@@ -1,0 +1,14 @@
+{
+	"Tasks": [
+		"default",
+		"publish-github"
+	],
+	"Os": "linux darwin windows",
+	"TaskSettings": {
+		"publish-github": {
+			"owner": "im7mortal",
+			"repository": "unrpa"
+		}
+	},
+	"ConfigVersion": "0.9"
+}
