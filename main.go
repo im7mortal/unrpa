@@ -8,8 +8,10 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/hydrogen18/stalecucumber"
+	flags "github.com/jessevdk/go-flags"
 	"io/ioutil"
 	"math/big"
 	"os"
@@ -281,9 +283,27 @@ func stringToInt64(s string) (i int64, err error) {
 }
 
 func main() {
+	var opts struct {
+		Help bool   `short:"h" long:"help" description:"Show the help message"`
+		Path string `short:"p" long:"path" description:"The archive will be extracted at this path"`
+	}
+	args, err := flags.Parse(&opts)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+	if opts.Help || len(args) != 1 {
+		fmt.Print(helpMessage)
+		return
+	}
+	archivePath := args[0]
+
 	extractPath := "./extract"
-	archivePath := os.Args[1]
-	err := os.MkdirAll(extractPath, os.ModePerm)
+	if opts.Path != "" {
+		extractPath = opts.Path
+	}
+
+	err = os.MkdirAll(extractPath, os.ModePerm)
 	if err != nil {
 		glog.Error(err)
 		return
@@ -310,3 +330,22 @@ func main() {
 		return
 	}
 }
+
+var helpMessage = `
+
+| Positional Argument | Description              |
+|---------------------|--------------------------|
+| FILENAME            | the RPA file to extract. |
+
+| Optional Argument            | Description                                                |
+|------------------------------|------------------------------------------------------------|
+|  -h, --help                  | show this help message and exit                          |
+|  -p PATH, --path PATH        | will extract to the given path.  
+
+Examples
+
+ - On most unix systems, open a terminal, then:
+   'unrpa -p "path/to/output/dir" "path/to/archive.rpa"'
+ - On most Windows systems, open a Command Prompt, then:
+   'unrpa -p "path\\to\\output\\dir" "path\\to\\archive.rpa"'
+`

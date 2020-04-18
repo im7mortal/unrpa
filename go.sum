@@ -2,3 +2,5 @@ github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekf
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/hydrogen18/stalecucumber v0.0.0-20180226003526-6de214d141dd h1:ULNa/hqzllTuY245P8JJ8XoaMebSNOEbNev99kQ7ufI=
 github.com/hydrogen18/stalecucumber v0.0.0-20180226003526-6de214d141dd/go.mod h1:KE5xQoh/IqNckSFoQXL5o5nEkrBiUDxatgac7TSMQ8Y=
+github.com/jessevdk/go-flags v1.4.0 h1:4IU2WS7AumrZ/40jfhf4QVDMsQwqA7VEHozFRrGARJA=
+github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
