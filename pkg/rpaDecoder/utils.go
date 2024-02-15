@@ -8,23 +8,23 @@ import (
 	"math/big"
 )
 
-func getInt64(i interface{}) (v int64, err error) {
+func getInt64(i interface{}) (int64, error) {
+
 	if vi, ok := i.(int); ok {
 		return int64(vi), nil
 	}
-	vv, ok := i.(*big.Int)
-	if !ok {
-		if v, ok = i.(int64); ok {
-			return
-		}
-		return 0, errors.New("expected *big.Int")
+
+	if vi64, ok := i.(int64); ok {
+		return vi64, nil
 	}
-	if !vv.IsInt64() {
-		if !ok {
-			return 0, errors.New("expected int64")
+
+	if vv, ok := i.(*big.Int); ok {
+		if vv.IsInt64() {
+			return vv.Int64(), nil
 		}
 	}
-	return vv.Int64(), nil
+
+	return 0, errors.New("expected int, int64, or *big.Int(int64)")
 }
 
 func stringToInt64(s string) (i int64, err error) {
