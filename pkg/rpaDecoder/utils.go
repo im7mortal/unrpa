@@ -9,6 +9,9 @@ import (
 )
 
 func getInt64(i interface{}) (v int64, err error) {
+	if vi, ok := i.(int); ok {
+		return int64(vi), nil
+	}
 	vv, ok := i.(*big.Int)
 	if !ok {
 		if v, ok = i.(int64); ok {

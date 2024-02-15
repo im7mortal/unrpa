@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"compress/zlib"
 	"context"
-	"errors"
+	"fmt"
 	"github.com/golang/glog"
-	"github.com/hydrogen18/stalecucumber"
+	"github.com/nlpodyssey/gopickle/pickle"
+	"github.com/nlpodyssey/gopickle/types"
 	"io"
 	"math/big"
 	"os"
@@ -83,69 +84,53 @@ func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 		return
 	}
 	defer zReader.Close()
-	buffMetadata1, err := io.ReadAll(zReader)
+
+	unpick := pickle.NewUnpickler(zReader)
+
+	d, err := unpick.Load()
 	if err != nil {
 		glog.Error(err)
 		return
 	}
-	load, err := stalecucumber.Unpickle(bytes.NewReader(buffMetadata1))
-	if err != nil {
-		glog.Error(err)
-		return
-	}
-	metadata, err := stalecucumber.DictString(load, err)
-	if err != nil {
-		glog.Error(err)
-		return
-	}
-	for key, value := range metadata {
-		v, ok := value.([]interface{})
-		if !ok {
-			err = errors.New("not valid interface conversion")
-			glog.Error(err)
-			return
-		}
-		if len(v) != 1 {
-			err = errors.New("not expected length 1")
-			glog.Error(err)
-			return
-		}
-		v, ok = v[0].([]interface{})
-		if !ok {
-			err = errors.New("not valid interface conversion")
-			glog.Error(err)
-			return
-		}
-		if len(v) != 3 {
-			err = errors.New("not expected length 3")
-			glog.Error(err)
-			return
-		}
-		fh := FileHeader{Name: key}
-		fh.Offset, err = getInt64(v[0])
-		if err != nil {
-			glog.Error(err)
-			return
-		}
 
-		fh.Len, err = getInt64(v[1])
-		if err != nil {
-			glog.Error(err)
-			return
-		}
-		// this field is never needed
-		//fh.Field, ok = v[2].(string)
-		//if !ok {
-		//	glog.Fatal("no ok")
-		//}
+	// following implementation pretty bad looking; for now we will stick with  it
+	if di, ok := d.(*types.Dict); ok {
+		for _, k := range di.Keys() {
 
-		if v3d.key != 0 {
-			fh.Offset = (&big.Int{}).Xor(big.NewInt(fh.Offset), big.NewInt(v3d.key)).Int64()
-			fh.Len = (&big.Int{}).Xor(big.NewInt(fh.Len), big.NewInt(v3d.key)).Int64()
-		}
+			fh := FileHeader{Name: fmt.Sprintf("%s", k)}
+			var v interface{}
+			if v, ok = di.Get(k); ok {
 
-		fhs = append(fhs, fh)
+				var vi *types.List
+				if vi, ok = v.(*types.List); ok {
+
+					var t *types.Tuple
+					if t, ok = vi.Get(0).(*types.Tuple); ok {
+
+						fh.Offset, err = getInt64(t.Get(0))
+						if err != nil {
+							glog.Error(err)
+							return
+						}
+
+						fh.Len, err = getInt64(t.Get(1))
+						if err != nil {
+							glog.Error(err)
+							return
+						}
+
+						if v3d.key != 0 {
+							fh.Offset = (&big.Int{}).Xor(big.NewInt(fh.Offset), big.NewInt(v3d.key)).Int64()
+							fh.Len = (&big.Int{}).Xor(big.NewInt(fh.Len), big.NewInt(v3d.key)).Int64()
+						}
+
+						fhs = append(fhs, fh)
+					}
+				}
+			}
+		}
 	}
+
 	v3d.fhs = fhs
 	return
 }
