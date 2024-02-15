@@ -33,6 +33,18 @@ type Decoder interface {
 	List(context.Context) ([]FileHeader, error)
 }
 
+type notImplemented struct {
+	v string
+}
+
+func (ni *notImplemented) Decode(context.Context) error {
+	return errors.New(ni.v + " is not implemented")
+}
+
+func (ni *notImplemented) List(context.Context) ([]FileHeader, error) {
+	return nil, errors.New(ni.v + " is not implemented")
+}
+
 func getInt64(i interface{}) (v int64, err error) {
 	vv, ok := i.(*big.Int)
 	if !ok {
@@ -52,7 +64,7 @@ func getInt64(i interface{}) (v int64, err error) {
 func DetectVersion(archivePath, extractPath string) (d Decoder, err error) {
 	ext := filepath.Ext(archivePath)
 	if ext == ".rpi" {
-		return &v1Decoder{}, nil
+		return &notImplemented{v: v1}, nil
 	}
 	file, err := os.Open(archivePath)
 	if err != nil {
@@ -79,7 +91,7 @@ func DetectVersion(archivePath, extractPath string) (d Decoder, err error) {
 		return
 	}
 	if len(parts) == 2 {
-		return &v2Decoder{}, nil
+		return &notImplemented{v: v2}, nil
 	}
 	v3d := v3Decoder{
 		extractPath: extractPath,
