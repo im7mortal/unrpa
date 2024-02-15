@@ -33,11 +33,6 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 		glog.Error(err)
 		return
 	}
-	buff, err := io.ReadAll(file)
-	if err != nil {
-		glog.Error(err)
-		return
-	}
 	defer file.Close()
 	for i := range v3d.fhs {
 		fileP := filepath.Join(v3d.extractPath, v3d.fhs[i].Name)
@@ -47,10 +42,12 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 			glog.Error(err)
 			return
 		}
+		b := make([]byte, v3d.fhs[i].Len)
+		_, err = file.ReadAt(b, v3d.fhs[i].Offset)
 		//glog.Info(filepath.Join(v3d.extractPath, v3d.fhs[i].Name), v3d.fhs[i].Offset, v3d.fhs[i].Len)
 		err = os.WriteFile(
 			fileP,
-			buff[v3d.fhs[i].Offset:v3d.fhs[i].Offset+v3d.fhs[i].Len],
+			b,
 			os.ModePerm,
 		)
 		if err != nil {
