@@ -9,7 +9,6 @@ import (
 	"github.com/nlpodyssey/gopickle/pickle"
 	"github.com/nlpodyssey/gopickle/types"
 	"io"
-	"math/big"
 	"os"
 	"path/filepath"
 )
@@ -117,8 +116,8 @@ func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 						}
 
 						if v3d.key != 0 {
-							fh.Offset = (&big.Int{}).Xor(big.NewInt(fh.Offset), big.NewInt(v3d.key)).Int64()
-							fh.Len = (&big.Int{}).Xor(big.NewInt(fh.Len), big.NewInt(v3d.key)).Int64()
+							fh.Offset = fh.Offset ^ v3d.key
+							fh.Len = fh.Len ^ v3d.key
 						}
 
 						fhs = append(fhs, fh)
