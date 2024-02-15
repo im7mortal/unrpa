@@ -1,7 +1,6 @@
 package rpaDecoder
 
 import (
-	"bytes"
 	"compress/zlib"
 	"context"
 	"fmt"
@@ -77,27 +76,27 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 }
 
 func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
+
 	file, err := os.Open(v3d.path)
 	if err != nil {
 		glog.Error(err)
 		return
 	}
+
 	defer file.Close()
-	_, err = file.Seek(v3d.offset, 0)
+
+	_, err = file.Seek(v3d.offset, io.SeekStart)
 	if err != nil {
 		glog.Error(err)
 		return
 	}
-	buffMetadata, err := io.ReadAll(file)
+
+	zReader, err := zlib.NewReader(file)
 	if err != nil {
 		glog.Error(err)
 		return
 	}
-	zReader, err := zlib.NewReader(bytes.NewReader(buffMetadata))
-	if err != nil {
-		glog.Error(err)
-		return
-	}
+
 	defer zReader.Close()
 
 	unpick := pickle.NewUnpickler(zReader)
@@ -134,6 +133,7 @@ func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 							return
 						}
 
+						// "decryption"
 						if v3d.key != 0 {
 							fh.Offset = fh.Offset ^ v3d.key
 							fh.Len = fh.Len ^ v3d.key
