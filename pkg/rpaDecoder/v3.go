@@ -37,13 +37,16 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 
 	defer file.Close()
 
-	const mb = 1024 * 1024 // 1 MB in bytes
-	b := make([]byte, int64(mb))
-
 	for i := range v3d.fhs {
 		fileP := filepath.Join(v3d.extractPath, v3d.fhs[i].Name)
 		dir, _ := filepath.Split(fileP)
 		err = os.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			glog.Error(err)
+			return
+		}
+
+		_, err = file.Seek(v3d.fhs[i].Offset, io.SeekStart)
 		if err != nil {
 			glog.Error(err)
 			return
@@ -56,38 +59,19 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 			return
 		}
 
-		defer outFile.Close()
-
-		var totalWritten int64 = 0
-		var currentWrite int64 = mb
-		for totalWritten < v3d.fhs[i].Len {
-			// Adjust the buffer size for the last chunk if necessary
-			remaining := v3d.fhs[i].Len - totalWritten
-			if remaining < mb {
-				currentWrite = remaining
-			}
-
-			// Read a chunk of the file starting from the current offset
-			_, err = file.ReadAt(b[:currentWrite], v3d.fhs[i].Offset+totalWritten)
-			if err != nil {
-				if err == io.EOF {
-					err = nil
-				} else {
-					glog.Error(err)
-					return
-				}
-			}
-
-			// Write the chunk to the destination file
-			_, err = outFile.Write(b[:currentWrite])
-			if err != nil {
-				glog.Error(err)
-				return
-			}
-
-			// Increment the total number of bytes written
-			totalWritten += currentWrite
+		_, err = io.CopyN(outFile, file, v3d.fhs[i].Len)
+		if err != nil {
+			glog.Error(err)
+			return
 		}
+
+		// we close it explicitly; becasue `defer` will wait for the end of the loop
+		err = outFile.Close()
+		if err != nil {
+			glog.Error(err)
+			return
+		}
+
 	}
 	return nil
 }
