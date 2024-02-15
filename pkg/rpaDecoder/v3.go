@@ -7,7 +7,7 @@ import (
 	"errors"
 	"github.com/golang/glog"
 	"github.com/hydrogen18/stalecucumber"
-	"io/ioutil"
+	"io"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -32,7 +32,7 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 		glog.Error(err)
 		return
 	}
-	buff, err := ioutil.ReadAll(file)
+	buff, err := io.ReadAll(file)
 	if err != nil {
 		glog.Error(err)
 		return
@@ -47,7 +47,7 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 			return
 		}
 		//glog.Info(filepath.Join(v3d.extractPath, v3d.fhs[i].Name), v3d.fhs[i].Offset, v3d.fhs[i].Len)
-		err = ioutil.WriteFile(
+		err = os.WriteFile(
 			fileP,
 			buff[v3d.fhs[i].Offset:v3d.fhs[i].Offset+v3d.fhs[i].Len],
 			os.ModePerm,
@@ -60,7 +60,7 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 	return nil
 }
 
-func (v3d *v3Decoder) List(ctx context.Context) (fhs []FileHeader, err error) {
+func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 	file, err := os.Open(v3d.path)
 	if err != nil {
 		glog.Error(err)
@@ -72,7 +72,7 @@ func (v3d *v3Decoder) List(ctx context.Context) (fhs []FileHeader, err error) {
 		glog.Error(err)
 		return
 	}
-	buffMetadata, err := ioutil.ReadAll(file)
+	buffMetadata, err := io.ReadAll(file)
 	if err != nil {
 		glog.Error(err)
 		return
@@ -83,7 +83,7 @@ func (v3d *v3Decoder) List(ctx context.Context) (fhs []FileHeader, err error) {
 		return
 	}
 	defer zReader.Close()
-	buffMetadata1, err := ioutil.ReadAll(zReader)
+	buffMetadata1, err := io.ReadAll(zReader)
 	if err != nil {
 		glog.Error(err)
 		return

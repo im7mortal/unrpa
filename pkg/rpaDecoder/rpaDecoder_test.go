@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	archivePath = "/home/user/QubesIncoming/basura/archive1.rpa"
+	archivePath = "/home/user/QubesIncoming/basura/archive.rpa"
 	extractPath = "~/out_rpa"
 )
 
