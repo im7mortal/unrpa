@@ -19,6 +19,9 @@ func isGui() bool {
 }
 
 func gui() {
+
+	var continueOnError bool
+
 	a := app.New()
 	w := a.NewWindow("RPA extractor")
 	hello := widget.NewLabel("Choose RPA file and extraction directory!")
@@ -47,8 +50,12 @@ func gui() {
 	})
 
 	start := widget.NewButton("start", func() {
-		run(rpaPath, extraction)
+		run(rpaPath, extraction, continueOnError)
 
+	})
+
+	errorCheckbox := widget.NewCheck("Continue on error", func(b bool) {
+		continueOnError = b
 	})
 
 	w.SetContent(container.NewVBox(
@@ -56,6 +63,7 @@ func gui() {
 		chooseRpa,
 		chooseExtract,
 		start,
+		errorCheckbox,
 	))
 
 	w.ShowAndRun()

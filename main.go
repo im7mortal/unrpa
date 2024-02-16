@@ -42,7 +42,7 @@ func main() {
 		return
 	}
 
-	run(archivePath, extractPath)
+	run(archivePath, extractPath, false)
 }
 
 var helpMessage = `
@@ -64,7 +64,7 @@ Examples
    'unrpa -p "path\\to\\output\\dir" "path\\to\\archive.rpa"'
 `
 
-func run(archivePath, extractPath string) {
+func run(archivePath, extractPath string, continueOnError bool) {
 	dcdr, err := rpaDecoder.DetectVersion(archivePath, extractPath)
 	if err != nil {
 		glog.Error(err)
