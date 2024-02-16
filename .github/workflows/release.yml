@@ -30,17 +30,13 @@ jobs:
         run: |
           GOOS=darwin GOARCH=amd64 go build -o unrpa-macos-amd64 .
 
-      - name: Create Release
+      - name: Create a Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: elgohr/Github-Release-Action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
+          title: Release ${{ github.ref }}
       - name: Upload Linux Binary to Release
         uses: actions/upload-release-asset@v1
         env:
