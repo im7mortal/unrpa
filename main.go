@@ -9,7 +9,13 @@ import (
 	"os"
 )
 
+const defaultExtractionPath = "./extract"
+
 func main() {
+	if isGui() {
+		gui()
+		return
+	}
 	var opts struct {
 		Help bool   `short:"h" long:"help" description:"Show the help message"`
 		Path string `short:"p" long:"path" description:"The archive will be extracted at this path"`
@@ -25,7 +31,7 @@ func main() {
 	}
 	archivePath := args[0]
 
-	extractPath := "./extract"
+	extractPath := defaultExtractionPath
 	if opts.Path != "" {
 		extractPath = opts.Path
 	}
@@ -36,6 +42,29 @@ func main() {
 		return
 	}
 
+	run(archivePath, extractPath)
+}
+
+var helpMessage = `
+
+| Positional Argument | Description              |
+|---------------------|--------------------------|
+| FILENAME            | the RPA file to extract. |
+
+| Optional Argument            | Description                                                |
+|------------------------------|------------------------------------------------------------|
+|  -h, --help                  | show this help message and exit                          |
+|  -p PATH, --path PATH        | will extract to the given path.  
+
+Examples
+
+ - On most unix systems, open a terminal, then:
+   'unrpa -p "path/to/output/dir" "path/to/archive.rpa"'
+ - On most Windows systems, open a Command Prompt, then:
+   'unrpa -p "path\\to\\output\\dir" "path\\to\\archive.rpa"'
+`
+
+func run(archivePath, extractPath string) {
 	dcdr, err := rpaDecoder.DetectVersion(archivePath, extractPath)
 	if err != nil {
 		glog.Error(err)
@@ -57,22 +86,3 @@ func main() {
 		return
 	}
 }
-
-var helpMessage = `
-
-| Positional Argument | Description              |
-|---------------------|--------------------------|
-| FILENAME            | the RPA file to extract. |
-
-| Optional Argument            | Description                                                |
-|------------------------------|------------------------------------------------------------|
-|  -h, --help                  | show this help message and exit                          |
-|  -p PATH, --path PATH        | will extract to the given path.  
-
-Examples
-
- - On most unix systems, open a terminal, then:
-   'unrpa -p "path/to/output/dir" "path/to/archive.rpa"'
- - On most Windows systems, open a Command Prompt, then:
-   'unrpa -p "path\\to\\output\\dir" "path\\to\\archive.rpa"'
-`
