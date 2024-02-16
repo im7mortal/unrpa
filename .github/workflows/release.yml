@@ -27,13 +27,13 @@ jobs:
         run: |
           GOOS=linux GOARCH=amd64 go build -o unrpa-linux-amd64 .
 
-      - name: Build binary for Windows
-        run: |
-          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
-
-      - name: Build binary for macOS
-        run: |
-          GOOS=darwin GOARCH=amd64 go build -o unrpa-macos-amd64 .
+#      - name: Build binary for Windows
+#        run: |
+#          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
+#
+#      - name: Build binary for macOS
+#        run: |
+#          GOOS=darwin GOARCH=amd64 go build -o unrpa-macos-amd64 .
 
       - name: Create Release
         id: create_release
@@ -56,22 +56,22 @@ jobs:
           asset_name: unrpa-linux-amd64
           asset_content_type: application/octet-stream
 
-      - name: Upload Windows Binary to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./unrpa-windows-amd64.exe
-          asset_name: unrpa-windows-amd64.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload macOS Binary to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./unrpa-macos-amd64
-          asset_name: unrpa-macos-amd64
-          asset_content_type: application/octet-stream
+#      - name: Upload Windows Binary to Release
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./unrpa-windows-amd64.exe
+#          asset_name: unrpa-windows-amd64.exe
+#          asset_content_type: application/octet-stream
+#
+#      - name: Upload macOS Binary to Release
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./unrpa-macos-amd64
+#          asset_name: unrpa-macos-amd64
+#          asset_content_type: application/octet-stream
