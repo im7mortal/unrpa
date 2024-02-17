@@ -60,7 +60,7 @@
 <div id="mobile" style="display: none;" class="container">
     Mobile platforms are not supported.
 </div>
-<div class="option">
+<div id="linux_exe" class="option">
     <a href="path_to_exe">Download exe</a>
 </div>
 
@@ -85,16 +85,14 @@
     const go = new Go();
     let wasmModule;
 
-    async function initWasm() {
-        const resp = await fetch('wasm/unrpa.wasm');
+    async function initWasm(wasm_path) {
+        const resp = await fetch(wasm_path);
         const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
         wasmModule = wasm.instance;
         go.run(wasmModule);
     }
 
-    window.addEventListener('load', initWasm);
 
-    ;
 
     document.addEventListener('DOMContentLoaded', (event) => {
         if (!('showOpenFilePicker' in window)) {
@@ -113,6 +111,31 @@
             console.log(version); // e.g., "88.0.4324.150"
         }
     });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            alert("START TO LOAD")
+            const response = await fetch('resources.json');
+            alert("LOADed")
+            const resources = await response.json();
+            const linuxExeLink = document.getElementById('linux_exe').querySelector('a');
+            if (resources.linux_exe) {
+                linuxExeLink.href = resources.linux_exe;
+            } else {
+                console.log('Linux executable URL not found.');
+            }
+            if (resources.wasm) {
+                initWasm(resources.wasm)
+            } else {
+                console.log('WASM bin URL not found.');
+            }
+
+        } catch (error) {
+            console.error('Failed to load resources:', error);
+        }
+    });
+
+
 </script>
 </body>
 </html>
