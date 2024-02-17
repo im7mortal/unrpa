@@ -86,7 +86,7 @@
     let wasmModule;
 
     async function initWasm(wasm_path) {
-        const resp = await fetch('unrpa.wasm');
+        const resp = await fetch('wasm/unrpa.wasm');
         const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
         wasmModule = wasm.instance;
         go.run(wasmModule);

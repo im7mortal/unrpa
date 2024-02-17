@@ -62,7 +62,7 @@ jobs:
           git config --global user.email 'actions@github.com'
           # Commit and push changes
           git add resources.json
-          git add unrpa.wasm
+          git add wasm/unrpa.wasm
           git commit -m 'Update resources.json with latest release URLs'
           git push origin gh-pages
         env:
