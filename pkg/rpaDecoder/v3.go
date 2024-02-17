@@ -166,7 +166,6 @@ func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 							return
 						}
 
-						// "decryption"
 						if v3d.key != 0 {
 							fh.Offset = fh.Offset ^ v3d.key
 							fh.Len = fh.Len ^ v3d.key
