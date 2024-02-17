@@ -25,8 +25,8 @@ async function detectVersionWithFileSystemAccess() {
         const header = lines[0];
         const parts = header.split(' ');
 
-        alert(stringToBigInt(parts[1]))
-        alert(stringToBigInt(parts[2]))
+        // alert(stringToBigInt(parts[1]))
+        // alert(stringToBigInt(parts[2]))
         console.log(stringToBigInt(parts[1]), stringToBigInt(parts[2]))
 
         if (parts.length < 2 || parts.length > 4) {
@@ -37,9 +37,21 @@ async function detectVersionWithFileSystemAccess() {
             return {decoder: 'notImplemented', version: 'v2'};
         } else {
             // For simplicity, just indicate a version 3 detection
-            alert('Version 3 detected');
+            alert('Version 3 detected; start to load to WASM');
 
-            const blob = file.slice(0, chunkSize);
+            const offsetNumber = Number(stringToBigInt(parts[1]));
+            const blobSlice = file.slice(offsetNumber);
+
+            // Read the blob as an array buffer
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const arrayBuffer = e.target.result;
+                const bytes = new Uint8Array(arrayBuffer);
+
+                // Now, bytes can be sent to the WASM module
+                await sendBytesToWasm(bytes, Number(stringToBigInt(parts[2])));
+            };
+            reader.readAsArrayBuffer(blobSlice);
 
 
             return {decoder: 'v3Decoder', version: 'v3', details: {offset: parts[1], key: parts[2]}};

@@ -6,8 +6,45 @@
 </head>
 <body>
 <button id="filePick" onclick="detectVersionWithFileSystemAccess()">Select and Detect File Version</button>
+<script src="wasm/wasm_exec.js"></script>
 <script src="web_resources/detectVersion.js"></script>
+
+
 <script>
+
+    async function sendBytesToWasm(bytes, key) {
+        // Assuming wasmModule is your instantiated WASM module
+        // And receiveBytes is a function you've exposed from Go
+        receiveBytes(bytes, key);
+    }
+
+
+</script>
+
+
+<script>
+
+    const go = new Go();
+    let wasmModule;
+
+    async function initWasm() {
+        const resp = await fetch('wasm/unrpa.wasm');
+        const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
+        wasmModule = wasm.instance;
+        go.run(wasmModule);
+    }
+
+    window.addEventListener('load', initWasm);
+
+    window.myApp = {
+        notifyCompletion: function(result) {
+
+            console.log(JSON.parse(result))
+
+            alert("Async operation completed with result: " + result);
+        }
+    };
+
     document.addEventListener('DOMContentLoaded', (event) => {
         if (!('showOpenFilePicker' in window)) {
             document.getElementById('filePick').style.display = 'none';

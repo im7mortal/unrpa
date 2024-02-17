@@ -1,6 +1,7 @@
 package rpaDecoder
 
 import (
+	"bytes"
 	"compress/zlib"
 	"context"
 	"fmt"
@@ -19,6 +20,8 @@ type v3Decoder struct {
 
 	continueOnError bool
 	errors          []error
+
+	raw []byte
 }
 
 const (
@@ -40,6 +43,14 @@ func (v3d *v3Decoder) canContinueOnError(err error, critical bool) (error, bool)
 		return nil, canSkip
 	}
 	return err, canNotSkip
+}
+
+func NewV3(src []byte, key int64) Decoder {
+	return &v3Decoder{
+
+		raw: src,
+		key: key,
+	}
 }
 
 func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
@@ -110,14 +121,15 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 
 func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 
-	file, err := os.Open(v3d.path)
-	if err != nil {
-		glog.Error(err)
-		return
-	}
+	//file, err := os.Open(v3d.path)
+	//if err != nil {
+	//	//glog.Error(err)
+	//	return
+	//}
+	//
+	//defer file.Close()
 
-	defer file.Close()
-
+	file := io.NewSectionReader(bytes.NewReader(v3d.raw), 0, int64(len(v3d.raw)))
 	_, err = file.Seek(v3d.offset, io.SeekStart)
 	if err != nil {
 		glog.Error(err)
