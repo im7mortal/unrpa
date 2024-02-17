@@ -49,9 +49,16 @@
         <button id="start" onclick="startProcess()">Extract</button>
     </div>
 </div>
-<div id="firefox" style="display: none;" class="container">
-    Firefox is great browser, the team consider File System Access API harmful and didn't implement it.
-    Implementation with File API will be soon.
+<div id="Firefox" style="display: none;" class="container">
+    Firefox is great browser, the team considers the File System Access API harmful and didn't implement it.
+    Implementation with simple File API will be soon.
+</div>
+<div id="Safari" style="display: none;" class="container">
+    Safari doesn't implement File System Access API.
+    Implementation with simple File API will be soon.
+</div>
+<div id="mobile" style="display: none;" class="container">
+    Mobile platforms are not supported.
 </div>
 <div class="option">
     <a href="path_to_exe">Download exe</a>
@@ -92,14 +99,14 @@
     document.addEventListener('DOMContentLoaded', (event) => {
         if (!('showOpenFilePicker' in window)) {
             document.getElementById('maincontainer').style.display = 'none';
-            document.getElementById('firefox').style.display = 'unset';
+
+            if (browser.getPlatformType() === "mobile") {
+                document.getElementById('mobile').style.display = 'none';
+            } else {
+                document.getElementById(browser.getBrowserName()).style.display = 'none';
+            }
             alert('Your browser does not support the File System Access API.');
             const browser = bowser.getParser(window.navigator.userAgent);
-
-            // Get browser name
-            const name = browser.getBrowserName();
-            alert(name); // e.g., "Chrome"
-            alert(browser.getPlatformType()); // e.g., "Chrome"
 
             // Get browser version
             const version = browser.getBrowserVersion();
