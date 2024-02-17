@@ -1,2 +1,5 @@
 /.idea/
 .goxc.local.json
+
+**/*.wasm
+**/*.exe
