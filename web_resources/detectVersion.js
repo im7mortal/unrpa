@@ -50,11 +50,22 @@ async function run(arr, directoryHandle, fileHandle) {
     }
 }
 
-async function detectVersionWithFileSystemAccess() {
+let directoryHandle = null;
+let fileHandle = null;
+
+async function chooseDirectory() {
+    directoryHandle = await window.showDirectoryPicker();
+}
+
+async function chooseFile() {
+    [fileHandle] = await window.showOpenFilePicker();
+}
+
+async function startProcess() {
     try {
         // Show a file picker to let the user select a file
         // Show a file picker to let the user select a file
-        const [fileHandle] = await window.showOpenFilePicker();
+
         // Get a file object from the file handle
         const file = await fileHandle.getFile();
 
@@ -77,8 +88,6 @@ async function detectVersionWithFileSystemAccess() {
         const header = lines[0];
         const parts = header.split(' ');
 
-
-        const directoryHandle = await window.showDirectoryPicker();
 
         // alert(stringToBigInt(parts[1]))
         // alert(stringToBigInt(parts[2]))

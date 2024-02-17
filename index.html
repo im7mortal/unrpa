@@ -5,7 +5,48 @@
     <title>File Version Detector</title>
 </head>
 <body>
-<button id="filePick" onclick="detectVersionWithFileSystemAccess()">Select and Detect File Version</button>
+<style>
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        text-align: center;
+        border-top: 1px solid #000;
+        border-bottom: 1px solid #000;
+        padding: 20px 0;
+    }
+    .option {
+        margin: 20px 0;
+    }
+    .option:not(:last-child):after {
+        content: "OR";
+        display: block;
+        margin: 20px 0;
+    }
+    button, a {
+        display: inline-block;
+        padding: 10px 20px;
+        text-decoration: none;
+        color: #000;
+        border: 1px solid #000;
+        background-color: #fff;
+        cursor: pointer;
+    }
+    a:hover, button:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+
+<div class="container">
+    <div class="option">
+        <button id="filePick" onclick="chooseFile()">Select archive</button>
+        <button id="dirrPick" onclick="chooseDirectory()">To directory</button>
+        <button id="start" onclick="startProcess()">Extract</button>
+    </div>
+    <div class="option">
+        <a href="path_to_exe">Download exe</a>
+    </div>
+</div>
+
 <script src="wasm/wasm_exec.js"></script>
 <script src="web_resources/detectVersion.js"></script>
 
