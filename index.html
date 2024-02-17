@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Version Detector</title>
+</head>
+<body>
+<button id="filePick" onclick="detectVersionWithFileSystemAccess()">Select and Detect File Version</button>
+<script src="web_resources/detectVersion.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        if (!('showOpenFilePicker' in window)) {
+            document.getElementById('filePick').style.display = 'none';
+            alert('Your browser does not support the File System Access API.');
+        }
+    });
+</script>
+</body>
+</html>
