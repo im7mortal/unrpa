@@ -8,12 +8,12 @@ on:
 jobs:
   build:
     name: Build and Release
-    runs-on: ubuntu-20.04 # to support as many users as possible
+    runs-on: ubuntu-20.04
     steps:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21' # Use the Go version of your choice
+          go-version: '1.21'
 
       - name: Check out code
         uses: actions/checkout@v4
@@ -31,73 +31,38 @@ jobs:
         run: |
           GOOS=js GOARCH=wasm go build -o unrpa.wasm wasm/main.go
 
-#      - name: Build binary for Windows
-#        run: |
-#          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
-#
-#      - name: Build binary for macOS
-#        run: |
-#          GOOS=darwin GOARCH=amd64 go build -o unrpa-macos-amd64 .
-
-      - name: Create a Release
-        id: create_release
-        uses: elgohr/Github-Release-Action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          title: Release ${{ github.ref }}
-
-      - name: Create a Release
+      # Use a single action for creating the release and uploading assets
+      - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
             unrpa-linux-amd64
             unrpa.wasm
-
-
-
-#      - name: Upload Windows Binary to Release
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ./unrpa-windows-amd64.exe
-#          asset_name: unrpa-windows-amd64.exe
-#          asset_content_type: application/octet-stream
-#
-#      - name: Upload macOS Binary to Release
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ./unrpa-macos-amd64
-#          asset_name: unrpa-macos-amd64
-#          asset_content_type: application/octet-stream
-      - name: Update resources.json
-        id: get_asset_url
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_OUTPUT: ${{ github.output }}
+
+      # Assuming resources.json update is needed in gh-pages branch
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: 'gh-pages'
+          path: 'gh-pages'
+
+      - name: Update resources.json
         run: |
-          METADATA=$(curl -s \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}/assets")
-          
-          echo  "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}/assets"
-          
-          echo $METADATA
-          
-          LINUX_EXE=$(echo "$METADATA" | jq -r '.[] | select(.name == "unrpa-linux-amd64") | .browser_download_url')
-          WASM_BIN=$(echo "$METADATA" | jq -r '.[] | select(.name == "unrpa.wasm") | .browser_download_url')
- 
-          echo '{"wasm": "${WASM_BIN}", "linux_exe": "${LINUX_EXE}"}' > resources.json
+          # Assuming the current directory is still the default workspace
+          cd gh-pages
+          # Construct the URLs based on the repository and tag name
+          LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
+          WASM_BIN="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa.wasm"
+          # Update resources.json
+          echo "{\"wasm\": \"$WASM_BIN\", \"linux_exe\": \"$LINUX_EXE\"}" > resources.json
+          # Configure git
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
-          git checkout gh-pages
+          # Commit and push changes
           git add resources.json
           git commit -m 'Update resources.json with latest release URLs'
           git push origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
