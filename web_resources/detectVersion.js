@@ -1,3 +1,55 @@
+async function readBlobFromFile(fileHandle, offset, length) {
+    // Get a file object from the file handle
+    const file = await fileHandle.getFile();
+    // Slice the file to get the blob
+    const blob = file.slice(offset, offset + length);
+    return blob;
+}
+
+async function saveBlobToFile(blob, fileName, directoryHandle) {
+    try {
+        // Create a new file handle.
+        const fileHandle = await directoryHandle.getFileHandle(fileName, {create: true});
+        // Create a writable stream to write to the file.
+        const writable = await fileHandle.createWritable();
+        // Write the blob to the file.
+        await writable.write(blob);
+        // Close the file.
+        await writable.close();
+        console.log(`File written: ${fileName}`);
+    } catch (err) {
+        console.error(`Could not write file: ${fileName}`, err);
+    }
+}
+
+async function ensureDirectoryHandle(directoryHandle, subPath) {
+    const names = subPath.split('/').filter(p => p.length > 0); // Remove empty segments
+    let currentHandle = directoryHandle;
+    for (const name of names) {
+        currentHandle = await currentHandle.getDirectoryHandle(name, {create: true});
+    }
+    return currentHandle;
+}
+
+
+async function run(arr, directoryHandle, fileHandle) {
+    for (let i = 0; i < arr.length; i++) {
+        console.log(JSON.stringify(arr[i]))
+
+        let fileInfo = arr[i]
+        const blob = await readBlobFromFile(fileHandle, fileInfo.Offset, fileInfo.Len);
+        // Ensure the directory path exists
+        const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
+        const targetDirectoryHandle = await ensureDirectoryHandle(directoryHandle, subPath);
+
+        // Extract the file name from the path
+        const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
+
+        // Save the blob to the file
+        await saveBlobToFile(blob, fileName, targetDirectoryHandle);
+    }
+}
+
 async function detectVersionWithFileSystemAccess() {
     try {
         // Show a file picker to let the user select a file
@@ -25,6 +77,9 @@ async function detectVersionWithFileSystemAccess() {
         const header = lines[0];
         const parts = header.split(' ');
 
+
+        const directoryHandle = await window.showDirectoryPicker();
+
         // alert(stringToBigInt(parts[1]))
         // alert(stringToBigInt(parts[2]))
         console.log(stringToBigInt(parts[1]), stringToBigInt(parts[2]))
@@ -44,7 +99,7 @@ async function detectVersionWithFileSystemAccess() {
 
             // Read the blob as an array buffer
             const reader = new FileReader();
-            reader.onload = async function(e) {
+            reader.onload = async function (e) {
                 const arrayBuffer = e.target.result;
                 const bytes = new Uint8Array(arrayBuffer);
 
@@ -52,7 +107,14 @@ async function detectVersionWithFileSystemAccess() {
                 await sendBytesToWasm(bytes, Number(stringToBigInt(parts[2])));
             };
             reader.readAsArrayBuffer(blobSlice);
+            window.myApp = {
+                notifyCompletion: function (result) {
 
+                    let arr = JSON.parse(result)
+                    run(arr, directoryHandle, fileHandle)
+
+                }
+            }
 
             return {decoder: 'v3Decoder', version: 'v3', details: {offset: parts[1], key: parts[2]}};
         }

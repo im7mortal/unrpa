@@ -36,14 +36,7 @@
 
     window.addEventListener('load', initWasm);
 
-    window.myApp = {
-        notifyCompletion: function(result) {
-
-            console.log(JSON.parse(result))
-
-            alert("Async operation completed with result: " + result);
-        }
-    };
+;
 
     document.addEventListener('DOMContentLoaded', (event) => {
         if (!('showOpenFilePicker' in window)) {
