@@ -62,28 +62,17 @@
 
 
 <script>
-
     async function sendBytesToWasm(bytes, key) {
         // Assuming wasmModule is your instantiated WASM module
         // And receiveBytes is a function you've exposed from Go
         receiveBytes(bytes, key);
     }
-
-
 </script>
 
 
 <script>
 
-    const browser = bowser.getParser(window.navigator.userAgent);
 
-    // Get browser name
-    const name = browser.getBrowserName();
-    alert(name); // e.g., "Chrome"
-
-    // Get browser version
-    const version = browser.getBrowserVersion();
-    console.log(version); // e.g., "88.0.4324.150"
 
 
     const go = new Go();
@@ -105,6 +94,15 @@
             document.getElementById('maincontainer').style.display = 'none';
             document.getElementById('firefox').style.display = 'unset';
             alert('Your browser does not support the File System Access API.');
+            const browser = bowser.getParser(window.navigator.userAgent);
+
+            // Get browser name
+            const name = browser.getBrowserName();
+            alert(name); // e.g., "Chrome"
+
+            // Get browser version
+            const version = browser.getBrowserVersion();
+            console.log(version); // e.g., "88.0.4324.150"
         }
     });
 </script>
