@@ -5,6 +5,8 @@
     <title>File Version Detector</title>
 </head>
 <body>
+<script src="https://unpkg.com/bowser@2.11.0/es5.js"></script>
+
 <style>
     .container {
         width: 80%;
@@ -14,14 +16,17 @@
         border-bottom: 1px solid #000;
         padding: 20px 0;
     }
+
     .option {
         margin: 20px 0;
     }
+
     .option:not(:last-child):after {
         content: "OR";
         display: block;
         margin: 20px 0;
     }
+
     button, a {
         display: inline-block;
         padding: 10px 20px;
@@ -31,20 +36,25 @@
         background-color: #fff;
         cursor: pointer;
     }
+
     a:hover, button:hover {
         background-color: #f0f0f0;
     }
 </style>
 
-<div class="container">
+<div id="maincontainer" class="container">
     <div class="option">
         <button id="filePick" onclick="chooseFile()">Select archive</button>
         <button id="dirrPick" onclick="chooseDirectory()">To directory</button>
         <button id="start" onclick="startProcess()">Extract</button>
     </div>
-    <div class="option">
-        <a href="path_to_exe">Download exe</a>
-    </div>
+</div>
+<div id="firefox" style="display: none;" class="container">
+    Firefox is great browser, the team consider File System Access API harmful and didn't implement it.
+    Implementation with File API will be soon.
+</div>
+<div class="option">
+    <a href="path_to_exe">Download exe</a>
 </div>
 
 <script src="wasm/wasm_exec.js"></script>
@@ -65,6 +75,17 @@
 
 <script>
 
+    const browser = bowser.getParser(window.navigator.userAgent);
+
+    // Get browser name
+    const name = browser.getBrowserName();
+    alert(name); // e.g., "Chrome"
+
+    // Get browser version
+    const version = browser.getBrowserVersion();
+    console.log(version); // e.g., "88.0.4324.150"
+
+
     const go = new Go();
     let wasmModule;
 
@@ -77,11 +98,12 @@
 
     window.addEventListener('load', initWasm);
 
-;
+    ;
 
     document.addEventListener('DOMContentLoaded', (event) => {
         if (!('showOpenFilePicker' in window)) {
-            document.getElementById('filePick').style.display = 'none';
+            document.getElementById('maincontainer').style.display = 'none';
+            document.getElementById('firefox').style.display = 'unset';
             alert('Your browser does not support the File System Access API.');
         }
     });
