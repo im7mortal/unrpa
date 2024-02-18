@@ -1,1 +1,1 @@
-{"linux_exe": "https://github.com/im7mortal/unrpa/releases/download/v1.2.0-debug-19/unrpa-linux-amd64"}
+{ "linux_exe": "${LINUX_EXE}"}
