@@ -52,7 +52,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: 'gh-pages'
-          path: 'gh-pages'
       - name: List2
         run: |
           ls -l
