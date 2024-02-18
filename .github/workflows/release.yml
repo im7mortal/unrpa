@@ -78,9 +78,11 @@ jobs:
           
           echo  "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}/assets"
           
-          echo $METADATA
+          echo "METADATA $METADATA"
           
-          LINUX_EXE=$(echo "$METADATA" | jq -r '.[] | select(.name == "unrpa-linux-amd64") | .browser_download_url')
+          
+          LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
+
           #WINDOWS_EXE=$(echo "$METADATA" | jq -r '.[] | select(.name == "unrpa-windows-amd64.exe") | .browser_download_url')
           
           
