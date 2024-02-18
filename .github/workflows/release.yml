@@ -27,9 +27,9 @@ jobs:
         run: |
           GOOS=linux GOARCH=amd64 go build -o unrpa-linux-amd64 .
 
-      - name: Build binary for Windows
-        run: |
-          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
+#      - name: Build binary for Windows
+#        run: |
+#          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
 
       - name: Build WASM binary
         run: |
@@ -40,8 +40,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            unrpa.wasm
-            unrpa-windows-amd64.exe
             unrpa-linux-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -83,10 +81,11 @@ jobs:
           echo $METADATA
           
           LINUX_EXE=$(echo "$METADATA" | jq -r '.[] | select(.name == "unrpa-linux-amd64") | .browser_download_url')
-          WINDOWS_EXE=$(echo "$METADATA" | jq -r '.[] | select(.name == "unrpa-windows-amd64.exe") | .browser_download_url')
-
+          #WINDOWS_EXE=$(echo "$METADATA" | jq -r '.[] | select(.name == "unrpa-windows-amd64.exe") | .browser_download_url')
           
-          echo '{"windows_exe": "${WINDOWS_EXE}", "linux_exe": "${LINUX_EXE}"}' > resources.json
+          
+          #echo '{"windows_exe": "${WINDOWS_EXE}", "linux_exe": "${LINUX_EXE}"}' > resources.json
+          echo '{ "linux_exe": "${LINUX_EXE}"}' > resources.json
           
           # Configure git
           git config --global user.name 'GitHub Actions'

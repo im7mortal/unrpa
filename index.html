@@ -167,6 +167,7 @@
             if (resources.windows_exe) {
                 windows_exeLink.href = resources.windows_exe;
             } else {
+                windows_exeLink.style.display = 'none';
                 console.log('Windows executable URL not found.');
             }
             initWasm(resources.wasm)
