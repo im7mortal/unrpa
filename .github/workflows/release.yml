@@ -36,7 +36,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-#            unrpa-linux-amd64
             unrpa.wasm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
