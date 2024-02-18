@@ -41,13 +41,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: List
+        run: |
+          ls -l
+          ls -l wasm
+
+
       # Assuming resources.json update is needed in gh-pages branch
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
         with:
           ref: 'gh-pages'
           path: 'gh-pages'
-
+      - name: List2
+        run: |
+          ls -l
+          ls -l wasm
       - name: Update resources.json
         run: |
           # Assuming the current directory is still the default workspace
