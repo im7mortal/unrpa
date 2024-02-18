@@ -61,7 +61,6 @@ jobs:
       - name: Update resources.json
         run: |
           # Assuming the current directory is still the default workspace
-          cd gh-pages
           # Construct the URLs based on the repository and tag name
           LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
           #WASM_BIN="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa.wasm"
