@@ -18,14 +18,14 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential libxxf86vm-dev jq
-
-      - name: Build binary for Linux
-        run: |
-          GOOS=linux GOARCH=amd64 go build -o unrpa-linux-amd64 .
+#      - name: Install Dependencies
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential libxxf86vm-dev jq
+#
+#      - name: Build binary for Linux
+#        run: |
+#          GOOS=linux GOARCH=amd64 go build -o unrpa-linux-amd64 .
 
       - name: Build WASM binary
         run: |
@@ -36,7 +36,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            unrpa-linux-amd64
+#            unrpa-linux-amd64
             unrpa.wasm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -62,6 +62,9 @@ jobs:
           
           git fetch --all
           git checkout gh-pages
+          ls -l
+          ls -l wasm
+          cat .gitignore
   
           # Assuming the current directory is still the default workspace
           # Construct the URLs based on the repository and tag name
