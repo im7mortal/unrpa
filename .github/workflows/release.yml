@@ -64,9 +64,10 @@ jobs:
           cd gh-pages
           # Construct the URLs based on the repository and tag name
           LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
-          WASM_BIN="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa.wasm"
+          #WASM_BIN="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa.wasm"
           # Update resources.json
-          echo "{\"wasm\": \"$WASM_BIN\", \"linux_exe\": \"$LINUX_EXE\"}" > resources.json
+          #echo "{\"wasm\": \"$WASM_BIN\", \"linux_exe\": \"$LINUX_EXE\"}" > resources.json
+          echo "{\"linux_exe\": \"$LINUX_EXE\"}" > resources.json
           # Configure git
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
