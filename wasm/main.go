@@ -15,7 +15,7 @@ func receiveBytes(this js.Value, inputs []js.Value) interface{} {
 	goBytes := make([]byte, length)
 	js.CopyBytesToGo(goBytes, uint8Array)
 
-	v := rpaDecoder.NewV3(goBytes, int64(inputs[1].Int()))
+	v := rpaDecoder.NewWasm(rpaDecoder.V3, goBytes, int64(inputs[1].Int()))
 
 	b, err := v.List(context.TODO())
 

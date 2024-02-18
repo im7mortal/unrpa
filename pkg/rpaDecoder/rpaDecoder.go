@@ -13,7 +13,7 @@ import (
 const (
 	v1 = "RPA-1.0"
 	v2 = "RPA-2.0"
-	v3 = "RPA-3.0"
+	V3 = "RPA-3.0"
 )
 
 type FileHeader struct {
