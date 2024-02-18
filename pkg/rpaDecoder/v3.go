@@ -53,14 +53,6 @@ func (v3d *v3Decoder) canContinueOnError(err error, critical bool) (error, bool)
 	return err, canNotSkip
 }
 
-func NewV3(src []byte, key int64) Decoder {
-	return &v3Decoder{
-
-		raw: src,
-		key: key,
-	}
-}
-
 func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 
 	if v3d.fhs == nil {
@@ -129,20 +121,27 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 
 func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 
-	//file, err := os.Open(v3d.path)
-	//if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
-	//	return nil, err
-	//}
-	//
-	//defer file.Close()
+	var r io.Reader
+	if v3d.raw != nil {
+		r = bytes.NewReader(v3d.raw)
+	} else {
+		var f *os.File
+		f, err = os.Open(v3d.path)
+		if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
+			return nil, err
+		}
 
-	file := io.NewSectionReader(bytes.NewReader(v3d.raw), 0, int64(len(v3d.raw)))
-	_, err = file.Seek(v3d.offset, io.SeekStart)
-	if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
-		return nil, err
+		defer f.Close()
+
+		_, err = f.Seek(v3d.offset, io.SeekStart)
+		if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
+			return nil, err
+		}
+
+		r = f
 	}
 
-	zReader, err := zlib.NewReader(file)
+	zReader, err := zlib.NewReader(r)
 	if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
 		return nil, err
 	}
