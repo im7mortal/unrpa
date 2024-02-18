@@ -6,6 +6,14 @@ async function readBlobFromFile(fileHandle, offset, length) {
     return blob;
 }
 
+function logMessage(message) {
+    // BAD IMPLEMENTATION BUT OK FOR NOW
+    const logElement = document.getElementById('log');
+    logElement.textContent += message + '\n'; // Append new message
+    logElement.scrollTop = logElement.scrollHeight; // Auto-scroll to the bottom
+}
+
+
 async function saveBlobToFile(blob, fileName, directoryHandle) {
     try {
         // Create a new file handle.
@@ -16,7 +24,7 @@ async function saveBlobToFile(blob, fileName, directoryHandle) {
         await writable.write(blob);
         // Close the file.
         await writable.close();
-        console.log(`File written: ${fileName}`);
+        logMessage(`File written: ${fileName}`);
     } catch (err) {
         console.error(`Could not write file: ${fileName}`, err);
     }
@@ -34,7 +42,7 @@ async function ensureDirectoryHandle(directoryHandle, subPath) {
 
 async function run(arr, directoryHandle, fileHandle) {
     for (let i = 0; i < arr.length; i++) {
-        console.log(JSON.stringify(arr[i]))
+        // console.log(JSON.stringify(arr[i]))
 
         let fileInfo = arr[i]
         const blob = await readBlobFromFile(fileHandle, fileInfo.Offset, fileInfo.Len);
