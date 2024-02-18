@@ -57,6 +57,7 @@ jobs:
         run: |
           ls -l
           ls -l wasm
+          cat .gitignore
       - name: Update resources.json
         run: |
           # Assuming the current directory is still the default workspace
