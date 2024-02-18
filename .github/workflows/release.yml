@@ -59,6 +59,10 @@ jobs:
           cat .gitignore
       - name: Update resources.json
         run: |
+          
+          git fetch --all
+          git checkout gh-pages
+  
           # Assuming the current directory is still the default workspace
           # Construct the URLs based on the repository and tag name
           LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
