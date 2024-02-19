@@ -42,7 +42,7 @@ jobs:
 
       - name: Update resources.json
         run: |
-          TMP_BRANCH_NAME = ${{ github.ref_name }}-$(date +%s)$RANDOM
+          TMP_BRANCH_NAME=${{ github.ref_name }}-$(date +%s)$RANDOM
           git checkout -b ${TMP_BRANCH_NAME}
           git fetch gh-pages
           git checkout gh-pages
