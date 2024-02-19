@@ -18,27 +18,27 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-#      - name: Install Dependencies
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential libxxf86vm-dev jq
-#
-#      - name: Build binary for Linux
-#        run: |
-#          GOOS=linux GOARCH=amd64 go build -o unrpa-linux-amd64 .
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential libxxf86vm-dev jq
+
+      - name: Build binary for Linux
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o unrpa-linux-amd64 .
 
       #      - name: Build binary for Windows
       #        run: |
       #          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
 
       # Use a single action for creating the release and uploading assets
-#      - name: Create Release and Upload Assets
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          files: |
-#            unrpa-linux-amd64
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            unrpa-linux-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update resources.json
         run: |
