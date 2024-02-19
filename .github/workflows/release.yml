@@ -8,70 +8,64 @@ on:
 jobs:
   build:
     name: Build and Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: '1.21' # Use the Go version of your choice
+          go-version: '1.21'
 
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential libxxf86vm-dev
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential libxxf86vm-dev jq
 
       - name: Build binary for Linux
         run: |
           GOOS=linux GOARCH=amd64 go build -o unrpa-linux-amd64 .
 
-#      - name: Build binary for Windows
-#        run: |
-#          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
-#
-#      - name: Build binary for macOS
-#        run: |
-#          GOOS=darwin GOARCH=amd64 go build -o unrpa-macos-amd64 .
+      #      - name: Build binary for Windows
+      #        run: |
+      #          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      # Use a single action for creating the release and uploading assets
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            unrpa-linux-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
 
-      - name: Upload Linux Binary to Release
-        uses: actions/upload-release-asset@v1
+      - name: Update resources.json
+        run: |
+          TMP_BRANCH_NAME=${{ github.ref_name }}-$(date +%s)$RANDOM
+          git checkout -b ${TMP_BRANCH_NAME}
+          git fetch origin gh-pages:gh-pages
+          git checkout gh-pages
+          git merge --no-ff ${TMP_BRANCH_NAME}
+          git branch -D ${TMP_BRANCH_NAME}
+          
+          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
+
+          # Prepare the download URL
+          LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
+          
+          # Update resources.json
+          echo "{\"linux_exe\": \"${LINUX_EXE}\"}"
+          echo "{\"linux_exe\": \"${LINUX_EXE}\"}" > resources.json
+          
+          # Configure git
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          
+          # Commit and push changes
+          git add resources.json
+          git add wasm/unrpa.wasm
+          git commit -m 'Update resources.json with latest release URLs'
+          git push origin gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./unrpa-linux-amd64
-          asset_name: unrpa-linux-amd64
-          asset_content_type: application/octet-stream
-
-#      - name: Upload Windows Binary to Release
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ./unrpa-windows-amd64.exe
-#          asset_name: unrpa-windows-amd64.exe
-#          asset_content_type: application/octet-stream
-#
-#      - name: Upload macOS Binary to Release
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ./unrpa-macos-amd64
-#          asset_name: unrpa-macos-amd64
-#          asset_content_type: application/octet-stream

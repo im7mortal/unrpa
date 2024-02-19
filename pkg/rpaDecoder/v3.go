@@ -21,6 +21,8 @@ type v3Decoder struct {
 	continueOnError bool
 	errors          []error
 
+	silent bool
+
 	raw []byte
 }
 
@@ -29,28 +31,26 @@ const (
 	canSkip    = true
 )
 
+func log(msg string, silent bool) {
+	if !silent {
+		glog.ErrorDepthf(2, msg)
+	}
+}
+
 func (v3d *v3Decoder) canContinueOnError(err error, critical bool) (error, bool) {
 	if err == nil {
 		return nil, false
 	}
 	if critical {
-		glog.ErrorDepthf(1, "[CRITICAL ERROR CAN'T CONTINUE] %s", err)
+		log(fmt.Sprintf("[CRITICAL ERROR CAN'T CONTINUE] %s", err), v3d.silent)
 		return err, canNotSkip
 	}
 	if v3d.continueOnError {
-		glog.ErrorDepthf(1, "[SKIP ERROR] %s", err)
+		log(fmt.Sprintf("[SKIP ERROR] %s", err), v3d.silent)
 		v3d.errors = append(v3d.errors, err)
 		return nil, canSkip
 	}
 	return err, canNotSkip
-}
-
-func NewV3(src []byte, key int64) Decoder {
-	return &v3Decoder{
-
-		raw: src,
-		key: key,
-	}
 }
 
 func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
@@ -121,25 +121,29 @@ func (v3d *v3Decoder) Decode(ctx context.Context) (err error) {
 
 func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 
-	//file, err := os.Open(v3d.path)
-	//if err != nil {
-	//	//glog.Error(err)
-	//	return
-	//}
-	//
-	//defer file.Close()
+	var r io.Reader
+	if v3d.raw != nil {
+		r = bytes.NewReader(v3d.raw)
+	} else {
+		var f *os.File
+		f, err = os.Open(v3d.path)
+		if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
+			return nil, err
+		}
 
-	file := io.NewSectionReader(bytes.NewReader(v3d.raw), 0, int64(len(v3d.raw)))
-	_, err = file.Seek(v3d.offset, io.SeekStart)
-	if err != nil {
-		glog.Error(err)
-		return
+		defer f.Close()
+
+		_, err = f.Seek(v3d.offset, io.SeekStart)
+		if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
+			return nil, err
+		}
+
+		r = f
 	}
 
-	zReader, err := zlib.NewReader(file)
-	if err != nil {
-		glog.Error(err)
-		return
+	zReader, err := zlib.NewReader(r)
+	if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
+		return nil, err
 	}
 
 	defer zReader.Close()
@@ -147,9 +151,8 @@ func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 	unpick := pickle.NewUnpickler(zReader)
 
 	d, err := unpick.Load()
-	if err != nil {
-		glog.Error(err)
-		return
+	if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
+		return nil, err
 	}
 
 	// following implementation pretty bad looking; for now we will stick with  it
@@ -167,15 +170,13 @@ func (v3d *v3Decoder) List(_ context.Context) (fhs []FileHeader, err error) {
 					if t, ok = vi.Get(0).(*types.Tuple); ok {
 
 						fh.Offset, err = getInt64(t.Get(0))
-						if err != nil {
-							glog.Error(err)
-							return
+						if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
+							return nil, err
 						}
 
 						fh.Len, err = getInt64(t.Get(1))
-						if err != nil {
-							glog.Error(err)
-							return
+						if err, _ = v3d.canContinueOnError(err, canNotSkip); err != nil {
+							return nil, err
 						}
 
 						if v3d.key != 0 {
