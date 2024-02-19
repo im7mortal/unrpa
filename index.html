@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>File Version Detector</title>
+    <title>Renpy arcives extractor</title>
     <style>
+        /* Container & General Layout */
         .container {
             width: 80%;
             margin: 0 auto;
@@ -11,12 +12,10 @@
             border-top: 1px solid #000;
             border-bottom: 1px solid #000;
             padding: 20px 0;
+            font-family: Arial, sans-serif; /* Consistent font */
         }
 
-        .option {
-            margin: 20px 0;
-        }
-
+        /* Buttons & Links Styling */
         button, a {
             display: inline-block;
             padding: 10px 20px;
@@ -25,10 +24,16 @@
             border: 1px solid #000;
             background-color: #fff;
             cursor: pointer;
+            transition: background-color 0.2s; /* Smooth transition for hover effect */
         }
 
         a:hover, button:hover {
             background-color: #f0f0f0;
+        }
+
+        /* Download Options */
+        .option {
+            margin: 20px 0;
         }
 
         .option a {
@@ -46,22 +51,29 @@
             margin-right: 8px;
         }
 
+        /* Log Area */
         #log {
-            white-space: pre; /* Keeps the formatting of log messages */
+            white-space: pre-wrap; /* Allows for proper text wrapping */
             background-color: #f4f4f4;
             border: 1px solid #ddd;
             padding: 10px;
-            margin: 10px 0;
+            margin: 20px 0; /* Increased margin for clearer separation */
             overflow-y: auto; /* Enables vertical scrolling */
-            height: 200px; /* Fixed height */
+            height: 200px; /* Adjustable based on content needs */
+            font-family: monospace; /* Improves readability for log messages */
+            color: #333;
+            font-size: 14px;
+            line-height: 1.4;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Soft outer shadow for depth */
+            border-radius: 4px; /* Consistent rounded corners */
         }
-
-    </style>
+</style>
 </head>
 <body>
 <script src="https://unpkg.com/bowser@2.11.0/es5.js"></script>
 
 <div id="maincontainer" class="container">
+    <h1>UNRPA - Extract Ren'Py Archives</h1>
     <div id="system_access_extraction" class="option">
         <button id="filePick" onclick="chooseFile()">Select archive</button>
         <button id="dirrPick" onclick="chooseDirectory()">To directory</button>
