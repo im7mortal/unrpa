@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	fyne.io/fyne/v2 v2.4.4
+	github.com/enescakir/emoji v1.0.0
 	github.com/golang/glog v1.2.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/nlpodyssey/gopickle v0.3.0
