@@ -31,6 +31,28 @@
             background-color: #f0f0f0;
         }
 
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px; /* Adjusted font size for better visibility */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+        }
+
         /* Download Options */
         .option {
             margin: 20px 0;
@@ -77,7 +99,7 @@
     <div id="system_access_extraction" class="option">
         <button id="filePick" onclick="chooseFile()">Select archive</button>
         <button id="dirrPick" onclick="chooseDirectory()">To directory</button>
-        <button id="start" onclick="startProcess()">Extract</button>
+        <button id="start" onclick="startProcess()" disabled>Extract</button>
     </div>
     <div id="Firefox" style="display: none;" class="container">
         Firefox is great browser, the team considers the File System Access API harmful and didn't implement it.

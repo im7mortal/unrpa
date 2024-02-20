@@ -56,17 +56,25 @@ async function run(arr, directoryHandle, fileHandle) {
         // Save the blob to the file
         await saveBlobToFile(blob, fileName, targetDirectoryHandle);
     }
+
+    logMessage(`EXTRACTION IS DONE`);
 }
 
 let directoryHandle = null;
 let fileHandle = null;
 
+function isReadyToExtract() {
+    document.getElementById('start').disabled = !(directoryHandle !== null && fileHandle !== null);
+}
+
 async function chooseDirectory() {
     directoryHandle = await window.showDirectoryPicker();
+    isReadyToExtract()
 }
 
 async function chooseFile() {
     [fileHandle] = await window.showOpenFilePicker();
+    isReadyToExtract()
 }
 
 async function startProcess() {
@@ -77,8 +85,8 @@ async function startProcess() {
         // Get a file object from the file handle
         const file = await fileHandle.getFile();
 
-        // Define a size in bytes to read from the start of the file, assuming the first line is within the first 1024 bytes
-        const chunkSize = 1024;
+        // Define a size in bytes to read from the start of the file, assuming the first line is within the first 100 bytes
+        const chunkSize = 100;
         // Create a Blob representing the first chunk of the file
         const blob = file.slice(0, chunkSize);
         // Read the chunk as text
