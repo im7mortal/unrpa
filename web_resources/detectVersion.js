@@ -74,26 +74,57 @@ async function chooseDirectory() {
 
 async function chooseFile() {
     [fileHandle] = await window.showOpenFilePicker();
+
+
+    startProcess()
+
     isReadyToExtract()
 }
 
+function logError(message) {
+    logMessage(message);
+}
+
+function isV1(fileName) {
+    return fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase() === 'rpi'
+}
+
+function isV2(length) {
+    return length === 2
+}
+
+const v3String = "RPA-3.0"
+
+function isV3(v) {
+    return v === v3String
+}
+
+
 async function startProcess() {
     try {
-        // Show a file picker to let the user select a file
-        // Show a file picker to let the user select a file
 
         // Get a file object from the file handle
         const file = await fileHandle.getFile();
+        logMessage("Analyze \"" + file.name + "\"")
+        if (isV1(file.name)) {
+            logError("The RPA-1.0 which has extension '.rpi' is not supported");
+            return
+        }
 
-        // Define a size in bytes to read from the start of the file, assuming the first line is within the first 100 bytes
+        // The header size is around 33 bytes. We will check 100
         const chunkSize = 100;
-        // Create a Blob representing the first chunk of the file
         const blob = file.slice(0, chunkSize);
-        // Read the chunk as text
         const textChunk = await blob.text();
 
         // Extract the first line from the chunk
         const firstLineEndIndex = textChunk.indexOf('\n');
+
+        // Check if the chunk does not contain '\n'
+        if (firstLineEndIndex === -1) {
+            console.log("Is it RPA format? The first 100 bytes do not contain a newline character.");
+            logError("Is it RPA file? The archive has errors");
+            return;
+        }
         const firstLine = textChunk.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : textChunk.length);
 
         // Process the first line here...
@@ -104,60 +135,82 @@ async function startProcess() {
         const header = lines[0];
         const parts = header.split(' ');
 
-
-        // alert(stringToBigInt(parts[1]))
-        // alert(stringToBigInt(parts[2]))
-        console.log(stringToBigInt(parts[1]), stringToBigInt(parts[2]))
-
         if (parts.length < 2 || parts.length > 4) {
-            alert('Expected length not valid');
+            console.log("Is it RPA file? Number of header components doesn't match to any format")
+            logError("Is it RPA file? The archive has errors");
             return;
-        } else if (parts.length === 2) {
-            alert('Version 2 detected');
-            return {decoder: 'notImplemented', version: 'v2'};
+        }
+
+        if (isV2(parts.length)) {
+            logError("Looks like it's RPA-2.0 format which is not supported");
+            return;
+        }
+
+        let offsetParse = stringToBigInt(parts[1]);
+        let keyParse = stringToBigInt(parts[2]);
+        if (!offsetParse[1] || !keyParse[1]) {
+            console.log("Is it RPA file? The archive header has errors");
+            logError("Is it RPA file? The archive has errors");
+            return
+        }
+
+        const offsetNumber = offsetParse[0];
+        const keyNumber = keyParse[0];
+
+        if (!isV3(parts[0])) {
+            logError("Is it RPA file? It doesn't match to any RPA version");
+            return
         } else {
-            // For simplicity, just indicate a version 3 detection
-            alert('Version 3 detected; start to load to WASM');
+            logMessage("Detected version " + v3String)
+        }
 
-            const offsetNumber = Number(stringToBigInt(parts[1]));
-            const blobSlice = file.slice(offsetNumber);
+        const blobSlice = file.slice(offsetNumber);
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+            const arrayBuffer = e.target.result;
+            const bytes = new Uint8Array(arrayBuffer);
 
-            // Read the blob as an array buffer
-            const reader = new FileReader();
-            reader.onload = async function (e) {
-                const arrayBuffer = e.target.result;
-                const bytes = new Uint8Array(arrayBuffer);
-
-                // Now, bytes can be sent to the WASM module
-                await sendBytesToWasm(bytes, Number(stringToBigInt(parts[2])));
-            };
-            reader.readAsArrayBuffer(blobSlice);
-            window.myApp = {
-                notifyCompletion: function (result) {
-
-                    let arr = JSON.parse(result)
-                    run(arr, directoryHandle, fileHandle)
-
-                }
+            // Now, bytes can be sent to the WASM module
+            await sendBytesToWasm(bytes, keyNumber);
+        };
+        reader.readAsArrayBuffer(blobSlice);
+        window.myApp = {
+            notifyCompletion: function (result) {
+                let arr = JSON.parse(result)
+                logMessage("Successfully parsed metadata. " + arr.length + " files are ready to extraction")
             }
-
-            return {decoder: 'v3Decoder', version: 'v3', details: {offset: parts[1], key: parts[2]}};
         }
     } catch (error) {
-        console.error('Error accessing file', error);
-        alert('Error processing file.');
+        console.log("Error processing file " + error);
+        logError("Is it RPA file? The archive has errors");
     }
 }
 
+
+function isHexString(str) {
+    // This regex matches a string that starts with "0x" or "0X" (optional)
+    // followed by one or more hexadecimal characters (0-9, a-f, A-F).
+    // The ^ and $ ensure the entire string matches this pattern.
+    const regex1 = /^0x[0-9a-fA-F]+$/i;
+    const regex2 = /^[0-9a-fA-F]+$/i;
+    return regex1.test(str) || regex2.test(str);
+}
+
 function stringToBigInt(hexString) {
+
+    if (!isHexString(hexString)) {
+        console.log("\"" + hexString + "\" is not hex string")
+        return [0, false]
+    }
+
     // Ensure the hex string length is even for proper conversion
     if (hexString.length % 2 !== 0) {
         console.error("Hex string must have an even length");
-        return null;
+        return [0, false]
     }
 
     // Convert the hex string to a BigInt
-    const number = BigInt("0x" + hexString);
+    const number = Number(BigInt("0x" + hexString));
 
-    return number;
+    return [number, true];
 }
