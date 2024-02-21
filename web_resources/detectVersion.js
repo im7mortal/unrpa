@@ -96,7 +96,10 @@ async function chooseDirectory() {
 
 async function chooseFile() {
     [fileHandle] = await window.showOpenFilePicker();
-    accessApiStart()
+
+    // Get a file object from the file handle
+    const file = await fileHandle.getFile();
+    accessApiStart(file)
     // button states must be here; but I want to keep it where error processing happen
     // ANYWAY THAT LOGIC IS BROKEN ; IT"S USER PROBLEMS FOR NOW
 }
@@ -125,10 +128,9 @@ async function startProcess() {
     setButtonActiveGreen("start")
 }
 
-async function accessApiStart() {
+async function accessApiStart(file) {
 
-    // Get a file object from the file handle
-    const file = await fileHandle.getFile();
+
     // The header size is around 33 bytes. We will check 100
     const chunkSize = 100;
     const blob = file.slice(0, chunkSize);
