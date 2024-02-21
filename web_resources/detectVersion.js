@@ -13,6 +13,25 @@ function logMessage(message) {
     logElement.scrollTop = logElement.scrollHeight; // Auto-scroll to the bottom
 }
 
+function setButtonDisabled(id) {
+    const button = document.getElementById(id);
+    button.disabled = true;
+    button.classList.remove('button-blue', 'button-green');
+}
+
+function setButtonActiveBlue(id) {
+    const button = document.getElementById(id);
+    button.disabled = false;
+    button.classList.remove('button-green');
+    button.classList.add('button-blue');
+}
+
+function setButtonActiveGreen(id) {
+    const button = document.getElementById(id);
+    button.disabled = false;
+    button.classList.remove('button-blue');
+    button.classList.add('button-green');
+}
 
 async function saveBlobToFile(blob, fileName, directoryHandle) {
     try {
@@ -63,22 +82,23 @@ async function run(arr, directoryHandle, fileHandle) {
 let directoryHandle = null;
 let fileHandle = null;
 
+let METADATA = null;
+
 function isReadyToExtract() {
     document.getElementById('start').disabled = !(directoryHandle !== null && fileHandle !== null);
 }
 
 async function chooseDirectory() {
     directoryHandle = await window.showDirectoryPicker();
-    isReadyToExtract()
+    setButtonActiveGreen("dirrPick")
+    setButtonActiveBlue("start")
 }
 
 async function chooseFile() {
     [fileHandle] = await window.showOpenFilePicker();
-
-
-    startProcess()
-
-    isReadyToExtract()
+    parseFile()
+    // button states must be here; but I want to keep it where error processing happen
+    // ANYWAY THAT LOGIC IS BROKEN ; IT"S USER PROBLEMS FOR NOW
 }
 
 function logError(message) {
@@ -99,8 +119,13 @@ function isV3(v) {
     return v === v3String
 }
 
-
 async function startProcess() {
+
+    run(METADATA, directoryHandle, fileHandle)
+    setButtonActiveGreen("start")
+}
+
+async function parseFile() {
     try {
 
         // Get a file object from the file handle
@@ -178,6 +203,13 @@ async function startProcess() {
             notifyCompletion: function (result) {
                 let arr = JSON.parse(result)
                 logMessage("Successfully parsed metadata. " + arr.length + " files are ready to extraction")
+                METADATA = arr;
+
+                // move from here
+                setButtonActiveGreen("filePick")
+                setButtonActiveBlue("dirrPick")
+                setButtonDisabled("start")
+
             }
         }
     } catch (error) {

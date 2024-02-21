@@ -89,6 +89,16 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Soft outer shadow for depth */
             border-radius: 4px; /* Consistent rounded corners */
         }
+
+        .button-blue {
+            background-color: #007bff; /* Blue */
+            color: white;
+        }
+
+        .button-green {
+            background-color: #28a745; /* Green */
+            color: white;
+        }
 </style>
 </head>
 <body>
@@ -97,8 +107,8 @@
 <div id="maincontainer" class="container">
     <h1>UNRPA - Extract Ren'Py Archives</h1>
     <div id="system_access_extraction" class="option">
-        <button id="filePick" onclick="chooseFile()">Select archive</button>
-        <button id="dirrPick" onclick="chooseDirectory()">To directory</button>
+        <button id="filePick" class="button-blue" onclick="chooseFile()">Select archive</button>
+        <button id="dirrPick" onclick="chooseDirectory()" disabled>To directory</button>
         <button id="start" onclick="startProcess()" disabled>Extract</button>
     </div>
     <div id="Firefox" style="display: none;" class="container">
