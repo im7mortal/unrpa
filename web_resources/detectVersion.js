@@ -282,3 +282,50 @@ window.glog = {
         console.log(result)
     }
 }
+
+async function readBlobFromFileD(file, offset, length) {
+    // Get a file object from the file handle
+    // Slice the file to get the blob
+    const blob = file.slice(offset, offset + length);
+    return blob;
+}
+
+
+function saveBlobToFileD(blob, fileName) {
+    // Create a URL for the blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary <a> element and set its href to the blob URL
+    const a = document.createElement("a");
+    document.body.appendChild(a); // Append the link to the body
+    a.style = "display: none"; // Hide the link
+    a.href = url;
+    a.download = fileName; // Set the file name for download
+
+    // Programmatically click the link to trigger the download
+    a.click();
+
+    // Clean up by revoking the blob URL and removing the link
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    logMessage(`File saved: ${fileName}`);
+}
+
+
+async function runForOld(arr,  file) {
+    for (let i = 0; i < arr.length; i++) {
+        // console.log(JSON.stringify(arr[i]))
+
+        let fileInfo = arr[i]
+        const blob = await readBlobFromFileD(file, fileInfo.Offset, fileInfo.Len);
+
+        // Extract the file name from the path
+        const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
+
+        // Save the blob to the file
+        await saveBlobToFileD(blob, fileName);
+    }
+    setButtonActiveGreen("startD")
+    logMessage(`EXTRACTION IS DONE`);
+}
+

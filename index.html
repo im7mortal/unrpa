@@ -115,6 +115,7 @@
         Firefox is great browser, the team considers the File System Access API harmful and didn't implement it.
         Implementation with simple File API will be soon.
         <input type="file" id="fileInput" />
+        <button id="startD" onclick="runForOld(METADATA, FILE)" disabled>Extract</button>
     </div>
     <div id="Safari" style="display: none;" class="container">
         Safari doesn't implement File System Access API.
@@ -211,14 +212,17 @@
         }
     });
 
+    let FILE = null;
+
     document.getElementById('fileInput').addEventListener('change', function() {
         if (!this.files.length) {
             alert('Please select a file.');
             return;
         }
 
-        const file = this.files[0];
-        accessApiStart(file)
+        FILE = this.files[0];
+        accessApiStart(FILE)
+        setButtonActiveBlue("startD")
     });
 
 
