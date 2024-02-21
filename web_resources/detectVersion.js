@@ -274,3 +274,9 @@ function stringToBigInt(hexString) {
 
     return [number, true];
 }
+
+window.glog = {
+    error: function (result) {
+        console.log(result)
+    }
+}
