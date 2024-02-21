@@ -313,18 +313,36 @@ function saveBlobToFileD(blob, fileName) {
 
 
 async function runForOld(arr,  file) {
+    var zip = new JSZip();
     for (let i = 0; i < arr.length; i++) {
+        console.log("here")
         // console.log(JSON.stringify(arr[i]))
 
         let fileInfo = arr[i]
         const blob = await readBlobFromFileD(file, fileInfo.Offset, fileInfo.Len);
 
+
+        const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
+
+        let folder = zip.folder(subPath);
+
         // Extract the file name from the path
         const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
 
+        await folder.file(fileName, blob)
+        logMessage(`File zipped: ${fileName}`);
+
         // Save the blob to the file
-        await saveBlobToFileD(blob, fileName);
+
     }
+    logMessage(`Preparing zip can take some time.`)
+    await zip.generateAsync({
+        type:"blob",
+        compression: "STORE" // TURN OFF COMPRESSION
+    }).then(function(content) {
+        // Use the saveBlobToFile function to download the ZIP
+        saveBlobToFileD(content, "extracted.zip");
+    });
     setButtonActiveGreen("startD")
     logMessage(`EXTRACTION IS DONE`);
 }
