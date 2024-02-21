@@ -141,7 +141,7 @@ async function accessApiStart() {
     let offsetNumber = res[0];
     let keyNumber = res[1];
     console.log(offsetNumber, keyNumber)
-    const blobSlice = file.slice(offsetNumber, keyNumber);
+    const blobSlice = file.slice(offsetNumber);
 
     parseMetadata(blobSlice, keyNumber)
 
