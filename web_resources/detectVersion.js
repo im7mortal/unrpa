@@ -330,15 +330,30 @@ async function runForOld(arr,  file) {
         const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
 
         await folder.file(fileName, blob)
-        logMessage(`File zipped: ${fileName}`);
+        // logMessage(`File zipped: ${fileName}`);
 
         // Save the blob to the file
 
     }
     logMessage(`Preparing zip can take some time.`)
+    let lastPercent = 0;
     await zip.generateAsync({
         type:"blob",
         compression: "STORE" // TURN OFF COMPRESSION
+    }, function updateCallback(metadata) {
+        // Check if the current percentage is different from the last reported
+        if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
+            // Update progress
+            let msg = "Progression: " + metadata.percent.toFixed(2) + " %";
+            if (metadata.currentFile) {
+                msg += "\t" + metadata.currentFile;
+            }
+            logMessage(msg);
+
+            // Update the last reported percentage
+            lastPercent = metadata.percent;
+        }
+
     }).then(function(content) {
         // Use the saveBlobToFile function to download the ZIP
         saveBlobToFileD(content, "extracted.zip");
