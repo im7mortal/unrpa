@@ -96,7 +96,7 @@ async function chooseDirectory() {
 
 async function chooseFile() {
     [fileHandle] = await window.showOpenFilePicker();
-    parseFile()
+    accessApiStart()
     // button states must be here; but I want to keep it where error processing happen
     // ANYWAY THAT LOGIC IS BROKEN ; IT"S USER PROBLEMS FOR NOW
 }
@@ -125,24 +125,41 @@ async function startProcess() {
     setButtonActiveGreen("start")
 }
 
-async function parseFile() {
-    try {
+async function accessApiStart() {
 
-        // Get a file object from the file handle
-        const file = await fileHandle.getFile();
-        logMessage("Analyze \"" + file.name + "\"")
-        if (isV1(file.name)) {
+    // Get a file object from the file handle
+    const file = await fileHandle.getFile();
+    // The header size is around 33 bytes. We will check 100
+    const chunkSize = 100;
+    const blob = file.slice(0, chunkSize);
+    const textChunk = await blob.text();
+
+    let res = await parseHeader(file.name, textChunk)
+    if (res === undefined) {
+        return
+    }
+    let offsetNumber = res[0];
+    let keyNumber = res[1];
+    console.log(offsetNumber, keyNumber)
+    const blobSlice = file.slice(offsetNumber, keyNumber);
+
+    parseMetadata(blobSlice, keyNumber)
+
+
+}
+
+async function parseHeader(filename, headerString) {
+    try {
+        logMessage("Analyze \"" + filename + "\"")
+        if (isV1(filename)) {
             logError("The RPA-1.0 which has extension '.rpi' is not supported");
             return
         }
 
-        // The header size is around 33 bytes. We will check 100
-        const chunkSize = 100;
-        const blob = file.slice(0, chunkSize);
-        const textChunk = await blob.text();
+
 
         // Extract the first line from the chunk
-        const firstLineEndIndex = textChunk.indexOf('\n');
+        const firstLineEndIndex = headerString.indexOf('\n');
 
         // Check if the chunk does not contain '\n'
         if (firstLineEndIndex === -1) {
@@ -150,7 +167,7 @@ async function parseFile() {
             logError("Is it RPA file? The archive has errors");
             return;
         }
-        const firstLine = textChunk.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : textChunk.length);
+        const firstLine = headerString.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : textChunk.length);
 
         // Process the first line here...
         console.log(firstLine);
@@ -188,8 +205,17 @@ async function parseFile() {
         } else {
             logMessage("Detected version " + v3String)
         }
+        return [offsetNumber, keyNumber]
 
-        const blobSlice = file.slice(offsetNumber);
+    } catch (error) {
+        console.log("Error processing file " + error);
+        logError("Is it RPA file? The archive has errors");
+    }
+}
+
+async function parseMetadata(metadataSrc, keyNumber) {
+    try {
+
         const reader = new FileReader();
         reader.onload = async function (e) {
             const arrayBuffer = e.target.result;
@@ -198,9 +224,10 @@ async function parseFile() {
             // Now, bytes can be sent to the WASM module
             await sendBytesToWasm(bytes, keyNumber);
         };
-        reader.readAsArrayBuffer(blobSlice);
+        reader.readAsArrayBuffer(metadataSrc);
         window.myApp = {
             notifyCompletion: function (result) {
+                console.log(result)
                 let arr = JSON.parse(result)
                 logMessage("Successfully parsed metadata. " + arr.length + " files are ready to extraction")
                 METADATA = arr;
@@ -217,6 +244,7 @@ async function parseFile() {
         logError("Is it RPA file? The archive has errors");
     }
 }
+
 
 
 function isHexString(str) {
