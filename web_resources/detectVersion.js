@@ -318,22 +318,30 @@ function groupBySubdirectory(entries) {
     entries.forEach(entry => {
         const subPath = entry.Name.substring(0, entry.Name.lastIndexOf('/'));
 
-        // Initialize the subdirectory array if not already
+        // Check if the group already exists
         if (!groups[subPath]) {
-            groups[subPath] = [];
+            // Initialize the group with an entries array, a subPath, and a totalSize counter
+            groups[subPath] = { subPath: subPath, entries: [], totalSize: 0 };
         }
 
-        groups[subPath].push(entry);
+        // Add the entry to the group's entries array
+        groups[subPath].entries.push(entry);
+        // Add the entry's size to the group's totalSize counter
+        groups[subPath].totalSize += entry.Len;
     });
 
-    const mergedArray = [];
+    // Convert groups object to an array of group objects
+    let groupsArray = Object.values(groups);
 
-    Object.values(groups).forEach(group => {
-        // Merge all group arrays into a single array
-        mergedArray.push(...group);
+    // Sort the array by subPath
+    groupsArray.sort((a, b) => a.subPath.localeCompare(b.subPath));
+
+    // Optional: Logging sorted groups
+    groupsArray.forEach(group => {
+        console.log(`Subpath: ${group.subPath}, Total Size: ${group.totalSize}`);
     });
 
-    return mergedArray;
+    return groupsArray;
 }
 
 
@@ -374,6 +382,7 @@ async function runForOld(arr,  file) {
     };
 
     arr = groupBySubdirectory(arr)
+    return
 
     for (let i = 0; i < arr.length; i++) {
         let fileInfo = arr[i];
