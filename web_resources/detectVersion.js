@@ -312,6 +312,32 @@ function saveBlobToFileD(blob, fileName) {
 }
 
 
+function groupBySubdirectory(entries) {
+    const groups = {};
+
+    entries.forEach(entry => {
+        const subPath = entry.Name.substring(0, entry.Name.lastIndexOf('/'));
+
+        // Initialize the subdirectory array if not already
+        if (!groups[subPath]) {
+            groups[subPath] = [];
+        }
+
+        groups[subPath].push(entry);
+    });
+
+    const mergedArray = [];
+
+    Object.values(groups).forEach(group => {
+        // Merge all group arrays into a single array
+        mergedArray.push(...group);
+    });
+
+    return mergedArray;
+}
+
+
+
 async function runForOld(arr,  file) {
     let zipIndex = 0; // To enumerate ZIP files
     let currentZipSize = 0;
@@ -346,6 +372,8 @@ async function runForOld(arr,  file) {
             currentZipSize = 0;
         }
     };
+
+    arr = groupBySubdirectory(arr)
 
     for (let i = 0; i < arr.length; i++) {
         let fileInfo = arr[i];
