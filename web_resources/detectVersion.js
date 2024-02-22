@@ -313,14 +313,47 @@ function saveBlobToFileD(blob, fileName) {
 
 
 async function runForOld(arr,  file) {
+    let zipIndex = 0; // To enumerate ZIP files
+    let currentZipSize = 0;
+    const maxZipSize = 200 * 1024 * 1024; // 200 MB in bytes
     var zip = new JSZip();
-    for (let i = 0; i < arr.length; i++) {
-        console.log("here")
-        // console.log(JSON.stringify(arr[i]))
 
-        let fileInfo = arr[i]
+    const saveAndResetZip = async () => {
+        logMessage(`Preparing zip can take some time.`)
+        if (currentZipSize > 0) { // Check to avoid saving empty ZIPs
+            logMessage(`Finalizing ZIP ${zipIndex}...`);
+            let lastPercent = 0;
+            const content = await zip.generateAsync({
+                    type: "blob",
+                    compression: "STORE"
+                }, function updateCallback(metadata) {
+                    console.log(metadata.percent.toFixed(), lastPercent.toFixed(), metadata.percent.toFixed() !== lastPercent.toFixed())
+                    // Check if the current percentage is different from the last reported
+                    if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
+                        lastPercent = metadata.percent
+                        // Update progress
+                        let msg = "Progression zip " + zipIndex + ": " + metadata.percent.toFixed(2) + " %";
+                        if (metadata.currentFile) {
+                            msg += "\t" + metadata.currentFile;
+                        }
+                        logMessage(msg);
+                    }
+                }
+            );
+            saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
+            zipIndex++;
+            zip = new JSZip(); // Reset for next ZIP
+            currentZipSize = 0;
+        }
+    };
+
+    for (let i = 0; i < arr.length; i++) {
+        let fileInfo = arr[i];
         const blob = await readBlobFromFileD(file, fileInfo.Offset, fileInfo.Len);
 
+        if (currentZipSize + blob.size > maxZipSize) {
+            await saveAndResetZip(); // Save current ZIP and start a new one
+        }
 
         const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
 
@@ -328,37 +361,14 @@ async function runForOld(arr,  file) {
 
         // Extract the file name from the path
         const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
-
-        await folder.file(fileName, blob)
-        // logMessage(`File zipped: ${fileName}`);
-
-        // Save the blob to the file
-
+        folder.file(fileName, blob);
+        currentZipSize += blob.size;
     }
-    logMessage(`Preparing zip can take some time.`)
-    let lastPercent = 0;
-    await zip.generateAsync({
-        type:"blob",
-        compression: "STORE" // TURN OFF COMPRESSION
-    }, function updateCallback(metadata) {
-        // Check if the current percentage is different from the last reported
-        if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
-            // Update progress
-            let msg = "Progression: " + metadata.percent.toFixed(2) + " %";
-            if (metadata.currentFile) {
-                msg += "\t" + metadata.currentFile;
-            }
-            logMessage(msg);
 
-            // Update the last reported percentage
-            lastPercent = metadata.percent;
-        }
+    // Finalize and save the last ZIP file (if any content is pending)
+    await saveAndResetZip();
 
-    }).then(function(content) {
-        // Use the saveBlobToFile function to download the ZIP
-        saveBlobToFileD(content, "extracted.zip");
-    });
-    setButtonActiveGreen("startD")
+    setButtonActiveGreen("startD");
     logMessage(`EXTRACTION IS DONE`);
 }
 
