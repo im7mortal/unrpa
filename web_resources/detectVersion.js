@@ -83,6 +83,7 @@ let directoryHandle = null;
 let fileHandle = null;
 
 let METADATA = null;
+let ZIPGROUPS = null;
 
 function isReadyToExtract() {
     document.getElementById('start').disabled = !(directoryHandle !== null && fileHandle !== null);
@@ -96,7 +97,10 @@ async function chooseDirectory() {
 
 async function chooseFile() {
     [fileHandle] = await window.showOpenFilePicker();
-    parseFile()
+
+    // Get a file object from the file handle
+    const file = await fileHandle.getFile();
+    accessApiStart(file)
     // button states must be here; but I want to keep it where error processing happen
     // ANYWAY THAT LOGIC IS BROKEN ; IT"S USER PROBLEMS FOR NOW
 }
@@ -125,24 +129,39 @@ async function startProcess() {
     setButtonActiveGreen("start")
 }
 
-async function parseFile() {
-    try {
+async function accessApiStart(file) {
 
-        // Get a file object from the file handle
-        const file = await fileHandle.getFile();
-        logMessage("Analyze \"" + file.name + "\"")
-        if (isV1(file.name)) {
+
+    // The header size is around 33 bytes. We will check 100
+    const chunkSize = 100;
+    const blob = file.slice(0, chunkSize);
+    const textChunk = await blob.text();
+
+    let res = await parseHeader(file.name, textChunk)
+    if (res === undefined) {
+        return
+    }
+    let offsetNumber = res[0];
+    let keyNumber = res[1];
+    console.log(offsetNumber, keyNumber)
+    const blobSlice = file.slice(offsetNumber);
+
+    parseMetadata(blobSlice, keyNumber)
+
+
+}
+
+async function parseHeader(filename, headerString) {
+    try {
+        logMessage("Analyze \"" + filename + "\"")
+        if (isV1(filename)) {
             logError("The RPA-1.0 which has extension '.rpi' is not supported");
             return
         }
 
-        // The header size is around 33 bytes. We will check 100
-        const chunkSize = 100;
-        const blob = file.slice(0, chunkSize);
-        const textChunk = await blob.text();
 
         // Extract the first line from the chunk
-        const firstLineEndIndex = textChunk.indexOf('\n');
+        const firstLineEndIndex = headerString.indexOf('\n');
 
         // Check if the chunk does not contain '\n'
         if (firstLineEndIndex === -1) {
@@ -150,7 +169,7 @@ async function parseFile() {
             logError("Is it RPA file? The archive has errors");
             return;
         }
-        const firstLine = textChunk.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : textChunk.length);
+        const firstLine = headerString.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : textChunk.length);
 
         // Process the first line here...
         console.log(firstLine);
@@ -188,8 +207,17 @@ async function parseFile() {
         } else {
             logMessage("Detected version " + v3String)
         }
+        return [offsetNumber, keyNumber]
 
-        const blobSlice = file.slice(offsetNumber);
+    } catch (error) {
+        console.log("Error processing file " + error);
+        logError("Is it RPA file? The archive has errors");
+    }
+}
+
+async function parseMetadata(metadataSrc, keyNumber) {
+    try {
+
         const reader = new FileReader();
         reader.onload = async function (e) {
             const arrayBuffer = e.target.result;
@@ -198,13 +226,18 @@ async function parseFile() {
             // Now, bytes can be sent to the WASM module
             await sendBytesToWasm(bytes, keyNumber);
         };
-        reader.readAsArrayBuffer(blobSlice);
+        reader.readAsArrayBuffer(metadataSrc);
         window.myApp = {
             notifyCompletion: function (result) {
+                console.log(result)
                 let arr = JSON.parse(result)
                 logMessage("Successfully parsed metadata. " + arr.length + " files are ready to extraction")
                 METADATA = arr;
 
+                // 250 mb limit
+                const zipSize = 250 * 1024 * 1024
+                ZIPGROUPS = groupBySubdirectory(METADATA, zipSize)
+                logMessage(`The content will be extracted to ${ZIPGROUPS.length} zip files`)
                 // move from here
                 setButtonActiveGreen("filePick")
                 setButtonActiveBlue("dirrPick")
@@ -246,3 +279,139 @@ function stringToBigInt(hexString) {
 
     return [number, true];
 }
+
+window.glog = {
+    error: function (result) {
+        console.log(result)
+    }
+}
+
+async function readBlobFromFileD(file, offset, length) {
+    // Get a file object from the file handle
+    // Slice the file to get the blob
+    const blob = file.slice(offset, offset + length);
+    return blob;
+}
+
+
+function saveBlobToFileD(blob, fileName) {
+    // Create a URL for the blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary <a> element and set its href to the blob URL
+    const a = document.createElement("a");
+    document.body.appendChild(a); // Append the link to the body
+    a.style = "display: none"; // Hide the link
+    a.href = url;
+    a.download = fileName; // Set the file name for download
+
+    // Programmatically click the link to trigger the download
+    a.click();
+
+    // Clean up by revoking the blob URL and removing the link
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    logMessage(`File saved: ${fileName}`);
+}
+
+
+function groupBySubdirectory(entries, maxSizeInBytes = 250 * 1024 * 1024) {
+    const groups = {};
+
+    entries.forEach(entry => {
+        const subPath = entry.Name.substring(0, entry.Name.lastIndexOf('/'));
+
+        // Check if the group already exists
+        if (!groups[subPath]) {
+            // Initialize the group with an entries array, a subPath, and a totalSize counter
+            groups[subPath] = {subPath: subPath, entries: [], totalSize: 0};
+        }
+
+        // Add the entry to the group's entries array
+        groups[subPath].entries.push(entry);
+        // Add the entry's size to the group's totalSize counter
+        groups[subPath].totalSize += entry.Len;
+    });
+
+    // Convert groups object to an array of group objects
+    let groupsArray = Object.values(groups);
+
+
+    // Sort the array by subPath
+    groupsArray.sort((a, b) => a.subPath.localeCompare(b.subPath));
+
+    let chunks = [];
+    let currentChunk = [];
+    let currentChunkSize = 0;
+    groupsArray.forEach(group => {
+        // Check if adding this group would exceed the max size
+        if (currentChunkSize + group.totalSize > maxSizeInBytes) {
+            // If so, push the current chunk to chunks array and start a new chunk
+            chunks.push(currentChunk);
+            currentChunk = [];
+            currentChunkSize = 0;
+        }
+
+        // Add the group to the current chunk and update the size
+        currentChunk.push(group);
+        currentChunkSize += group.totalSize;
+    });
+    if (currentChunk.length !== 0) {
+        chunks.push(currentChunk);
+    }
+    return chunks;
+}
+
+
+async function runForOld(zipGroup, file) {
+    let zipIndex = 0; // To enumerate ZIP files
+    var zip = new JSZip();
+
+    const saveAndResetZip = async () => {
+        logMessage(`Preparing zip can take some time.`)
+        logMessage(`Finalizing ZIP ${zipIndex}...`);
+        let lastPercent = 0;
+        const content = await zip.generateAsync({
+                type: "blob",
+                compression: "STORE"
+            }, function updateCallback(metadata) {
+                // Check if the current percentage is different from the last reported
+                if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
+                    lastPercent = metadata.percent
+                    // Update progress
+                    let msg = "Progression zip " + zipIndex + ": " + metadata.percent.toFixed(2) + " %";
+                    if (metadata.currentFile) {
+                        msg += "\t" + metadata.currentFile;
+                    }
+                    logMessage(msg);
+                }
+            }
+        );
+        saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
+        zipIndex++;
+        zip = new JSZip(); // Reset for next ZIP
+    };
+
+    for (let j = 0; j < zipGroup.length; j++) {
+        for (let k = 0; k < zipGroup[j].length; k++) {
+            let arr = zipGroup[j][k].entries
+            for (let i = 0; i < arr.length; i++) {
+                let fileInfo = arr[i];
+                const blob = await readBlobFromFileD(file, fileInfo.Offset, fileInfo.Len);
+                const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
+
+                let folder = zip.folder(subPath);
+
+                // Extract the file name from the path
+                const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
+                folder.file(fileName, blob);
+
+            }
+        }
+        await saveAndResetZip();
+    }
+
+    setButtonActiveGreen("startD");
+    logMessage(`EXTRACTION IS DONE`);
+}
+

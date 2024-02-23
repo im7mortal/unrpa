@@ -103,6 +103,7 @@
 </head>
 <body>
 <script src="https://unpkg.com/bowser@2.11.0/es5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
 
 <div id="maincontainer" class="container">
     <h1>UNRPA - Extract Ren'Py Archives</h1>
@@ -114,6 +115,8 @@
     <div id="Firefox" style="display: none;" class="container">
         Firefox is great browser, the team considers the File System Access API harmful and didn't implement it.
         Implementation with simple File API will be soon.
+        <input type="file" id="fileInput" />
+        <button id="startD" onclick="runForOld(ZIPGROUPS, FILE)" disabled>Extract</button>
     </div>
     <div id="Safari" style="display: none;" class="container">
         Safari doesn't implement File System Access API.
@@ -172,17 +175,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', (event) => {
+        const browser = bowser.getParser(window.navigator.userAgent);
         if (!('showOpenFilePicker' in window)) {
             document.getElementById('system_access_extraction').style.display = 'none';
-
             if (browser.getPlatformType() === "mobile") {
-                document.getElementById('mobile').style.display = 'none';
+                document.getElementById('mobile').style.display = '';
             } else {
-                document.getElementById(browser.getBrowserName()).style.display = 'none';
+                document.getElementById(browser.getBrowserName()).style.display = '';
             }
-            alert('Your browser does not support the File System Access API.');
-            const browser = bowser.getParser(window.navigator.userAgent);
-
             // Get browser version
             const version = browser.getBrowserVersion();
             console.log(version); // e.g., "88.0.4324.150"
@@ -212,6 +212,20 @@
             console.error('Failed to load resources:', error);
         }
     });
+
+    let FILE = null;
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+        if (!this.files.length) {
+            alert('Please select a file.');
+            return;
+        }
+
+        FILE = this.files[0];
+        accessApiStart(FILE)
+        setButtonActiveBlue("startD")
+    });
+
 
 </script>
 </body>

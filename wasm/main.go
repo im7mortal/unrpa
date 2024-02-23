@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/im7mortal/unrpa/pkg/rpaDecoder"
 	"syscall/js"
 )
@@ -14,7 +15,7 @@ func receiveBytes(this js.Value, inputs []js.Value) interface{} {
 	length := uint8Array.Get("length").Int()
 	goBytes := make([]byte, length)
 	js.CopyBytesToGo(goBytes, uint8Array)
-
+	js.Global().Get("glog").Call("error", fmt.Sprintf("from wasm %d\n", length))
 	v := rpaDecoder.NewWasm(rpaDecoder.V3, goBytes, int64(inputs[1].Int()))
 
 	b, err := v.List(context.TODO())
