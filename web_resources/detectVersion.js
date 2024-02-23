@@ -83,6 +83,7 @@ let directoryHandle = null;
 let fileHandle = null;
 
 let METADATA = null;
+let ZIPGROUPS = null;
 
 function isReadyToExtract() {
     document.getElementById('start').disabled = !(directoryHandle !== null && fileHandle !== null);
@@ -159,7 +160,6 @@ async function parseHeader(filename, headerString) {
         }
 
 
-
         // Extract the first line from the chunk
         const firstLineEndIndex = headerString.indexOf('\n');
 
@@ -234,6 +234,10 @@ async function parseMetadata(metadataSrc, keyNumber) {
                 logMessage("Successfully parsed metadata. " + arr.length + " files are ready to extraction")
                 METADATA = arr;
 
+                // 250 mb limit
+                const zipSize = 250 * 1024 * 1024
+                ZIPGROUPS = groupBySubdirectory(METADATA, zipSize)
+                logMessage(`The content will be extracted to ${ZIPGROUPS.length} zip files`)
                 // move from here
                 setButtonActiveGreen("filePick")
                 setButtonActiveBlue("dirrPick")
@@ -246,7 +250,6 @@ async function parseMetadata(metadataSrc, keyNumber) {
         logError("Is it RPA file? The archive has errors");
     }
 }
-
 
 
 function isHexString(str) {
@@ -312,7 +315,7 @@ function saveBlobToFileD(blob, fileName) {
 }
 
 
-function groupBySubdirectory(entries) {
+function groupBySubdirectory(entries, maxSizeInBytes = 250 * 1024 * 1024) {
     const groups = {};
 
     entries.forEach(entry => {
@@ -321,7 +324,7 @@ function groupBySubdirectory(entries) {
         // Check if the group already exists
         if (!groups[subPath]) {
             // Initialize the group with an entries array, a subPath, and a totalSize counter
-            groups[subPath] = { subPath: subPath, entries: [], totalSize: 0 };
+            groups[subPath] = {subPath: subPath, entries: [], totalSize: 0};
         }
 
         // Add the entry to the group's entries array
@@ -333,77 +336,80 @@ function groupBySubdirectory(entries) {
     // Convert groups object to an array of group objects
     let groupsArray = Object.values(groups);
 
+
     // Sort the array by subPath
     groupsArray.sort((a, b) => a.subPath.localeCompare(b.subPath));
 
-    // Optional: Logging sorted groups
+    let chunks = [];
+    let currentChunk = [];
+    let currentChunkSize = 0;
     groupsArray.forEach(group => {
-        console.log(`Subpath: ${group.subPath}, Total Size: ${group.totalSize}`);
-    });
+        // Check if adding this group would exceed the max size
+        if (currentChunkSize + group.totalSize > maxSizeInBytes) {
+            // If so, push the current chunk to chunks array and start a new chunk
+            chunks.push(currentChunk);
+            currentChunk = [];
+            currentChunkSize = 0;
+        }
 
-    return groupsArray;
+        // Add the group to the current chunk and update the size
+        currentChunk.push(group);
+        currentChunkSize += group.totalSize;
+    });
+    if (currentChunk.length !== 0) {
+        chunks.push(currentChunk);
+    }
+    return chunks;
 }
 
 
-
-async function runForOld(arr,  file) {
+async function runForOld(zipGroup, file) {
     let zipIndex = 0; // To enumerate ZIP files
-    let currentZipSize = 0;
-    const maxZipSize = 200 * 1024 * 1024; // 200 MB in bytes
     var zip = new JSZip();
 
     const saveAndResetZip = async () => {
         logMessage(`Preparing zip can take some time.`)
-        if (currentZipSize > 0) { // Check to avoid saving empty ZIPs
-            logMessage(`Finalizing ZIP ${zipIndex}...`);
-            let lastPercent = 0;
-            const content = await zip.generateAsync({
-                    type: "blob",
-                    compression: "STORE"
-                }, function updateCallback(metadata) {
-                    console.log(metadata.percent.toFixed(), lastPercent.toFixed(), metadata.percent.toFixed() !== lastPercent.toFixed())
-                    // Check if the current percentage is different from the last reported
-                    if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
-                        lastPercent = metadata.percent
-                        // Update progress
-                        let msg = "Progression zip " + zipIndex + ": " + metadata.percent.toFixed(2) + " %";
-                        if (metadata.currentFile) {
-                            msg += "\t" + metadata.currentFile;
-                        }
-                        logMessage(msg);
+        logMessage(`Finalizing ZIP ${zipIndex}...`);
+        let lastPercent = 0;
+        const content = await zip.generateAsync({
+                type: "blob",
+                compression: "STORE"
+            }, function updateCallback(metadata) {
+                // Check if the current percentage is different from the last reported
+                if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
+                    lastPercent = metadata.percent
+                    // Update progress
+                    let msg = "Progression zip " + zipIndex + ": " + metadata.percent.toFixed(2) + " %";
+                    if (metadata.currentFile) {
+                        msg += "\t" + metadata.currentFile;
                     }
+                    logMessage(msg);
                 }
-            );
-            saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
-            zipIndex++;
-            zip = new JSZip(); // Reset for next ZIP
-            currentZipSize = 0;
-        }
+            }
+        );
+        saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
+        zipIndex++;
+        zip = new JSZip(); // Reset for next ZIP
     };
 
-    arr = groupBySubdirectory(arr)
-    return
+    for (let j = 0; j < zipGroup.length; j++) {
+        for (let k = 0; k < zipGroup[j].length; k++) {
+            let arr = zipGroup[j][k].entries
+            for (let i = 0; i < arr.length; i++) {
+                let fileInfo = arr[i];
+                const blob = await readBlobFromFileD(file, fileInfo.Offset, fileInfo.Len);
+                const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
 
-    for (let i = 0; i < arr.length; i++) {
-        let fileInfo = arr[i];
-        const blob = await readBlobFromFileD(file, fileInfo.Offset, fileInfo.Len);
+                let folder = zip.folder(subPath);
 
-        if (currentZipSize + blob.size > maxZipSize) {
-            await saveAndResetZip(); // Save current ZIP and start a new one
+                // Extract the file name from the path
+                const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
+                folder.file(fileName, blob);
+
+            }
         }
-
-        const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
-
-        let folder = zip.folder(subPath);
-
-        // Extract the file name from the path
-        const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
-        folder.file(fileName, blob);
-        currentZipSize += blob.size;
+        await saveAndResetZip();
     }
-
-    // Finalize and save the last ZIP file (if any content is pending)
-    await saveAndResetZip();
 
     setButtonActiveGreen("startD");
     logMessage(`EXTRACTION IS DONE`);
