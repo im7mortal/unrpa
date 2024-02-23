@@ -113,14 +113,10 @@
         <button id="start" onclick="startProcess()" disabled>Extract</button>
     </div>
     <div id="Firefox" style="display: none;" class="container">
-        Firefox is great browser, the team considers the File System Access API harmful and didn't implement it.
-        Implementation with simple File API will be soon.
-        <input type="file" id="fileInput" />
+        <input type="file" id="fileInput" style="display:none" />
+        <!-- Trigger button for file input -->
+        <button id="filePick2" class="button-blue" onclick="chooseFile()">Select Archive</button>
         <button id="startD" onclick="runForOld(ZIPGROUPS, FILE)" disabled>Extract</button>
-    </div>
-    <div id="Safari" style="display: none;" class="container">
-        Safari doesn't implement File System Access API.
-        Implementation with simple File API will be soon.
     </div>
     <div id="mobile" style="display: none;" class="container">
         Mobile platforms are not supported.
@@ -181,7 +177,10 @@
             if (browser.getPlatformType() === "mobile") {
                 document.getElementById('mobile').style.display = '';
             } else {
-                document.getElementById(browser.getBrowserName()).style.display = '';
+                let b = browser.getBrowserName();
+                if (b === "Safari" || b === "Firefox") {
+                    document.getElementById("Firefox").style.display = '';
+                }
             }
             // Get browser version
             const version = browser.getBrowserVersion();
@@ -214,7 +213,9 @@
     });
 
     let FILE = null;
-
+    function chooseFile() {
+        document.getElementById("fileInput").click();
+    }
     document.getElementById('fileInput').addEventListener('change', function() {
         if (!this.files.length) {
             alert('Please select a file.');
@@ -223,6 +224,7 @@
 
         FILE = this.files[0];
         accessApiStart(FILE)
+        setButtonActiveGreen("filePick2");
         setButtonActiveBlue("startD")
     });
 
