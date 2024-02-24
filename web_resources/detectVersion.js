@@ -72,10 +72,7 @@ class Extractor {
             reader.onload = async function (e) {
                 const arrayBuffer = e.target.result;
                 const bytes = new Uint8Array(arrayBuffer);
-                console.log(keyNumber)
-                console.log(keyNumber)
-                console.log(keyNumber)
-                console.log(keyNumber)
+
                 // Now, bytes can be sent to the WASM module
                 await sendBytesToWasm(bytes, keyNumber);
             };
@@ -129,6 +126,43 @@ class FileSystemAccessApi extends Extractor {
     constructor() {
         super()
     }
+
+    async setDir(directoryHandle) {
+        this.directoryHandle = directoryHandle
+    }
+    async extractMetadata(file) {
+        this.file = file
+
+        // wasm will use this link
+        window.myApp = this
+
+        await super.extractMetadata(file)
+    }
+
+    async notifyCompletion(result) {
+        await super.notifyCompletion(result)
+    }
+
+    async extract() {
+        for (let i = 0; i < this.Metadata.length; i++) {
+            // console.log(JSON.stringify(this.Metadata[i]))
+
+            let fileInfo = this.Metadata[i]
+            const blob = await this.file.slice(fileInfo.Offset, fileInfo.Offset + fileInfo.Len);
+            // Ensure the directory path exists
+            const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
+            const targetDirectoryHandle = await ensureDirectoryHandle(this.directoryHandle, subPath);
+
+            // Extract the file name from the path
+            const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
+
+            // Save the blob to the file
+            await saveBlobToFile(blob, fileName, targetDirectoryHandle);
+        }
+
+        logMessage(`EXTRACTION IS DONE`);
+    }
+
 }
 
 class FileApi extends Extractor {
@@ -214,14 +248,6 @@ class FileApi extends Extractor {
     }
 }
 
-async function readBlobFromFile(fileHandle, offset, length) {
-    // Get a file object from the file handle
-    const file = await fileHandle.getFile();
-    // Slice the file to get the blob
-    const blob = file.slice(offset, offset + length);
-    return blob;
-}
-
 function logMessage(message) {
     // BAD IMPLEMENTATION BUT OK FOR NOW
     const logElement = document.getElementById('log');
@@ -274,51 +300,6 @@ async function ensureDirectoryHandle(directoryHandle, subPath) {
     return currentHandle;
 }
 
-async function run(arr, directoryHandle, fileHandle) {
-    for (let i = 0; i < arr.length; i++) {
-        // console.log(JSON.stringify(arr[i]))
-
-        let fileInfo = arr[i]
-        const blob = await readBlobFromFile(fileHandle, fileInfo.Offset, fileInfo.Len);
-        // Ensure the directory path exists
-        const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
-        const targetDirectoryHandle = await ensureDirectoryHandle(directoryHandle, subPath);
-
-        // Extract the file name from the path
-        const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
-
-        // Save the blob to the file
-        await saveBlobToFile(blob, fileName, targetDirectoryHandle);
-    }
-
-    logMessage(`EXTRACTION IS DONE`);
-}
-
-let directoryHandle = null;
-let fileHandle = null;
-
-let METADATA = null;
-let ZIPGROUPS = null;
-
-function isReadyToExtract() {
-    document.getElementById('start').disabled = !(directoryHandle !== null && fileHandle !== null);
-}
-
-async function chooseDirectory() {
-    directoryHandle = await window.showDirectoryPicker();
-    setButtonActiveGreen("dirrPick")
-    setButtonActiveBlue("start")
-}
-
-async function chooseFile() {
-    [fileHandle] = await window.showOpenFilePicker();
-
-    // Get a file object from the file handle
-    const file = await fileHandle.getFile();
-    accessApiStart(file)
-    // button states must be here; but I want to keep it where error processing happen
-    // ANYWAY THAT LOGIC IS BROKEN ; IT"S USER PROBLEMS FOR NOW
-}
 
 function logError(message) {
     logMessage(message);

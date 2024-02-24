@@ -25,7 +25,7 @@
     <div id="system_access_extraction" class="option">
         <button id="filePick" class="button-blue" onclick="chooseFile()">Select archive</button>
         <button id="dirrPick" onclick="chooseDirectory()" disabled>To directory</button>
-        <button id="start" onclick="startProcess()" disabled>Extract</button>
+        <button id="start" onclick="fsa.extract()" disabled>Extract</button>
     </div>
     <div id="Firefox" style="display: none;" class="container">
         <input type="file" id="fileInput" style="display:none"/>
@@ -138,7 +138,30 @@
         }
     });
 
-    let FILE = null;
+
+
+    async function chooseFile() {
+        [fileHandle] = await window.showOpenFilePicker();
+
+        // Get a file object from the file handle
+        const file = await fileHandle.getFile();
+        await fsa.extractMetadata(file)
+        setButtonActiveGreen("filePick")
+        setButtonActiveBlue("dirrPick")
+        setButtonDisabled("start")
+    }
+
+
+
+    async function chooseDirectory() {
+        directoryHandle = await window.showDirectoryPicker();
+
+        fsa.setDir(directoryHandle);
+
+        setButtonActiveGreen("dirrPick")
+        setButtonActiveBlue("start")
+    }
+
 
     function chooseFileD() {
         document.getElementById("fileInput").click();
