@@ -9,8 +9,6 @@
             width: 80%;
             margin: 0 auto;
             text-align: center;
-            border-top: 1px solid #000;
-            border-bottom: 1px solid #000;
             padding: 20px 0;
             font-family: Arial, sans-serif; /* Consistent font */
         }
@@ -21,7 +19,6 @@
             padding: 10px 20px;
             text-decoration: none;
             color: #000;
-            border: 1px solid #000;
             background-color: #fff;
             cursor: pointer;
             transition: background-color 0.2s; /* Smooth transition for hover effect */
@@ -86,7 +83,7 @@
             color: #333;
             font-size: 14px;
             line-height: 1.4;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Soft outer shadow for depth */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft outer shadow for depth */
             border-radius: 4px; /* Consistent rounded corners */
         }
 
@@ -99,11 +96,28 @@
             background-color: #28a745; /* Green */
             color: white;
         }
-</style>
+
+        .github-buttons {
+            position: fixed;
+            right: 0;
+            top: 5%;
+            transform: translateY(-50%);
+        }
+
+    </style>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
 </head>
 <body>
 <script src="https://unpkg.com/bowser@2.11.0/es5.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+<div class="github-buttons">
+    <a class="github-button" href="https://github.com/im7mortal/unrpa"
+       data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-size="large"
+       data-show-count="true" aria-label="Star im7mortal/unrpa on GitHub">Star</a>
+    <a class="github-button" href="https://github.com/im7mortal/unrpa/issues"
+       data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-issue-opened"
+       data-size="large" data-show-count="true" aria-label="Issue im7mortal/unrpa on GitHub">Issue</a>
+</div>
 
 <div id="maincontainer" class="container">
     <h1>UNRPA - Extract Ren'Py Archives</h1>
@@ -113,7 +127,7 @@
         <button id="start" onclick="startProcess()" disabled>Extract</button>
     </div>
     <div id="Firefox" style="display: none;" class="container">
-        <input type="file" id="fileInput" style="display:none" />
+        <input type="file" id="fileInput" style="display:none"/>
         <!-- Trigger button for file input -->
         <button id="filePick2" class="button-blue" onclick="chooseFile()">Select Archive</button>
         <button id="startD" onclick="runForOld(ZIPGROUPS, FILE)" disabled>Extract</button>
@@ -213,10 +227,12 @@
     });
 
     let FILE = null;
+
     function chooseFile() {
         document.getElementById("fileInput").click();
     }
-    document.getElementById('fileInput').addEventListener('change', function() {
+
+    document.getElementById('fileInput').addEventListener('change', function () {
         if (!this.files.length) {
             alert('Please select a file.');
             return;
