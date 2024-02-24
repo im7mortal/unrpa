@@ -129,7 +129,7 @@
     <div id="Firefox" style="display: none;" class="container">
         <input type="file" id="fileInput" style="display:none"/>
         <!-- Trigger button for file input -->
-        <button id="filePick2" class="button-blue" onclick="chooseFile()">Select Archive</button>
+        <button id="filePick2" class="button-blue" onclick="chooseFileD()">Select Archive</button>
         <button id="startD" onclick="runForOld(ZIPGROUPS, FILE)" disabled>Extract</button>
     </div>
     <div id="mobile" style="display: none;" class="container">
@@ -228,7 +228,7 @@
 
     let FILE = null;
 
-    function chooseFile() {
+    function chooseFileD() {
         document.getElementById("fileInput").click();
     }
 
