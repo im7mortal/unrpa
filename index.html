@@ -3,113 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Renpy arcives extractor</title>
-    <style>
-        /* Container & General Layout */
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            text-align: center;
-            padding: 20px 0;
-            font-family: Arial, sans-serif; /* Consistent font */
-        }
-
-        /* Buttons & Links Styling */
-        button, a {
-            display: inline-block;
-            padding: 10px 20px;
-            text-decoration: none;
-            color: #000;
-            background-color: #fff;
-            cursor: pointer;
-            transition: background-color 0.2s; /* Smooth transition for hover effect */
-        }
-
-        a:hover, button:hover {
-            background-color: #f0f0f0;
-        }
-
-
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-size: 16px; /* Adjusted font size for better visibility */
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        button:disabled {
-            background-color: #cccccc;
-            color: #666666;
-            cursor: not-allowed;
-        }
-
-        /* Download Options */
-        .option {
-            margin: 20px 0;
-        }
-
-        .option a {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 12px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .option a svg {
-            margin-right: 8px;
-        }
-
-        /* Log Area */
-        #log {
-            white-space: pre-wrap; /* Allows for proper text wrapping */
-            background-color: #f4f4f4;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 20px 0; /* Increased margin for clearer separation */
-            overflow-y: auto; /* Enables vertical scrolling */
-            height: 200px; /* Adjustable based on content needs */
-            font-family: monospace; /* Improves readability for log messages */
-            color: #333;
-            font-size: 14px;
-            line-height: 1.4;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft outer shadow for depth */
-            border-radius: 4px; /* Consistent rounded corners */
-        }
-
-        .button-blue {
-            background-color: #007bff; /* Blue */
-            color: white;
-        }
-
-        .button-green {
-            background-color: #28a745; /* Green */
-            color: white;
-        }
-
-        .github-buttons {
-            position: fixed;
-            right: 0;
-            top: 5%;
-            transform: translateY(-50%);
-        }
-
-    </style>
+    <link rel="stylesheet" href="web_resources/style.css">
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://unpkg.com/bowser@2.11.0/es5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+    <script src="wasm/wasm_exec.js"></script>
+    <script src="web_resources/detectVersion.js"></script>
 </head>
 <body>
-<script src="https://unpkg.com/bowser@2.11.0/es5.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
 <div class="github-buttons">
     <a class="github-button" href="https://github.com/im7mortal/unrpa"
        data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-size="large"
@@ -128,9 +29,8 @@
     </div>
     <div id="Firefox" style="display: none;" class="container">
         <input type="file" id="fileInput" style="display:none"/>
-        <!-- Trigger button for file input -->
         <button id="filePick2" class="button-blue" onclick="chooseFileD()">Select Archive</button>
-        <button id="startD" onclick="runForOld(ZIPGROUPS, FILE)" disabled>Extract</button>
+        <button id="startD" onclick="fa.extract()" disabled>Extract</button>
     </div>
     <div id="mobile" style="display: none;" class="container">
         Mobile platforms are not supported.
@@ -163,11 +63,23 @@
 
 
 <div id="log"></div>
-<script src="wasm/wasm_exec.js"></script>
-<script src="web_resources/detectVersion.js"></script>
 
 
 <script>
+
+    let onMetadataSuccess = function () {
+        setButtonActiveGreen("filePick2");
+        setButtonActiveBlue("startD")
+    }
+
+    let onExtractionSuccess = function () {
+        setButtonActiveGreen("startD")
+    }
+
+    const fa = new FileApi(onMetadataSuccess, onExtractionSuccess);
+    const fsa = new FileSystemAccessApi(onMetadataSuccess, onExtractionSuccess);
+
+
     async function sendBytesToWasm(bytes, key) {
         // Assuming wasmModule is your instantiated WASM module
         // And receiveBytes is a function you've exposed from Go
@@ -237,11 +149,7 @@
             alert('Please select a file.');
             return;
         }
-
-        FILE = this.files[0];
-        accessApiStart(FILE)
-        setButtonActiveGreen("filePick2");
-        setButtonActiveBlue("startD")
+        fa.extractMetadata(this.files[0])
     });
 
 

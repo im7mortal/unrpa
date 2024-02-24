@@ -1,3 +1,219 @@
+class Extractor {
+    constructor() {
+    }
+
+
+    async parseHeader(filename, headerString) {
+        try {
+            logMessage("Analyze \"" + filename + "\"")
+            if (isV1(filename)) {
+                logError("The RPA-1.0 which has extension '.rpi' is not supported");
+                return
+            }
+
+            // Extract the first line from the chunk
+            const firstLineEndIndex = headerString.indexOf('\n');
+
+            // Check if the chunk does not contain '\n'
+            if (firstLineEndIndex === -1) {
+                console.log("Is it RPA format? The first 100 bytes do not contain a newline character.");
+                logError("Is it RPA file? The archive has errors");
+                return;
+            }
+            const firstLine = headerString.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : textChunk.length);
+
+            // Process the first line here...
+            console.log(firstLine);
+
+            // Process the file content to detect version
+            const lines = firstLine.split('\n');
+            const header = lines[0];
+            const parts = header.split(' ');
+
+            if (parts.length < 2 || parts.length > 4) {
+                console.log("Is it RPA file? Number of header components doesn't match to any format")
+                logError("Is it RPA file? The archive has errors");
+                return;
+            }
+
+            if (isV2(parts.length)) {
+                logError("Looks like it's RPA-2.0 format which is not supported");
+                return;
+            }
+
+            let offsetParse = stringToBigInt(parts[1]);
+            let keyParse = stringToBigInt(parts[2]);
+            if (!offsetParse[1] || !keyParse[1]) {
+                console.log("Is it RPA file? The archive header has errors");
+                logError("Is it RPA file? The archive has errors");
+                return
+            }
+
+            const offsetNumber = offsetParse[0];
+            const keyNumber = keyParse[0];
+
+            if (!isV3(parts[0])) {
+                logError("Is it RPA file? It doesn't match to any RPA version");
+                return
+            } else {
+                logMessage("Detected version " + v3String)
+            }
+            return [offsetNumber, keyNumber]
+
+        } catch (error) {
+            console.log("Error processing file " + error);
+            logError("Is it RPA file? The archive has errors");
+        }
+    }
+
+    async parseMetadata(metadataSrc, keyNumber) {
+        try {
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                const arrayBuffer = e.target.result;
+                const bytes = new Uint8Array(arrayBuffer);
+                console.log(keyNumber)
+                console.log(keyNumber)
+                console.log(keyNumber)
+                console.log(keyNumber)
+                // Now, bytes can be sent to the WASM module
+                await sendBytesToWasm(bytes, keyNumber);
+            };
+            reader.readAsArrayBuffer(metadataSrc);
+
+        } catch (error) {
+            console.log("Error processing file " + error);
+            logError("Is it RPA file? The archive has errors");
+        }
+    }
+
+    async extractMetadata(file) {
+
+        // The header size is around 33 bytes. We will check 100
+        const chunkSize = 100;
+        const blob = file.slice(0, chunkSize);
+        const textChunk = await blob.text();
+
+        let res = await this.parseHeader(file.name, textChunk)
+        if (res === undefined) {
+            return
+        }
+        let offsetNumber = res[0];
+        let keyNumber = res[1];
+
+        const blobSlice = file.slice(offsetNumber);
+
+
+        console.log(blobSlice, keyNumber)
+        console.log(blobSlice, keyNumber)
+        console.log(blobSlice, keyNumber)
+        console.log(blobSlice, keyNumber)
+
+        await this.parseMetadata(blobSlice, keyNumber)
+
+    }
+
+
+    Metadata = null;
+
+    async notifyCompletion(result) {
+
+        this.Metadata = JSON.parse(result);
+
+        logMessage("Successfully parsed metadata. " + this.Metadata.length + " files are ready to extraction")
+
+    }
+}
+
+class FileSystemAccessApi extends Extractor {
+    constructor() {
+        super()
+    }
+}
+
+class FileApi extends Extractor {
+    constructor(onMetadataSuccess, onExtractionSuccess) {
+        super()
+        this.onMetadataSuccess = onMetadataSuccess
+        this.onExtractionSuccess = onExtractionSuccess
+    }
+
+    ZipGroups = null;
+
+    ZipSize = 250 * 1024 * 1024
+
+    async extractMetadata(file) {
+        this.file = file
+
+        // wasm will use this link
+        window.myApp = this
+
+        await super.extractMetadata(file)
+    }
+
+
+    async notifyCompletion(result) {
+        await super.notifyCompletion(result)
+        this.ZipGroups = groupBySubdirectory(this.Metadata, this.ZipSize)
+        logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`)
+
+        this.onMetadataSuccess()
+    }
+
+    async extract() {
+        let zipIndex = 0; // To enumerate ZIP files
+        var zip = new JSZip();
+
+        const saveAndResetZip = async () => {
+            logMessage(`Preparing zip can take some time.`)
+            logMessage(`Finalizing ZIP ${zipIndex}...`);
+            let lastPercent = 0;
+            const content = await zip.generateAsync({
+                    type: "blob",
+                    compression: "STORE"
+                }, function updateCallback(metadata) {
+                    // Check if the current percentage is different from the last reported
+                    if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
+                        lastPercent = metadata.percent
+                        // Update progress
+                        let msg = "Progression zip " + zipIndex + ": " + metadata.percent.toFixed(2) + " %";
+                        if (metadata.currentFile) {
+                            msg += "\t" + metadata.currentFile;
+                        }
+                        logMessage(msg);
+                    }
+                }
+            );
+            saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
+            zipIndex++;
+            zip = new JSZip(); // Reset for next ZIP
+        };
+
+        for (let j = 0; j < this.ZipGroups.length; j++) {
+            for (let k = 0; k < this.ZipGroups[j].length; k++) {
+                let arr = this.ZipGroups[j][k].entries
+                for (let i = 0; i < arr.length; i++) {
+                    let fileInfo = arr[i];
+                    const blob = await readBlobFromFileD(this.file, fileInfo.Offset, fileInfo.Len);
+                    const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
+
+                    let folder = zip.folder(subPath);
+
+                    // Extract the file name from the path
+                    const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
+                    folder.file(fileName, blob);
+
+                }
+            }
+            await saveAndResetZip();
+        }
+
+
+        this.onExtractionSuccess()
+        logMessage(`EXTRACTION IS DONE`);
+    }
+}
+
 async function readBlobFromFile(fileHandle, offset, length) {
     // Get a file object from the file handle
     const file = await fileHandle.getFile();
@@ -57,7 +273,6 @@ async function ensureDirectoryHandle(directoryHandle, subPath) {
     }
     return currentHandle;
 }
-
 
 async function run(arr, directoryHandle, fileHandle) {
     for (let i = 0; i < arr.length; i++) {
