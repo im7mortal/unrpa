@@ -240,6 +240,8 @@ class FileApi extends Extractor {
 
     ZipSize = 250 * 1024 * 1024
 
+    workers = [];
+
     async extractMetadata(file) {
         this.file = file
 
@@ -259,6 +261,7 @@ class FileApi extends Extractor {
     }
 
     async extract() {
+        console.time("extract");
         let zipIndex = 0; // To enumerate ZIP files
         var zip = new JSZip();
 
@@ -286,29 +289,56 @@ class FileApi extends Extractor {
             zipIndex++;
             zip = new JSZip(); // Reset for next ZIP
         };
+
+        // Create worker for each group and put them in the array
+        this.ZipGroups.forEach((group, index) => {
+            const worker = new Worker('web_resources/worker.js');
+            worker.name = `Worker-${index}`;
+            this.workers.push(worker);
+        });
+
+
+
         glog.error(this.ZipGroups)
+        // Post tasks to corresponding worker
         for (let j = 0; j < this.ZipGroups.length; j++) {
             for (let k = 0; k < this.ZipGroups[j].length; k++) {
                 let arr = this.ZipGroups[j][k].entries
                 for (let i = 0; i < arr.length; i++) {
                     let fileInfo = arr[i];
                     const blob = await this.readBlobFromFileD(this.file, fileInfo.Offset, fileInfo.Len);
-                    const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
 
-                    let folder = zip.folder(subPath);
-
-                    // Extract the file name from the path
-                    const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
-                    folder.file(fileName, blob);
-
+                    // Post message to worker
+                    this.workers[j].postMessage({
+                        action: 'addTask',
+                        payload: {
+                            filename: fileInfo.Name,
+                            data: blob
+                        }
+                    });
                 }
             }
-            await saveAndResetZip();
+
+            this.workers[j].postMessage({
+                action: 'finalize',
+                payload: {
+                    index: j,
+                }
+            });
         }
 
-
+        // Wait for all workers to finish their work.
+        await Promise.all(this.workers.map(worker => new Promise((resolve) => {
+            worker.onmessage = (e) => {
+                if (e.data.status === 'done') {
+                    console.log(`Extraction completed by ${worker.name}`);
+                    resolve();
+                }
+            };
+        })));
         this.onExtractionSuccess()
         logMessage(`EXTRACTION IS DONE`);
+        console.timeEnd("extract");
     }
 
 
