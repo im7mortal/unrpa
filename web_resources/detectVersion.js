@@ -290,55 +290,81 @@ class FileApi extends Extractor {
             zip = new JSZip(); // Reset for next ZIP
         };
 
-        // Create worker for each group and put them in the array
-        this.ZipGroups.forEach((group, index) => {
+        const maxWorkers = 4;
+        logMessage("create workers")
+        const workers = Array.from({length: maxWorkers}, (_, index) => {
             const worker = new Worker('web_resources/worker.js');
             worker.name = `Worker-${index}`;
-            this.workers.push(worker);
+            return worker;
+        });
+        logMessage("workers created")
+
+        let busyWorkers = new Array(maxWorkers).fill(false);
+
+        workers.forEach((worker, index) => {
+            worker.onmessage = (e) => {
+
+                if (e.data.status === 'finished') {
+                    logMessage("ITS DNE MESSAG")
+                    logMessage(`${worker.name} is free!`);
+                    busyWorkers[index] = false;
+
+                    // await this.saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
+                    this.saveBlobToFileD(e.data.content, `extracted_${e.data.zipIndex}.zip`)
+                    logMessage("saved")
+                }
+            }
         });
 
+        async function getFreeWorker() {
+            let index = busyWorkers.indexOf(false); // find a free worker if one exists
+            while (index === -1) { // keep checking until a worker is free
+                await new Promise(resolve => setTimeout(resolve, 10));
+                index = busyWorkers.indexOf(false); // check again if a worker has freed up
+            }
+            busyWorkers[index] = true; // this worker is now busy
+            return index; // return the index of available worker
+        }
 
-
-        glog.error(this.ZipGroups)
-        // Post tasks to corresponding worker
-        for (let j = 0; j < this.ZipGroups.length; j++) {
-            for (let k = 0; k < this.ZipGroups[j].length; k++) {
-                let arr = this.ZipGroups[j][k].entries
-                for (let i = 0; i < arr.length; i++) {
-                    let fileInfo = arr[i];
-                    const blob = await this.readBlobFromFileD(this.file, fileInfo.Offset, fileInfo.Len);
-
-                    // Post message to worker
-                    this.workers[j].postMessage({
+        let indZip = 0;
+        for (let group of this.ZipGroups) {
+            logMessage("STARTED NEW GROUP")
+            const workerIndex = await getFreeWorker();
+            for (let subGroup of group) {
+                for (let entry of subGroup.entries) {
+                    let blob = await this.readBlobFromFileD(this.file, entry.Offset, entry.Len);
+                    workers[workerIndex].postMessage({
                         action: 'addTask',
                         payload: {
-                            filename: fileInfo.Name,
-                            data: blob
+                            filename: entry.Name,
+                            data: blob,
                         }
                     });
                 }
             }
-
-            this.workers[j].postMessage({
-                action: 'finalize',
-                payload: {
-                    index: j,
-                }
-            });
+            workers[workerIndex].postMessage({
+                action: 'finalize', zipIndex: indZip                    }
+            );
+            indZip++;
         }
 
-        // Wait for all workers to finish their work.
-        await Promise.all(this.workers.map(worker => new Promise((resolve) => {
-            worker.onmessage = (e) => {
-                if (e.data.status === 'done') {
-                    console.log(`Extraction completed by ${worker.name}`);
-                    resolve();
-                }
-            };
-        })));
+        async function
+
+        waitForAllWorkersFree() {
+            // Check if all workers are free
+            while (busyWorkers.some(value => value === true)) { // Check if any worker is still busy
+                await new Promise(resolve => setTimeout(resolve, 1000)); // If any of them are, wait for 1 second before checking again
+            }
+            console.log('All workers are free!');
+        }
+
+        await waitForAllWorkersFree()
+
         this.onExtractionSuccess()
+
         logMessage(`EXTRACTION IS DONE`);
-        console.timeEnd("extract");
+        console.timeEnd("extract")
+        ;
     }
 
 
