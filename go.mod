@@ -1,6 +1,6 @@
 module github.com/im7mortal/unrpa
 
-go 1.21
+go 1.22
 
 require (
 	fyne.io/fyne/v2 v2.4.4

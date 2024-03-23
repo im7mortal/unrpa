@@ -1,5 +1,5 @@
 # Use a Debian base image
-FROM registry.hub.docker.com/library/golang:1.22.0-bullseye
+FROM registry.hub.docker.com/library/golang:1.22.1-bullseye
 
 # Install GTK and its dependencies
 RUN apt-get update && apt-get install -y \
