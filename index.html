@@ -9,202 +9,105 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
     <script src="wasm/wasm_exec.js"></script>
     <script src="web_resources/detectVersion.js"></script>
+    <script src="logic.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+
 </head>
 <body>
-<div class="github-buttons">
+
+<div class="d-flex justify-content-end mr-2 mt-2">
     <a class="github-button" href="https://github.com/im7mortal/unrpa"
-       data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-size="large"
+       data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star"
+       data-size="large"
        data-show-count="true" aria-label="Star im7mortal/unrpa on GitHub">Star</a>
     <a class="github-button" href="https://github.com/im7mortal/unrpa/issues"
        data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-issue-opened"
        data-size="large" data-show-count="true" aria-label="Issue im7mortal/unrpa on GitHub">Issue</a>
 </div>
 
-<div id="maincontainer" class="container">
-    <h1>UNRPA - Extract Ren'Py Archives</h1>
-    <div id="system_access_extraction" class="option">
-        <button id="filePick" class="button-blue" onclick="chooseFile()">Select archive</button>
-        <button id="dirrPick" onclick="chooseDirectory()" disabled>To directory</button>
-        <button id="start" onclick="fsa.extract()" disabled>Extract</button>
+
+<h1 class="display-1 text-center">UNRPA - Extract Ren'Py Archives</h1>
+
+<div class="container text-center">
+
+    <div class="row">
+        <div class="col">
+
+            <!--  This is for Chromium based browsers-->
+            <div id="system_access_extraction" class="option">
+                <button id="filePick" class="button-blue" onclick="chooseFile()">Select archive</button>
+                <button id="dirrPick" onclick="chooseDirectory()" disabled>To directory</button>
+                <button id="start" onclick="fsa.extract()" disabled>Extract</button>
+                <!--                <button id="selectDirectory" onclick="scanDirectory()">Scan directory</button>-->
+            </div>
+        </div>
     </div>
-    <div id="Firefox" style="display: none;" class="container">
-        <input type="file" id="fileInput" style="display:none"/>
-        <button id="filePick2" class="button-blue" onclick="chooseFileD()">Select Archive</button>
-        <button id="startD" onclick="fa.extract()" disabled>Extract</button>
+
+    <div class="row">
+        <div class="col">
+            <!--  This is for Firefox and apple one-->
+            <div id="Firefox" style="display: none;" class="container">
+                <input type="file" id="fileInput" style="display:none"/>
+                <button id="filePick2" class="button-blue" onclick="chooseFileD()">Select Archive</button>
+                <button id="startD" onclick="fa.extract()" disabled>Extract</button>
+            </div>
+
+        </div>
     </div>
-    <div id="mobile" style="display: none;" class="container">
-        Mobile platforms are not supported.
+
+    <div class="row">
+        <div class="col">
+            <div id="mobile" style="display: none;" class="container">
+                Mobile platforms are not supported.
+            </div>
+        </div>
     </div>
-    <div> OR DOWNLOAD EXE</div>
-    <div id="linux_exe" class="option">
-        <a href="path_to_exe" class="m-811560b9 mantine-Button-label">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="tabler-icon tabler-icon-icon-brand-linux" style="vertical-align: middle;">
-                <path d="M29.8945,23.542l-1.7238-3.4473a1.9994,1.9994,0,0,0-1.7886-1.1054h-.4683a14.887,14.887,0,0,0-1.8193-4.5977C23.0647,12.4429,22,10.4277,22,8A6,6,0,0,0,10,8a13.0041,13.0041,0,0,1-2.0486,6.2153,14.7022,14.7022,0,0,0-1.8708,4.7759H5.6184a2.0007,2.0007,0,0,0-1.7893,1.106L2.1055,23.5439a1,1,0,0,0,.0971,1.0508L6.2319,29.92a2.9995,2.9995,0,0,0,3.8482.6519l1.8735-1.1241A13.8223,13.8223,0,0,0,16,30a13.8034,13.8034,0,0,0,4.0488-.5527L21.92,30.57a2.9819,2.9819,0,0,0,1.5385.43,3.0385,3.0385,0,0,0,2.3389-1.1187l4-5.2885A1.001,1.001,0,0,0,29.8945,23.542Zm-7.5683-8.2158a14.8311,14.8311,0,0,1,1.5591,3.6631H21.738a16.6591,16.6591,0,0,0-.98-2.6455,12.7083,12.7083,0,0,1-.8789-2.4454,8.8046,8.8046,0,0,0,1.0034-1.4277l.0384-.0718A30.746,30.746,0,0,0,22.3262,15.3262ZM12,21a9.3959,9.3959,0,0,1,1.0728-3.8516c.2563-.5825.5158-1.1757.726-1.7993a4.0474,4.0474,0,0,0,4.4024,0c.21.6236.47,1.2168.726,1.7993A9.3959,9.3959,0,0,1,20,21c0,1.2881-.4146,3-4,3S12,22.2881,12,21Zm6.5105-8.5752A3.6265,3.6265,0,0,1,16,14a3.6273,3.6273,0,0,1-2.5107-1.5757,7.6356,7.6356,0,0,1,5.0212,0ZM12,8a4,4,0,0,1,8,0,10.9164,10.9164,0,0,0,.4673,3.1152A7.9811,7.9811,0,0,0,19,10.4849V8H17v2.0542a9.2522,9.2522,0,0,0-2,0V8H13v2.4849a7.9019,7.9019,0,0,0-1.4785.6372A10.7093,10.7093,0,0,0,12,8ZM9.7146,15.1592A29.8007,29.8007,0,0,0,11.0693,12.38l.0484.09a8.8046,8.8046,0,0,0,1.0034,1.4277,12.7083,12.7083,0,0,1-.8789,2.4454,16.6574,16.6574,0,0,0-.981,2.6474H8.1047A14.0567,14.0567,0,0,1,9.7146,15.1592Zm1.3708,12.4775L9.0508,28.8574a.9866.9866,0,0,1-1.2529-.1806L4.1724,23.8833l1.4458-2.8921h3.706L11.49,26.3853A1.0036,1.0036,0,0,1,11.0854,27.6367Zm2.316.1177a2.9571,2.9571,0,0,0-.0562-2.11A9.03,9.03,0,0,0,16,26a9.0237,9.0237,0,0,0,2.6562-.3564,2.9889,2.9889,0,0,0-.0546,2.11,13.8722,13.8722,0,0,1-5.2,0Zm10.83.8833a.996.996,0,0,1-1.2827.2178l-2.0342-1.2207h0a1.01,1.01,0,0,1-.396-1.273l2.157-5.3725h3.7058l1.4461,2.892Z"
-                      fill="currentColor" stroke-width="0" transform="scale(0.74)"></path>
-            </svg>
-            Linux Download
-        </a>
+
+    <div class="row" style="display: none;">
+        <div class="col">
+            <div> OR DOWNLOAD EXE</div>
+            <div id="linux_exe" class="d-grid gap-2">
+                <a href="path_to_exe" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="bi bi-terminal-fill" style="vertical-align: middle;">
+                        <path d="M29.8945,23.542l-1.7238-3.4473a1.9994,1.9994,0,0,0-1.7886-1.1054h-.4683a14.887,14.887,0,0,0-1.8193-4.5977C23.0647,12.4429,22,10.4277,22,8A6,6,0,0,0,10,8a13.0041,13.0041,0,0,1-2.0486,6.2153,14.7022,14.7022,0,0,0-1.8708,4.7759H5.6184a2.0007,2.0007,0,0,0-1.7893,1.106L2.1055,23.5439a1,1,0,0,0,.0971,1.0508L6.2319,29.92a2.9995,2.9995,0,0,0,3.8482.6519l1.8735-1.1241A13.8223,13.8223,0,0,0,16,30a13.8034,13.8034,0,0,0,4.0488-.5527L21.92,30.57a2.9819,2.9819,0,0,0,1.5385.43,3.0385,3.0385,0,0,0,2.3389-1.1187l4-5.2885A1.001,1.001,0,0,0,29.8945,23.542Zm-7.5683-8.2158a14.8311,14.8311,0,0,1,1.5591,3.6631H21.738a16.6591,16.6591,0,0,0-.98-2.6455,12.7083,12.7083,0,0,1-.8789-2.4454,8.8046,8.8046,0,0,0,1.0034-1.4277l.0384-.0718A30.746,30.746,0,0,0,22.3262,15.3262ZM12,21a9.3959,9.3959,0,0,1,1.0728-3.8516c.2563-.5825.5158-1.1757.726-1.7993a4.0474,4.0474,0,0,0,4.4024,0c.21.6236.47,1.2168.726,1.7993A9.3959,9.3959,0,0,1,20,21c0,1.2881-.4146,3-4,3S12,22.2881,12,21Zm6.5105-8.5752A3.6265,3.6265,0,0,1,16,14a3.6273,3.6273,0,0,1-2.5107-1.5757,7.6356,7.6356,0,0,1,5.0212,0ZM12,8a4,4,0,0,1,8,0,10.9164,10.9164,0,0,0,.4673,3.1152A7.9811,7.9811,0,0,0,19,10.4849V8H17v2.0542a9.2522,9.2522,0,0,0-2,0V8H13v2.4849a7.9019,7.9019,0,0,0-1.4785.6372A10.7093,10.7093,0,0,0,12,8ZM9.7146,15.1592A29.8007,29.8007,0,0,0,11.0693,12.38l.0484.09a8.8046,8.8046,0,0,0,1.0034,1.4277,12.7083,12.7083,0,0,1-.8789,2.4454,16.6574,16.6574,0,0,0-.981,2.6474H8.1047A14.0567,14.0567,0,0,1,9.7146,15.1592Zm1.3708,12.4775L9.0508,28.8574a.9866.9866,0,0,1-1.2529-.1806L4.1724,23.8833l1.4458-2.8921h3.706L11.49,26.3853A1.0036,1.0036,0,0,1,11.0854,27.6367Zm2.316.1177a2.9571,2.9571,0,0,0-.0562-2.11A9.03,9.03,0,0,0,16,26a9.0237,9.0237,0,0,0,2.6562-.3564,2.9889,2.9889,0,0,0-.0546,2.11,13.8722,13.8722,0,0,1-5.2,0Zm10.83.8833a.996.996,0,0,1-1.2827.2178l-2.0342-1.2207h0a1.01,1.01,0,0,1-.396-1.273l2.157-5.3725h3.7058l1.4461,2.892Z"
+                              fill="currentColor" stroke-width="0" transform="scale(0.74)"></path>
+                    </svg>
+                    Linux Download
+                </a>
+            </div>
+            <div id="windows_exe" class="d-grid gap-2">
+                <a href="path_to_exe" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="bi bi-terminal-fill">
+                        <path d="M17.8 20l-12 -1.5c-1 -.1 -1.8 -.9 -1.8 -1.9v-9.2c0 -1 .8 -1.8 1.8 -1.9l12 -1.5c1.2 -.1 2.2 .8 2.2 1.9v12.1c0 1.2 -1.1 2.1 -2.2 1.9z"></path>
+                        <path d="M12 5l0 14"></path>
+                        <path d="M4 12l16 0"></path>
+                    </svg>
+                    Windows (64-bit)
+                </a>
+            </div>
+        </div>
     </div>
-    <div id="windows_exe" class="option">
-        <a href="path_to_exe" class="m-811560b9 mantine-Button-label">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="tabler-icon tabler-icon-brand-windows">
-                <path d="M17.8 20l-12 -1.5c-1 -.1 -1.8 -.9 -1.8 -1.9v-9.2c0 -1 .8 -1.8 1.8 -1.9l12 -1.5c1.2 -.1 2.2 .8 2.2 1.9v12.1c0 1.2 -1.1 2.1 -2.2 1.9z"></path>
-                <path d="M12 5l0 14"></path>
-                <path d="M4 12l16 0"></path>
-            </svg>
-            Windows (64-bit)
-        </a>
+
+    <div class="row">
+        <div class="col">
+            <div class="card" style="height: 200px; overflow:auto;">
+                <div id="log" class="card-body">
+                    <!-- Here the logs will be added -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 
-<div id="log"></div>
-
-
-<script>
-
-    let onMetadataSuccess = function () {
-        setButtonActiveGreen("filePick2");
-        setButtonActiveBlue("startD")
-    }
-
-    let onExtractionSuccess = function () {
-        setButtonActiveGreen("startD")
-    }
-
-    const fa = new FileApi(onMetadataSuccess, onExtractionSuccess);
-    const fsa = new FileSystemAccessApi(onMetadataSuccess, onExtractionSuccess);
-
-
-    async function sendBytesToWasm(bytes, key) {
-        // Assuming wasmModule is your instantiated WASM module
-        // And receiveBytes is a function you've exposed from Go
-        receiveBytes(bytes, key);
-    }
-
-    const go = new Go();
-    let wasmModule;
-
-    async function initWasm(wasm_path) {
-        const resp = await fetch('wasm/unrpa.wasm');
-        const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
-        wasmModule = wasm.instance;
-        go.run(wasmModule);
-    }
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const browser = bowser.getParser(window.navigator.userAgent);
-        if (!('showOpenFilePicker' in window)) {
-            document.getElementById('system_access_extraction').style.display = 'none';
-            if (browser.getPlatformType() === "mobile") {
-                document.getElementById('mobile').style.display = '';
-            } else {
-                let b = browser.getBrowserName();
-                if (b === "Safari" || b === "Firefox") {
-                    document.getElementById("Firefox").style.display = '';
-                }
-            }
-            // Get browser version
-            const version = browser.getBrowserVersion();
-            console.log(version); // e.g., "88.0.4324.150"
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        try {
-            const response = await fetch('resources.json');
-            const resources = await response.json();
-            const linuxExeLink = document.getElementById('linux_exe').querySelector('a');
-            if (resources.linux_exe) {
-                linuxExeLink.href = resources.linux_exe;
-            } else {
-                console.log('Linux executable URL not found.');
-            }
-            const windows_exeLink = document.getElementById('windows_exe').querySelector('a');
-            if (resources.windows_exe) {
-                windows_exeLink.href = resources.windows_exe;
-            } else {
-                windows_exeLink.style.display = 'none';
-                console.log('Windows executable URL not found.');
-            }
-            initWasm(resources.wasm)
-
-        } catch (error) {
-            console.error('Failed to load resources:', error);
-        }
-    });
-
-
-
-    async function chooseFile() {
-        [fileHandle] = await window.showOpenFilePicker();
-
-        // Get a file object from the file handle
-        const file = await fileHandle.getFile();
-        await fsa.extractMetadata(file)
-        setButtonActiveGreen("filePick")
-        setButtonActiveBlue("dirrPick")
-        setButtonDisabled("start")
-    }
-
-
-
-    async function chooseDirectory() {
-        directoryHandle = await window.showDirectoryPicker();
-
-        fsa.setDir(directoryHandle);
-
-        setButtonActiveGreen("dirrPick")
-        setButtonActiveBlue("start")
-    }
-
-
-    function chooseFileD() {
-        document.getElementById("fileInput").click();
-    }
-
-    document.getElementById('fileInput').addEventListener('change', function () {
-        if (!this.files.length) {
-            alert('Please select a file.');
-            return;
-        }
-        fa.extractMetadata(this.files[0])
-    });
-
-
-
-    function logMessage(message) {
-        // BAD IMPLEMENTATION BUT OK FOR NOW
-        const logElement = document.getElementById('log');
-        logElement.textContent += message + '\n'; // Append new message
-        logElement.scrollTop = logElement.scrollHeight; // Auto-scroll to the bottom
-    }
-
-    function setButtonDisabled(id) {
-        const button = document.getElementById(id);
-        button.disabled = true;
-        button.classList.remove('button-blue', 'button-green');
-    }
-
-    function setButtonActiveBlue(id) {
-        const button = document.getElementById(id);
-        button.disabled = false;
-        button.classList.remove('button-green');
-        button.classList.add('button-blue');
-    }
-
-    function setButtonActiveGreen(id) {
-        const button = document.getElementById(id);
-        button.disabled = false;
-        button.classList.remove('button-blue');
-        button.classList.add('button-green');
-    }
-
-
-</script>
 </body>
 </html>
