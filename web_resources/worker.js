@@ -42,6 +42,7 @@ async function finalizeZip() {
                     msg += "\t" + metadata.currentFile;
                 }
                 console.log(msg);
+                self.postMessage({ status: 'progress',  content: msg});
             }
         }
     );

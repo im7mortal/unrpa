@@ -313,6 +313,12 @@ class FileApi extends Extractor {
                     this.saveBlobToFileD(e.data.content, `extracted_${e.data.zipIndex}.zip`)
                     logMessage("saved")
                 }
+
+                if (e.data.status === 'progress') {
+                    logMessage(e.data.content)
+                }
+
+
             }
         });
 

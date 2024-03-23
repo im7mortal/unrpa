@@ -120,15 +120,19 @@ function chooseFileD() {
     document.getElementById("fileInput").click();
 }
 
-document.getElementById('fileInput').addEventListener('change', function () {
-    if (!this.files.length) {
-        alert('Please select a file.');
-        return;
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        document.getElementById('fileInput').addEventListener('change', function () {
+            if (!this.files.length) {
+                alert('Please select a file.');
+                return;
+            }
+            fa.extractMetadata(this.files[0])
+        });
+    } catch (error) {
+        console.error('Error 56');
     }
-    fa.extractMetadata(this.files[0])
-});
-
-
+})
 
 function logMessage(message) {
     // BAD IMPLEMENTATION BUT OK FOR NOW
