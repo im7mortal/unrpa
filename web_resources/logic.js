@@ -1,5 +1,3 @@
-
-
 let onMetadataSuccess = function () {
     setButtonActiveGreen("filePick2");
     setButtonActiveBlue("startD")
@@ -72,7 +70,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-
 async function chooseFile() {
     [fileHandle] = await window.showOpenFilePicker();
 
@@ -85,11 +82,10 @@ async function chooseFile() {
 }
 
 
-
-async function chooseDirectory() {
+async function chooseDirectory(f) {
     const directoryHandle = await window.showDirectoryPicker();
 
-    fsa.setDir(directoryHandle);
+    f.setDir(directoryHandle);
 
     setButtonActiveGreen("dirrPick")
     setButtonActiveBlue("start")
@@ -100,15 +96,62 @@ async function scanDirectory() {
     const directoryHandle = await window.showDirectoryPicker();
 
     const files = await fsa.scanDir(directoryHandle);
-    const listElement = document.getElementById('listOfArchives');
+
+    console.log(files)
+    const container = document.getElementById('options');
+    const system_access_extraction = document.getElementById('system_access_extraction');
+
     for (let index = 0; index < files.length; index++) {
-        const fileRow = document.createElement('div');
-        fileRow.innerHTML = `
-        ${files[index].name} |
-        <button id="dirrPick-${index}" onclick="fsa.chooseDirectoryIndex(${index})">To directory</button> |
-        <button id="start-${index}" onclick="fsa.extractIndex(${index})" disabled>Extract</button>
-      `;
-        listElement.appendChild(fileRow);
+        const extractionRowDiv = document.createElement('div');
+        extractionRowDiv.className = "row justify-content-center";
+
+        const colDiv = document.createElement('div');
+        colDiv.className = "col";
+
+        let fileButton = document.createElement('button');
+        fileButton.className = "button-green";
+        fileButton.innerText = files[index].name;
+
+
+        let directoryButton = document.createElement('button');
+        directoryButton.innerText = "To directory";
+
+
+        let extractButton = document.createElement('button');
+        extractButton.innerText = "Extract";
+
+
+        let localFsa = new FileSystemAccessApi(function () {
+            directoryButton.className = "button-green"
+        }, onExtractionSuccess)
+
+        try {
+            console.log(files[index])
+            await localFsa.extractMetadata(files[index])
+        } catch (err) {
+            console.log("An error occurred:" + err)
+            continue
+        }
+
+
+        directoryButton.onclick = function () {
+            chooseDirectory(localFsa);
+            directoryButton.className = "button-green"
+        };
+        extractButton.onclick = async function () {
+            await localFsa.extract();
+            extractButton.className = "button-green";
+        };
+
+        colDiv.appendChild(fileButton);
+        colDiv.appendChild(directoryButton);
+        colDiv.appendChild(extractButton);
+        extractionRowDiv.appendChild(colDiv);
+        console.log(container.childNodes)
+        // Insert the new div between row1 and row2
+        container.insertBefore(extractionRowDiv, container.childNodes[4]);
+
+        system_access_extraction.style.display = "none"
     }
 
     // setButtonActiveGreen("dirrPick")

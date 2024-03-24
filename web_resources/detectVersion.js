@@ -168,6 +168,7 @@ class FileSystemAccessApi extends Extractor {
     }
 
     async extractMetadata(file) {
+
         this.file = file
 
         // wasm will use this link
@@ -224,6 +225,33 @@ class FileSystemAccessApi extends Extractor {
             currentHandle = await currentHandle.getDirectoryHandle(name, {create: true});
         }
         return currentHandle;
+    }
+
+
+
+    // recursive function to handle folders that contain other sub-folders
+    async  *iterateDirectory(dirHandle) {
+        for await (const entry of dirHandle.values()) {
+            if (entry.kind === 'file') {
+                yield entry;
+            } else {
+                yield* this.iterateDirectory(entry);
+            }
+        }
+    }
+
+    async  scanDir(dirHandle) {
+        const files = [];
+        for await (const fileHandle of this.iterateDirectory(dirHandle)) {
+            const fileName = fileHandle.name;
+            console.log(fileName)
+            if (fileName.endsWith('.rpa')) {
+                // get the file from the file handle
+                const file = await fileHandle.getFile();
+                files.push(file);
+            }
+        }
+        return files;
     }
 
 
