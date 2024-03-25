@@ -119,7 +119,7 @@ async function scanDirectory() {
 
         let extractButton = document.createElement('button');
         extractButton.innerText = "Extract";
-
+        extractButton.disabled = true
 
         let localFsa = new FileSystemAccessApi(function () {
             directoryButton.className = "button-green"
@@ -137,6 +137,7 @@ async function scanDirectory() {
         directoryButton.onclick = function () {
             chooseDirectory(localFsa);
             directoryButton.className = "button-green"
+            extractButton.disabled = false;
         };
         extractButton.onclick = async function () {
             await localFsa.extract();
