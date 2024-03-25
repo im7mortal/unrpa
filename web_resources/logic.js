@@ -190,29 +190,45 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // JavaScript Part
+
+    var dropZone = document.getElementById('drop_zone');
+    var overlay = document.getElementById("overlay");
+
+    // Show overlay when file is dragged over dropZone
+    function dragOverHandler(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        overlay.style.display = "block";
+    }
+
+    // Hide overlay when file is dragged out of dropZone
+    function dragLeaveHandler(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        // overlay.style.display = "none";
+    }
+
+    // File upload logic
     async function handleFileSelect(evt) {
         evt.stopPropagation();
         evt.preventDefault();
 
         var files = evt.dataTransfer.files; // FileList object.
-        // files is a FileList of File objects. List some properties.
 
+        // Hide overlay
+        overlay.style.display = "none";
+
+        // handle the files here
         await createFilesList(files)
     }
 
-    function handleDragOver(evt) {
-        evt.stopPropagation();
-        evt.preventDefault();
-        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    }
-
     // Setup the listeners.
-    var dropZone = document.getElementById('drop_zone');
-    dropZone.addEventListener('dragover', handleDragOver, false);
+    dropZone.addEventListener('dragover', dragOverHandler, false);
+    dropZone.addEventListener('dragleave', dragLeaveHandler, false);
     dropZone.addEventListener('drop', handleFileSelect, false);
-})
 
+})
 function logMessage(message) {
     // BAD IMPLEMENTATION BUT OK FOR NOW
     const logElement = document.getElementById('log');
