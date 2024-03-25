@@ -5,9 +5,11 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/enescakir/emoji"
 	"github.com/golang/glog"
 	"github.com/sqweek/dialog"
 	"os"
+	"time"
 )
 
 func getExtractionMessage(p string) string {
@@ -49,8 +51,28 @@ func gui() {
 
 	})
 
+	ready := widget.NewLabel("")
 	start := widget.NewButton("start", func() {
+		var spinner = true
+		go func() {
+			for {
+				e := []emoji.Emoji{emoji.Snail, emoji.Butterfly, emoji.Bug, emoji.Ant, emoji.Honeybee, emoji.Beetle, emoji.LadyBeetle, emoji.Cricket, emoji.Cockroach, emoji.Spider, emoji.SpiderWeb, emoji.Scorpion, emoji.Mosquito, emoji.Fly, emoji.Worm, emoji.Microbe}
+				for i := range e {
+					if !spinner {
+						return
+					}
+					ready.SetText(e[i].String() + " processing")
+					time.Sleep(time.Second / 2)
+				}
+			}
+		}()
 		run(rpaPath, extraction, continueOnError)
+		spinner = false
+		if err == nil {
+			ready.SetText(emoji.CheckMark.String() + "Extracted")
+		} else {
+			ready.SetText(emoji.CrossMark.String() + "\t:\t" + err.Error())
+		}
 
 	})
 
@@ -63,6 +85,7 @@ func gui() {
 		chooseRpa,
 		chooseExtract,
 		start,
+		ready,
 		errorCheckbox,
 	))
 

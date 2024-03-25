@@ -40,3 +40,7 @@ usage: unrpa [-h] [-p PATH]
 
 Released via goxc.
 
+### Timing
+
+extract: 1019018ms - timer ended  ; 7958be5b
+extract: 571323ms - timer ended   ; 94241652
