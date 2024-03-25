@@ -97,11 +97,23 @@ async function scanDirectory() {
 
     const files = await fsa.scanDir(directoryHandle);
 
+    await createFilesList(files)
+
+    // setButtonActiveGreen("dirrPick")
+    // setButtonActiveBlue("start")
+}
+
+async function createFilesList(files) {
     console.log(files)
     const container = document.getElementById('options');
     const system_access_extraction = document.getElementById('system_access_extraction');
 
     for (let index = 0; index < files.length; index++) {
+
+        if (!files[index].name.endsWith('.rpa')) {
+            continue
+        }
+
         const extractionRowDiv = document.createElement('div');
         extractionRowDiv.className = "row justify-content-center";
 
@@ -155,8 +167,7 @@ async function scanDirectory() {
         system_access_extraction.style.display = "none"
     }
 
-    // setButtonActiveGreen("dirrPick")
-    // setButtonActiveBlue("start")
+
 }
 
 
@@ -176,6 +187,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error('Error 56');
     }
+})
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // JavaScript Part
+    async function handleFileSelect(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var files = evt.dataTransfer.files; // FileList object.
+        // files is a FileList of File objects. List some properties.
+
+        await createFilesList(files)
+    }
+
+    function handleDragOver(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    }
+
+    // Setup the listeners.
+    var dropZone = document.getElementById('drop_zone');
+    dropZone.addEventListener('dragover', handleDragOver, false);
+    dropZone.addEventListener('drop', handleFileSelect, false);
 })
 
 function logMessage(message) {
