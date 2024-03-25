@@ -6,9 +6,19 @@ let onMetadataSuccess = function () {
 let onExtractionSuccess = function () {
     setButtonActiveGreen("startD")
 }
+const fw = getFW()
 
-const fa = new FileApi(onMetadataSuccess, onExtractionSuccess);
-const fsa = new FileSystemAccessApi(onMetadataSuccess, onExtractionSuccess);
+function getFW() {
+    // bad done
+    const browser = bowser.getParser(window.navigator.userAgent);
+    let b = browser.getBrowserName();
+    if (b === "Safari" || b === "Firefox") {
+        return new FileApi(onMetadataSuccess, onExtractionSuccess)
+    } else {
+        return new FileSystemAccessApi(onMetadataSuccess, onExtractionSuccess);
+    }
+}
+
 
 
 async function sendBytesToWasm(bytes, key) {
@@ -75,7 +85,7 @@ async function chooseFile() {
 
     // Get a file object from the file handle
     const file = await fileHandle.getFile();
-    await fsa.extractMetadata(file)
+    await fw.extractMetadata(file)
     setButtonActiveGreen("filePick")
     setButtonActiveBlue("dirrPick")
     setButtonDisabled("start")
@@ -95,7 +105,7 @@ async function scanDirectory() {
     console.log("scan directory preinit")
     const directoryHandle = await window.showDirectoryPicker();
 
-    const files = await fsa.scanDir(directoryHandle);
+    const files = await fw.scanDir(directoryHandle);
 
     await createFilesList(files)
 
@@ -131,11 +141,8 @@ async function createFilesList(files) {
 
         let extractButton = document.createElement('button');
         extractButton.innerText = "Extract";
-        extractButton.disabled = true
 
-        let localFsa = new FileSystemAccessApi(function () {
-            directoryButton.className = "button-green"
-        }, onExtractionSuccess)
+        let localFsa = getFW()
 
         try {
             console.log(files[index])
@@ -157,7 +164,10 @@ async function createFilesList(files) {
         };
 
         colDiv.appendChild(fileButton);
-        colDiv.appendChild(directoryButton);
+        if (localFsa.constructor.name === "FileSystemAccessApi") {
+            colDiv.appendChild(directoryButton);
+            extractButton.disabled = true
+        }
         colDiv.appendChild(extractButton);
         extractionRowDiv.appendChild(colDiv);
         console.log(container.childNodes)
@@ -182,7 +192,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alert('Please select a file.');
                 return;
             }
-            fa.extractMetadata(this.files[0])
+            fw.extractMetadata(this.files[0])
         });
     } catch (error) {
         console.error('Error 56');

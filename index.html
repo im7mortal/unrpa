@@ -52,8 +52,8 @@
     <div id="system_access_extraction" class="row justify-content-center">
         <div class="col">
             <button id="filePick" class="button-blue" onclick="chooseFile()">Select archive</button>
-            <button id="dirrPick" onclick="chooseDirectory(fsa)" disabled>To directory</button>
-            <button id="start" onclick="fsa.extract()" disabled>Extract</button>
+            <button id="dirrPick" onclick="chooseDirectory(fw)" disabled>To directory</button>
+            <button id="start" onclick="fw.extract()" disabled>Extract</button>
             <span class="fs-2 font-weight-bold me-3 ms-3">OR</span>
             <button id="selectDirectory" onclick="scanDirectory()">Scan directory</button>
         </div>
@@ -74,7 +74,7 @@
             <div id="Firefox" style="display: none;" class="container">
                 <input type="file" id="fileInput" style="display:none"/>
                 <button id="filePick2" class="button-blue" onclick="chooseFileD()">Select Archive</button>
-                <button id="startD" onclick="fa.extract()" disabled>Extract</button>
+                <button id="startD" onclick="fw.extract()" disabled>Extract</button>
             </div>
 
         </div>
