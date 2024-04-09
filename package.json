@@ -1,0 +1,16 @@
+{
+  "name": "unrpa",
+  "version": "1.0.0",
+  "description": "Hassle free RPA extractor. In-Browser, no code, no EXEs.",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.4"
+  },
+  "dependencies": {
+  }
+}
