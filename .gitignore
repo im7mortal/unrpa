@@ -4,3 +4,4 @@
 
 **/*.wasm
 **/*.exe
+web_resources/**/*.js
