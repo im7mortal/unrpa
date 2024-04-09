@@ -24,7 +24,7 @@ class Extractor {
     }
 
     async parseHeader(filename: string, headerString: string): Promise<[number, number, number]> {
-        let fail = [0, 0, 0]
+        let fail: [number, number, number] = [0, 0, 0]
 
         try {
             this.logMessage(`Analyze "${filename}"`);
@@ -218,7 +218,7 @@ class FileSystemAccessApi extends Extractor {
     }
 
     async scanDir(dirHandle: FileSystemDirectoryHandle) {
-        const files: File[];
+        const files: File[] = [];
         for await (const fileHandle: FileSystemFileHandle of this.iterateDirectory(dirHandle)) {
             const fileName = fileHandle.name;
             console.log(fileName)
