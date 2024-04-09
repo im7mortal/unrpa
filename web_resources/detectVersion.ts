@@ -56,10 +56,8 @@ class Extractor {
                 logError("Looks like it's RPA-2.0 format which is not supported");
                 return fail
             }
-            console.log("HERE ",parts[1], parts[2])
             let offsetParse = this.stringToBigInt(parts[1]);
             let keyParse = this.stringToBigInt(parts[2]);
-            console.log("HERE ", offsetParse, keyParse)
             if (!offsetParse[1] || !keyParse[1]) {
                 console.log("Is it RPA file? The archive header has errors");
                 logError("Is it RPA file? The archive has errors");
@@ -85,7 +83,7 @@ class Extractor {
         return fail
     }
 
-    async parseMetadata(metadataSrc: any, keyNumber: number): Promise<void> {
+    async parseMetadata(metadataSrc: Blob, keyNumber: number): Promise<void> {
         try {
             const reader = new FileReader();
             reader.onload = async (e: any): Promise<void> => {
@@ -105,12 +103,11 @@ class Extractor {
         const blob = file.slice(0, chunkSize);
         const textChunk = await blob.text();
 
-        let res: [number, number, number] = await this.parseHeader(file.name, textChunk)
-        if (res[0] === 0) {
-            return
+        let valid: number, offsetNumber: number, keyNumber: number;
+        [valid, offsetNumber, keyNumber] = await this.parseHeader(file.name, textChunk);
+        if (valid === 0) {
+            return;
         }
-        let offsetNumber: number = res[1];
-        let keyNumber = res[0];
 
         const blobSlice: Blob = file.slice(offsetNumber);
 
