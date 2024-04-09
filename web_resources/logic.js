@@ -13,9 +13,9 @@ function getFW() {
     const browser = bowser.getParser(window.navigator.userAgent);
     let b = browser.getBrowserName();
     if (b === "Safari" || b === "Firefox") {
-        return new FileApi(onMetadataSuccess, onExtractionSuccess)
+        return new FileApi(logMessage,sendBytesToWasm,onMetadataSuccess, onExtractionSuccess)
     } else {
-        return new FileSystemAccessApi(onMetadataSuccess, onExtractionSuccess);
+        return new FileSystemAccessApi(logMessage,sendBytesToWasm,onMetadataSuccess, onExtractionSuccess);
     }
 }
 
