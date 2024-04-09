@@ -56,9 +56,10 @@ class Extractor {
                 logError("Looks like it's RPA-2.0 format which is not supported");
                 return fail
             }
-
+            console.log("HERE ",parts[1], parts[2])
             let offsetParse = this.stringToBigInt(parts[1]);
             let keyParse = this.stringToBigInt(parts[2]);
+            console.log("HERE ", offsetParse, keyParse)
             if (!offsetParse[1] || !keyParse[1]) {
                 console.log("Is it RPA file? The archive header has errors");
                 logError("Is it RPA file? The archive has errors");
@@ -138,7 +139,7 @@ class Extractor {
             return [0, false]
         }
 
-        const n: number = parseInt(hexString, 16);
+        const n: number = Number(BigInt("0x" + hexString));
 
         return [n, true];
     }
@@ -148,11 +149,15 @@ class FileSystemAccessApi extends Extractor {
     directoryHandle: any;
     file: File;
 
+    onExtractionSuccess: Function;
+    onMetadataSuccess: Function;
     logMessage: Function;
 
-    constructor(logMessage: Function, sendBytesToWasm: Function) {
+    constructor(logMessage: Function, sendBytesToWasm: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
         super(logMessage, sendBytesToWasm)
         this.logMessage = logMessage
+        this.onExtractionSuccess = onExtractionSuccess
+        this.onMetadataSuccess = onMetadataSuccess
     }
 
     async setDir(directoryHandle: any) {
@@ -172,7 +177,9 @@ class FileSystemAccessApi extends Extractor {
     async extract() {
         for (let i = 0; i < this.Metadata.length; i++) {
             let fileInfo = this.Metadata[i]
+            console.log(fileInfo)
             const blob = await this.file.slice(fileInfo.Offset, fileInfo.Offset + fileInfo.Len);
+            console.log(blob.size)
             const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
             const targetDirectoryHandle = await this.ensureDirectoryHandle(this.directoryHandle, subPath);
             const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
@@ -237,7 +244,7 @@ class FileApi extends Extractor {
     onMetadataSuccess: Function;
     logMessage: Function;
 
-    constructor(onMetadataSuccess: Function, onExtractionSuccess: Function, logMessage: Function, sendBytesToWasm: Function) {
+    constructor(logMessage: Function, sendBytesToWasm: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
         super(logMessage, sendBytesToWasm)
         this.logMessage = logMessage
         this.onExtractionSuccess = onExtractionSuccess
