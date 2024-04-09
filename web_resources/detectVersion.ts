@@ -1,44 +1,47 @@
+declare var JSZip: any;
+
 class Extractor {
-    constructor() {
+    v3String: string = "RPA-3.0";
+    Metadata: any = null;
+    logMessage: Function;
+    sendBytesToWasm: Function;
+
+    constructor(logMessage: Function, sendBytesToWasm: Function) {
+        this.logMessage = logMessage
+        this.sendBytesToWasm = sendBytesToWasm
     }
 
-    isV1(fileName) {
+    isV1(fileName: string): boolean {
         return fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase() === 'rpi'
     }
 
-    isV2(length) {
+    isV2(length: number): boolean {
         return length === 2
     }
 
-    v3String = "RPA-3.0"
-
-    isV3(v) {
+    isV3(v: string): boolean {
         return v === this.v3String
     }
 
-    async parseHeader(filename, headerString) {
+    async parseHeader(filename: string, headerString: string): Promise<[number, number, number]> {
+        let fail = [0, 0, 0]
+
         try {
-            logMessage("Analyze \"" + filename + "\"")
+            this.logMessage(`Analyze "${filename}"`);
             if (this.isV1(filename)) {
                 logError("The RPA-1.0 which has extension '.rpi' is not supported");
-                return
+                return fail
             }
 
-            // Extract the first line from the chunk
             const firstLineEndIndex = headerString.indexOf('\n');
-
-            // Check if the chunk does not contain '\n'
             if (firstLineEndIndex === -1) {
                 console.log("Is it RPA format? The first 100 bytes do not contain a newline character.");
                 logError("Is it RPA file? The archive has errors");
-                return;
+                return fail
             }
-            const firstLine = headerString.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : textChunk.length);
-
-            // Process the first line here...
+            const firstLine = headerString.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : headerString.length);
             console.log(firstLine);
 
-            // Process the file content to detect version
             const lines = firstLine.split('\n');
             const header = lines[0];
             const parts = header.split(' ');
@@ -46,12 +49,12 @@ class Extractor {
             if (parts.length < 2 || parts.length > 4) {
                 console.log("Is it RPA file? Number of header components doesn't match to any format")
                 logError("Is it RPA file? The archive has errors");
-                return;
+                return fail
             }
 
             if (this.isV2(parts.length)) {
                 logError("Looks like it's RPA-2.0 format which is not supported");
-                return;
+                return fail
             }
 
             let offsetParse = this.stringToBigInt(parts[1]);
@@ -59,7 +62,7 @@ class Extractor {
             if (!offsetParse[1] || !keyParse[1]) {
                 console.log("Is it RPA file? The archive header has errors");
                 logError("Is it RPA file? The archive has errors");
-                return
+                return fail
             }
 
             const offsetNumber = offsetParse[0];
@@ -67,159 +70,132 @@ class Extractor {
 
             if (!this.isV3(parts[0])) {
                 logError("Is it RPA file? It doesn't match to any RPA version");
-                return
+                return fail
             } else {
-                logMessage("Detected version " + this.v3String)
+                this.logMessage("Detected version " + this.v3String)
             }
-            return [offsetNumber, keyNumber]
+
+            return [1, Number(offsetNumber), Number(keyNumber)]
 
         } catch (error) {
             console.log("Error processing file " + error);
             logError("Is it RPA file? The archive has errors");
         }
+        return fail
     }
 
-    async parseMetadata(metadataSrc, keyNumber) {
+    async parseMetadata(metadataSrc: any, keyNumber: number): Promise<void> {
         try {
             const reader = new FileReader();
-            reader.onload = async function (e) {
+            reader.onload = async (e: any): Promise<void> => {
                 const arrayBuffer = e.target.result;
                 const bytes = new Uint8Array(arrayBuffer);
-
-                // Now, bytes can be sent to the WASM module
-                await sendBytesToWasm(bytes, keyNumber);
+                await this.sendBytesToWasm(bytes, keyNumber);
             };
             reader.readAsArrayBuffer(metadataSrc);
-
         } catch (error) {
             console.log("Error processing file " + error);
             logError("Is it RPA file? The archive has errors");
         }
     }
 
-    async extractMetadata(file) {
-
-        // The header size is around 33 bytes. We will check 100
+    async extractMetadata(file: File) {
         const chunkSize = 100;
         const blob = file.slice(0, chunkSize);
         const textChunk = await blob.text();
 
-        let res = await this.parseHeader(file.name, textChunk)
-        if (res === undefined) {
+        let res: [number, number, number] = await this.parseHeader(file.name, textChunk)
+        if (res[0] === 0) {
             return
         }
-        let offsetNumber = res[0];
-        let keyNumber = res[1];
+        let offsetNumber: number = res[1];
+        let keyNumber = res[0];
 
-        const blobSlice = file.slice(offsetNumber);
+        const blobSlice: Blob = file.slice(offsetNumber);
 
         await this.parseMetadata(blobSlice, keyNumber)
-
     }
 
-
-    Metadata = null;
-
-    async notifyCompletion(result) {
-
+    async notifyCompletion(result: string) {
         this.Metadata = JSON.parse(result);
-
-        logMessage("Successfully parsed metadata. " + this.Metadata.length + " files are ready to extraction")
-
+        this.logMessage("Successfully parsed metadata. " + this.Metadata.length + " files are ready to extraction")
     }
 
-    isHexString(str) {
-        // This regex matches a string that starts with "0x" or "0X" (optional)
-        // followed by one or more hexadecimal characters (0-9, a-f, A-F).
-        // The ^ and $ ensure the entire string matches this pattern.
+    isHexString(str: string) {
         const regex1 = /^0x[0-9a-fA-F]+$/i;
         const regex2 = /^[0-9a-fA-F]+$/i;
         return regex1.test(str) || regex2.test(str);
     }
 
-    stringToBigInt(hexString) {
-
+    stringToBigInt(hexString: string): [number, boolean] {
         if (!this.isHexString(hexString)) {
-            console.log("\"" + hexString + "\" is not hex string")
+            console.log(`"${hexString}" is not hex string`);
             return [0, false]
         }
 
-        // Ensure the hex string length is even for proper conversion
         if (hexString.length % 2 !== 0) {
             console.error("Hex string must have an even length");
             return [0, false]
         }
 
-        // Convert the hex string to a BigInt
-        const number = Number(BigInt("0x" + hexString));
+        const n: number = parseInt(hexString, 16);
 
-        return [number, true];
+        return [n, true];
     }
-
 }
 
 class FileSystemAccessApi extends Extractor {
-    constructor() {
-        super()
+    directoryHandle: any;
+    file: File;
+
+    logMessage: Function;
+
+    constructor(logMessage: Function, sendBytesToWasm: Function) {
+        super(logMessage, sendBytesToWasm)
+        this.logMessage = logMessage
     }
 
-    async setDir(directoryHandle) {
+    async setDir(directoryHandle: any) {
         this.directoryHandle = directoryHandle
     }
 
-    async extractMetadata(file) {
-
+    async extractMetadata(file: File) {
         this.file = file
-
-        // wasm will use this link
         window.myApp = this
-
         await super.extractMetadata(file)
     }
 
-    async notifyCompletion(result) {
+    async notifyCompletion(result: string) {
         await super.notifyCompletion(result)
     }
 
     async extract() {
         for (let i = 0; i < this.Metadata.length; i++) {
-            // console.log(JSON.stringify(this.Metadata[i]))
-
             let fileInfo = this.Metadata[i]
             const blob = await this.file.slice(fileInfo.Offset, fileInfo.Offset + fileInfo.Len);
-            // Ensure the directory path exists
             const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
             const targetDirectoryHandle = await this.ensureDirectoryHandle(this.directoryHandle, subPath);
-
-            // Extract the file name from the path
             const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
-
-            // Save the blob to the file
             await this.saveBlobToFile(blob, fileName, targetDirectoryHandle);
         }
 
-        logMessage(`EXTRACTION IS DONE`);
+        this.logMessage(`EXTRACTION IS DONE`);
     }
 
-
-    async saveBlobToFile(blob, fileName, directoryHandle) {
+    async saveBlobToFile(blob: Blob, fileName: string, directoryHandle: any) {
         try {
-            // Create a new file handle.
             const fileHandle = await directoryHandle.getFileHandle(fileName, {create: true});
-            // Create a writable stream to write to the file.
             const writable = await fileHandle.createWritable();
-            // Write the blob to the file.
             await writable.write(blob);
-            // Close the file.
             await writable.close();
-            logMessage(`File written: ${fileName}`);
+            this.logMessage(`File written: ${fileName}`);
         } catch (err) {
             console.error(`Could not write file: ${fileName}`, err);
         }
     }
 
-    async ensureDirectoryHandle(directoryHandle, subPath) {
-        const names = subPath.split('/').filter(p => p.length > 0); // Remove empty segments
+    async ensureDirectoryHandle(directoryHandle: any, subPath: string) {
+        const names = subPath.split('/').filter(p => p.length > 0);
         let currentHandle = directoryHandle;
         for (const name of names) {
             currentHandle = await currentHandle.getDirectoryHandle(name, {create: true});
@@ -227,10 +203,7 @@ class FileSystemAccessApi extends Extractor {
         return currentHandle;
     }
 
-
-
-    // recursive function to handle folders that contain other sub-folders
-    async  *iterateDirectory(dirHandle) {
+    async* iterateDirectory(dirHandle: FileSystemDirectoryHandle) {
         for await (const entry of dirHandle.values()) {
             if (entry.kind === 'file') {
                 yield entry;
@@ -240,129 +213,120 @@ class FileSystemAccessApi extends Extractor {
         }
     }
 
-    async  scanDir(dirHandle) {
-        const files = [];
-        for await (const fileHandle of this.iterateDirectory(dirHandle)) {
+    async scanDir(dirHandle: FileSystemDirectoryHandle) {
+        const files: File[];
+        for await (const fileHandle: FileSystemFileHandle of this.iterateDirectory(dirHandle)) {
             const fileName = fileHandle.name;
             console.log(fileName)
             if (fileName.endsWith('.rpa')) {
-                // get the file from the file handle
                 const file = await fileHandle.getFile();
                 files.push(file);
             }
         }
         return files;
     }
-
-
 }
 
 class FileApi extends Extractor {
-    constructor(onMetadataSuccess, onExtractionSuccess) {
-        super()
-        this.onMetadataSuccess = onMetadataSuccess
+    ZipGroups: any = null;
+    ZipSize: number = 250 * 1024 * 1024;
+    workers: any = [];
+    file: File;
+
+    onExtractionSuccess: Function;
+    onMetadataSuccess: Function;
+    logMessage: Function;
+
+    constructor(onMetadataSuccess: Function, onExtractionSuccess: Function, logMessage: Function, sendBytesToWasm: Function) {
+        super(logMessage, sendBytesToWasm)
+        this.logMessage = logMessage
         this.onExtractionSuccess = onExtractionSuccess
+        this.onMetadataSuccess = onMetadataSuccess
     }
 
-    ZipGroups = null;
-
-    ZipSize = 250 * 1024 * 1024
-
-    workers = [];
-
-    async extractMetadata(file) {
+    async extractMetadata(file: File) {
         this.file = file
-
-        // wasm will use this link
         window.myApp = this
-
         await super.extractMetadata(file)
     }
 
-
-    async notifyCompletion(result) {
+    async notifyCompletion(result: string) {
         await super.notifyCompletion(result)
         this.ZipGroups = await this.groupBySubdirectory(this.Metadata, this.ZipSize)
-        logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`)
-
+        this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`)
         this.onMetadataSuccess()
     }
 
     async extract() {
         console.time("extract");
-        let zipIndex = 0; // To enumerate ZIP files
+        let zipIndex = 0;
         var zip = new JSZip();
 
         const saveAndResetZip = async () => {
-            logMessage(`Preparing zip can take some time.`)
-            logMessage(`Finalizing ZIP ${zipIndex}...`);
+            this.logMessage(`Preparing zip can take some time.`)
+            this.logMessage(`Finalizing ZIP ${zipIndex}...`);
             let lastPercent = 0;
             const content = await zip.generateAsync({
                     type: "blob",
                     compression: "STORE"
-                }, function updateCallback(metadata) {
-                    // Check if the current percentage is different from the last reported
+                }, function updateCallback(metadata: any) {
                     if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
                         lastPercent = metadata.percent
-                        // Update progress
                         let msg = "Progression zip " + zipIndex + ": " + metadata.percent.toFixed(2) + " %";
                         if (metadata.currentFile) {
                             msg += "\t" + metadata.currentFile;
                         }
-                        logMessage(msg);
+                        this.logMessage(msg);
                     }
                 }
             );
             await this.saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
             zipIndex++;
-            zip = new JSZip(); // Reset for next ZIP
+            let zip = new JSZip();
         };
 
         const maxWorkers = 4;
-        logMessage("create workers")
+        this.logMessage("create workers")
         const workers = Array.from({length: maxWorkers}, (_, index) => {
-            const worker = new Worker('web_resources/worker.js');
-            worker.name = `Worker-${index}`;
+            const worker: Worker = new Worker('web_resources/worker.js');
+            // worker.name = `Worker-${index}`;
             return worker;
         });
-        logMessage("workers created")
+        this.logMessage("workers created")
 
         let busyWorkers = new Array(maxWorkers).fill(false);
 
         workers.forEach((worker, index) => {
-            worker.onmessage = (e) => {
+            worker.onmessage = (e: any) => {
 
                 if (e.data.status === 'finished') {
-                    logMessage("ITS DNE MESSAG")
-                    logMessage(`${worker.name} is free!`);
+                    this.logMessage("ITS DNE MESSAG")
+                    // this.logMessage(`${worker.name} is free!`);
                     busyWorkers[index] = false;
-
-                    // await this.saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
                     this.saveBlobToFileD(e.data.content, `extracted_${e.data.zipIndex}.zip`)
-                    logMessage("saved")
+                    this.logMessage("saved")
                 }
 
                 if (e.data.status === 'progress') {
-                    logMessage(e.data.content)
+                    this.logMessage(e.data.content)
                 }
-
 
             }
         });
 
         async function getFreeWorker() {
-            let index = busyWorkers.indexOf(false); // find a free worker if one exists
-            while (index === -1) { // keep checking until a worker is free
+            let index = busyWorkers.indexOf(false);
+            while (index === -1) {
                 await new Promise(resolve => setTimeout(resolve, 10));
-                index = busyWorkers.indexOf(false); // check again if a worker has freed up
+                index = busyWorkers.indexOf(false);
             }
-            busyWorkers[index] = true; // this worker is now busy
-            return index; // return the index of available worker
+            busyWorkers[index] = true;
+            return index;
         }
 
         let indZip = 0;
         for (let group of this.ZipGroups) {
-            logMessage("STARTED NEW GROUP")
+            this.logMessage("STARTED NEW GROUP")
             const workerIndex = await getFreeWorker();
             for (let subGroup of group) {
                 for (let entry of subGroup.entries) {
@@ -377,17 +341,14 @@ class FileApi extends Extractor {
                 }
             }
             workers[workerIndex].postMessage({
-                action: 'finalize', zipIndex: indZip                    }
-            );
+                action: 'finalize', zipIndex: indZip
+            });
             indZip++;
         }
 
-        async function
-
-        waitForAllWorkersFree() {
-            // Check if all workers are free
-            while (busyWorkers.some(value => value === true)) { // Check if any worker is still busy
-                await new Promise(resolve => setTimeout(resolve, 1000)); // If any of them are, wait for 1 second before checking again
+        async function waitForAllWorkersFree() {
+            while (busyWorkers.some(value => value === true)) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
             console.log('All workers are free!');
         }
@@ -396,79 +357,61 @@ class FileApi extends Extractor {
 
         this.onExtractionSuccess()
 
-        logMessage(`EXTRACTION IS DONE`);
-        console.timeEnd("extract")
-        ;
+        this.logMessage(`EXTRACTION IS DONE`);
+        console.timeEnd("extract");
     }
 
-
-    async readBlobFromFileD(file, offset, length) {
-        // Get a file object from the file handle
-        // Slice the file to get the blob
+    async readBlobFromFileD(file: File, offset: number, length: number) {
         const blob = file.slice(offset, offset + length);
         return blob;
     }
 
-
-    async saveBlobToFileD(blob, fileName) {
-        // Create a URL for the blob
-        const url = URL.createObjectURL(blob);
-
-        // Create a temporary <a> element and set its href to the blob URL
+    async saveBlobToFileD(content: Blob, fileName: string) {
+        const url = URL.createObjectURL(content);
         const a = document.createElement("a");
-        document.body.appendChild(a); // Append the link to the body
-        a.style = "display: none"; // Hide the link
+        document.body.appendChild(a);
+        a.style.display = "none";
         a.href = url;
-        a.download = fileName; // Set the file name for download
-
-        // Programmatically click the link to trigger the download
+        a.download = fileName;
         a.click();
-
-        // Clean up by revoking the blob URL and removing the link
         URL.revokeObjectURL(url);
         document.body.removeChild(a);
-        logMessage(`File saved: ${fileName}`);
+        this.logMessage(`File saved: ${fileName}`);
     }
 
+    async groupBySubdirectory(entries: any, maxSizeInBytes: number = 250 * 1024 * 1024) {
+        const groups: { [key: string]: any } = {};
 
-    async groupBySubdirectory(entries, maxSizeInBytes = 250 * 1024 * 1024) {
-        const groups = {};
-
-        entries.forEach(entry => {
+        entries.forEach((entry: any) => {
             const subPath = entry.Name.substring(0, entry.Name.lastIndexOf('/'));
 
-            // Check if the group already exists
             if (!groups[subPath]) {
-                // Initialize the group with an entries array, a subPath, and a totalSize counter
                 groups[subPath] = {subPath: subPath, entries: [], totalSize: 0};
             }
 
-            // Add the entry to the group's entries array
             groups[subPath].entries.push(entry);
-            // Add the entry's size to the group's totalSize counter
             groups[subPath].totalSize += entry.Len;
         });
 
-        // Convert groups object to an array of group objects
-        let groupsArray = Object.values(groups);
+        const groupsArray: any[] = [];
+        for (const key in groups) {
+            if (groups.hasOwnProperty(key)) {
+                groupsArray.push(groups[key]);
+            }
+        }
 
+        groupsArray.sort((a: any, b: any) => a.subPath.localeCompare(b.subPath));
 
-        // Sort the array by subPath
-        groupsArray.sort((a, b) => a.subPath.localeCompare(b.subPath));
-
-        let chunks = [];
-        let currentChunk = [];
+        let chunks: any[] = [];
+        let currentChunk: any[] = [];
         let currentChunkSize = 0;
         groupsArray.forEach(group => {
-            // Check if adding this group would exceed the max size
             if (currentChunkSize + group.totalSize > maxSizeInBytes) {
-                // If so, push the current chunk to chunks array and start a new chunk
                 chunks.push(currentChunk);
                 currentChunk = [];
                 currentChunkSize = 0;
             }
 
-            // Add the group to the current chunk and update the size
             currentChunk.push(group);
             currentChunkSize += group.totalSize;
         });
@@ -477,17 +420,21 @@ class FileApi extends Extractor {
         }
         return chunks;
     }
-
-
 }
 
-function logError(message) {
-    logMessage(message);
+function logError(message: string): void {
+    this.logMessage(message);
 }
 
+declare global {
+    interface Window {
+        glog: any;
+        myApp: any;
+    }
+}
 
 window.glog = {
-    error: function (result) {
+    error: function (result: any) {
         console.log(result)
     }
 }
