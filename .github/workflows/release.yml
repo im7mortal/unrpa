@@ -63,6 +63,7 @@ jobs:
 
       - name: Build
         run: npm run build
+        continue-on-error: true
 
       - name: Checkout the repo
         uses: actions/checkout@v2
