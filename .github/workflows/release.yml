@@ -102,6 +102,10 @@ jobs:
           
           GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
 
+          npm install
+          npm run build || true
+
+
           # Prepare the download URL
           LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
           
