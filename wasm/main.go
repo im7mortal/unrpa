@@ -31,11 +31,14 @@ func receiveBytes(this js.Value, inputs []js.Value) any {
 	if err != nil {
 		response.Error = err.Error()
 	}
-	bs, err := json.Marshal(b)
+	bs, err := json.Marshal(response)
 	if err != nil {
 		panic(err) // let's panic. I am not sure how to handle it in the WASM
 	}
 	//js.Global().Get("glog").Call("error", fmt.Sprintf("from wasm %d\n", string(bs)))
+
+	js.Global().Get("myApp").Call("notifyCompletion", string(bs))
+
 	return js.ValueOf(string(bs))
 }
 
