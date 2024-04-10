@@ -2,7 +2,7 @@ declare var JSZip: any;
 
 interface FileHeader {
     Name: string
-    Offset,
+    Offset: number,
     Len: number
     Field: string // I don't know what is it
 }
@@ -12,6 +12,29 @@ interface WASMResponse {
     Error: string
     FileHeaders: FileHeader[]
 }
+
+interface RPAHeader {
+    offsetNumber: number,
+    keyNumber: number
+    Error: string,
+}
+
+function newRPAHeader(offsetNumber: number, keyNumber: number, err: string): RPAHeader {
+    return {
+        offsetNumber: offsetNumber,
+        keyNumber: keyNumber,
+        Error: err
+    }
+}
+
+function failedRPAHeader(err: string): RPAHeader {
+    return {
+        offsetNumber: 0,
+        keyNumber: 0,
+        Error: err
+    }
+}
+
 
 class Extractor {
     v3String: string = "RPA-3.0";
@@ -36,45 +59,40 @@ class Extractor {
         return v === this.v3String
     }
 
-    async parseHeader(filename: string, headerString: string): Promise<[number, number, number]> {
-        let fail: [number, number, number] = [0, 0, 0]
+    async parseHeader(filename: string, headerString: string): Promise<RPAHeader> {
 
         try {
             this.logMessage(`Analyze "${filename}"`);
             if (this.isV1(filename)) {
-                logError("The RPA-1.0 which has extension '.rpi' is not supported");
-                return fail
+                console.log("The RPA-1.0 which has extension '.rpi' is not supported")
+                return failedRPAHeader("Is it RPA file? The archive has errors")
             }
 
             const firstLineEndIndex = headerString.indexOf('\n');
             if (firstLineEndIndex === -1) {
                 console.log("Is it RPA format? The first 100 bytes do not contain a newline character.");
-                logError("Is it RPA file? The archive has errors");
-                return fail
+                return failedRPAHeader("Is it RPA file? The archive has errors")
             }
-            const firstLine = headerString.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : headerString.length);
-            console.log(firstLine);
 
+            const firstLine = headerString.substring(0, firstLineEndIndex >= 0 ? firstLineEndIndex : headerString.length);
             const lines = firstLine.split('\n');
             const header = lines[0];
             const parts = header.split(' ');
 
             if (parts.length < 2 || parts.length > 4) {
                 console.log("Is it RPA file? Number of header components doesn't match to any format")
-                logError("Is it RPA file? The archive has errors");
-                return fail
+                return failedRPAHeader("Is it RPA file? The archive has errors")
             }
 
             if (this.isV2(parts.length)) {
                 logError("Looks like it's RPA-2.0 format which is not supported");
-                return fail
+                return failedRPAHeader("Is it RPA file? The archive has errors")
             }
             let offsetParse = this.stringToBigInt(parts[1]);
             let keyParse = this.stringToBigInt(parts[2]);
             if (!offsetParse[1] || !keyParse[1]) {
                 console.log("Is it RPA file? The archive header has errors");
-                logError("Is it RPA file? The archive has errors");
-                return fail
+                return failedRPAHeader("Is it RPA file? The archive has errors")
             }
 
             const offsetNumber = offsetParse[0];
@@ -82,18 +100,17 @@ class Extractor {
 
             if (!this.isV3(parts[0])) {
                 logError("Is it RPA file? It doesn't match to any RPA version");
-                return fail
+                return failedRPAHeader("Is it RPA file? The archive has errors")
             } else {
                 this.logMessage("Detected version " + this.v3String)
             }
 
-            return [1, Number(offsetNumber), Number(keyNumber)]
+            return newRPAHeader(Number(offsetNumber), Number(keyNumber), "")
 
         } catch (error) {
             console.log("Error processing file " + error);
-            logError("Is it RPA file? The archive has errors");
         }
-        return fail
+        return failedRPAHeader("Is it RPA file? The archive has errors")
     }
 
     async parseMetadata(metadataSrc: Blob, keyNumber: number): Promise<void> {
@@ -128,7 +145,7 @@ class Extractor {
     }
 
     async notifyCompletion(result: string) {
-        let res :WASMResponse = JSON.parse(result);
+        let res: WASMResponse = JSON.parse(result);
         if (res.Error !== "") {
             this.logMessage("Encountered error: " + res.Error)
             return
