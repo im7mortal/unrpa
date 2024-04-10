@@ -8,7 +8,12 @@ import (
 	"syscall/js"
 )
 
-func receiveBytes(this js.Value, inputs []js.Value) interface{} {
+type Response struct {
+	Error       string
+	FileHeaders []rpaDecoder.FileHeader
+}
+
+func receiveBytes(this js.Value, inputs []js.Value) any {
 
 	// Convert js.Value to Go byte slice
 	uint8Array := js.Global().Get("Uint8Array").New(inputs[0])
@@ -20,20 +25,18 @@ func receiveBytes(this js.Value, inputs []js.Value) interface{} {
 
 	b, err := v.List(context.TODO())
 
-	var s string
-	if err != nil {
-		s = err.Error()
-	} else {
-		ss, _ := json.Marshal(b)
-		s = string(ss)
+	response := Response{
+		FileHeaders: b,
 	}
-
-	js.Global().Get("myApp").Call("notifyCompletion", s)
-
-	// Now, goBytes contains the data from JavaScript
-	// Process goBytes as needed...
-
-	return nil
+	if err != nil {
+		response.Error = err.Error()
+	}
+	bs, err := json.Marshal(b)
+	if err != nil {
+		panic(err) // let's panic. I am not sure how to handle it in the WASM
+	}
+	//js.Global().Get("glog").Call("error", fmt.Sprintf("from wasm %d\n", string(bs)))
+	return js.ValueOf(string(bs))
 }
 
 func main() {

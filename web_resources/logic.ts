@@ -137,6 +137,9 @@ async function createFilesList(files): Promise<void> {
         try {
             console.log(files[index])
             await localFsa.extractMetadata(files[index])
+
+
+            // this.logMessage("Successfully parsed metadata. " + this.Metadata.length + " files are ready to extraction")
         } catch (err) {
             console.log("An error occurred:" + err)
             continue

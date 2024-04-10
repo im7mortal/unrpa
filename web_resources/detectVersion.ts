@@ -8,10 +8,10 @@ interface FileHeader {
 }
 
 
-interface WASMResponse {
-    Error: string
-    FileHeaders: FileHeader[]
-}
+// interface WASMMetadataResponse {
+//     Error: string
+//
+// }
 
 interface RPAHeader {
     offsetNumber: number,
@@ -35,10 +35,20 @@ function failedRPAHeader(err: string): RPAHeader {
     }
 }
 
+interface MetadataResponse {
+    FileHeaders: FileHeader[]
+    Error: string,
+}
+
+function newMetadataResponse(FileHeaders: FileHeader[], err: string): MetadataResponse {
+    return {
+        FileHeaders: FileHeaders,
+        Error: err
+    }
+}
 
 class Extractor {
     v3String: string = "RPA-3.0";
-    Metadata: FileHeader[] = null;
     logMessage: Function;
     sendBytesToWasm: Function;
 
@@ -113,45 +123,46 @@ class Extractor {
         return failedRPAHeader("Is it RPA file? The archive has errors")
     }
 
-    async parseMetadata(metadataSrc: Blob, keyNumber: number): Promise<void> {
+    async parseMetadata(metadataSrc: Blob, keyNumber: number): Promise<MetadataResponse> {
         try {
-            const reader = new FileReader();
-            reader.onload = async (e: any): Promise<void> => {
-                const arrayBuffer = e.target.result;
-                const bytes = new Uint8Array(arrayBuffer);
-                await this.sendBytesToWasm(bytes, keyNumber);
-            };
-            reader.readAsArrayBuffer(metadataSrc);
+            // Wrap FileReader operation in a Promise
+            const metadataString: string = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async (e: any): Promise<void> => {
+                    try {
+                        const arrayBuffer = e.target.result;
+                        const bytes = new Uint8Array(arrayBuffer);
+                        let metadataString: string = await this.sendBytesToWasm(bytes, keyNumber);
+                        resolve(metadataString);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.readAsArrayBuffer(metadataSrc);
+            });
+            return JSON.parse(metadataString)
+
         } catch (error) {
             console.log("Error processing file " + error);
-            logError("Is it RPA file? The archive has errors");
+            return {
+                FileHeaders: [],
+                Error: "Is it RPA file? The archive has errors"
+            }
         }
     }
 
-    async extractMetadata(file: File) {
-        const chunkSize = 100;
-        const blob = file.slice(0, chunkSize);
-        const textChunk = await blob.text();
+    async extractMetadata(file: File): Promise<MetadataResponse> {
+        const chunkSize = 100; // we assume that RPA header must fit in 100 bytes
+        const headerBlob: Blob = file.slice(0, chunkSize);
 
-        let valid: number, offsetNumber: number, keyNumber: number;
-        [valid, offsetNumber, keyNumber] = await this.parseHeader(file.name, textChunk);
-        if (valid === 0) {
-            return;
+        let rpaHead: RPAHeader = await this.parseHeader(file.name, await headerBlob.text());
+        if (rpaHead.Error !== "") {
+            return newMetadataResponse([], rpaHead.Error);
         }
 
-        const blobSlice: Blob = file.slice(offsetNumber);
+        const metadataBlob: Blob = file.slice(rpaHead.offsetNumber);
+        return this.parseMetadata(metadataBlob, rpaHead.keyNumber);
 
-        await this.parseMetadata(blobSlice, keyNumber)
-    }
-
-    async notifyCompletion(result: string) {
-        let res: WASMResponse = JSON.parse(result);
-        if (res.Error !== "") {
-            this.logMessage("Encountered error: " + res.Error)
-            return
-        }
-        this.Metadata = res.FileHeaders
-        this.logMessage("Successfully parsed metadata. " + this.Metadata.length + " files are ready to extraction")
     }
 
     isHexString(str: string) {
@@ -180,6 +191,7 @@ class Extractor {
 class FileSystemAccessApi extends Extractor {
     directoryHandle: any;
     file: File;
+    Metadata: FileHeader[] = [];
 
     onExtractionSuccess: Function;
     onMetadataSuccess: Function;
@@ -196,14 +208,13 @@ class FileSystemAccessApi extends Extractor {
         this.directoryHandle = directoryHandle
     }
 
-    async extractMetadata(file: File) {
+    async extractMetadata(file: File): Promise<MetadataResponse> {
         this.file = file
-        window.myApp = this // WASM can catch it
-        await super.extractMetadata(file)
-    }
-
-    async notifyCompletion(result: string) {
-        await super.notifyCompletion(result)
+        let metadata: MetadataResponse = await super.extractMetadata(file)
+        if (metadata.Error === "") {
+            this.Metadata = metadata.FileHeaders
+        }
+        return metadata
     }
 
     async extract() {
@@ -270,6 +281,7 @@ class FileSystemAccessApi extends Extractor {
 class FileApi extends Extractor {
     ZipGroups: any = null;
     ZipSize: number = 250 * 1024 * 1024;
+    Metadata: FileHeader[] = [];
     workers: any = [];
     file: File;
 
@@ -284,17 +296,18 @@ class FileApi extends Extractor {
         this.onMetadataSuccess = onMetadataSuccess
     }
 
-    async extractMetadata(file: File) {
+    async extractMetadata(file: File): Promise<MetadataResponse> {
         this.file = file
-        window.myApp = this // WASM can catch it
-        await super.extractMetadata(file)
-    }
+        let metadata: MetadataResponse = await super.extractMetadata(file)
+        if (metadata.Error === "") {
+            this.Metadata = metadata.FileHeaders
+        }
 
-    async notifyCompletion(result: string) {
-        await super.notifyCompletion(result)
         this.ZipGroups = await this.groupBySubdirectory(this.Metadata, this.ZipSize)
         this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`)
         this.onMetadataSuccess()
+
+        return metadata
     }
 
     async extract() {
@@ -469,7 +482,6 @@ function logError(message: string): void {
 declare global {
     interface Window {
         glog: any;
-        myApp: any;
     }
 }
 
