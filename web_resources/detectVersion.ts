@@ -181,7 +181,7 @@ class FileSystemAccessApi extends Extractor {
 
     async extractMetadata(file: File) {
         this.file = file
-        window.myApp = this
+        window.myApp = this // WASM can catch it
         await super.extractMetadata(file)
     }
 
@@ -269,7 +269,7 @@ class FileApi extends Extractor {
 
     async extractMetadata(file: File) {
         this.file = file
-        window.myApp = this
+        window.myApp = this // WASM can catch it
         await super.extractMetadata(file)
     }
 
