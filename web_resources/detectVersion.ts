@@ -219,7 +219,8 @@ class FileSystemAccessApi extends Extractor {
 
     async scanDir(dirHandle: FileSystemDirectoryHandle) {
         const files: File[] = [];
-        for await (const fileHandle: FileSystemFileHandle of this.iterateDirectory(dirHandle)) {
+        for await (const fileHandle of this.iterateDirectory(dirHandle)) {
+            // TypeScript infers fileHandle as FileSystemFileHandle
             const fileName = fileHandle.name;
             console.log(fileName)
             if (fileName.endsWith('.rpa')) {
