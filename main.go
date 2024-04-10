@@ -64,11 +64,11 @@ Examples
    'unrpa -p "path\\to\\output\\dir" "path\\to\\archive.rpa"'
 `
 
-func run(archivePath, extractPath string, continueOnError bool) {
+func run(archivePath, extractPath string, continueOnError bool) error {
 	dcdr, err := rpaDecoder.DetectVersion(archivePath, extractPath)
 	if err != nil {
 		glog.Error(err)
-		return
+		return err
 	}
 	ctx := context.TODO()
 	/*	list, err := dcdr.List(ctx)
@@ -83,6 +83,6 @@ func run(archivePath, extractPath string, continueOnError bool) {
 	err = dcdr.Decode(ctx)
 	if err != nil {
 		glog.Error(err)
-		return
 	}
+	return err
 }

@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	//archivePath = "../../assets/tests/valid.rpa"
 	archivePath = "/home/user/QubesIncoming/basura/archive.rpa"
 	extractPath = "~/out_rpa"
 )

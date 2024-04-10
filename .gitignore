@@ -1,5 +1,7 @@
 /.idea/
+/node_modules/
 .goxc.local.json
 
 #**/*.wasm
 **/*.exe
+#web_resources/**/*.js
