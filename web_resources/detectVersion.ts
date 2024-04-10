@@ -1,8 +1,21 @@
 declare var JSZip: any;
 
+interface FileHeader {
+    Name: string
+    Offset,
+    Len: number
+    Field: string // I don't know what is it
+}
+
+
+interface WASMResponse {
+    Error: string
+    FileHeaders: FileHeader[]
+}
+
 class Extractor {
     v3String: string = "RPA-3.0";
-    Metadata: any = null;
+    Metadata: FileHeader[] = null;
     logMessage: Function;
     sendBytesToWasm: Function;
 
@@ -115,7 +128,12 @@ class Extractor {
     }
 
     async notifyCompletion(result: string) {
-        this.Metadata = JSON.parse(result);
+        let res :WASMResponse = JSON.parse(result);
+        if (res.Error !== "") {
+            this.logMessage("Encountered error: " + res.Error)
+            return
+        }
+        this.Metadata = res.FileHeaders
         this.logMessage("Successfully parsed metadata. " + this.Metadata.length + " files are ready to extraction")
     }
 
