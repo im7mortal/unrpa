@@ -1,6 +1,4 @@
 declare var bowser: any;
-declare var receiveBytes: (input: Uint8Array, key: number) => void;
-declare var Go: any;
 
 let onMetadataSuccess = function (): void {
     setButtonActiveGreen("filePick2");
@@ -16,25 +14,10 @@ function getFW(): any {
     const browser = bowser.getParser(window.navigator.userAgent);
     let b = browser.getBrowserName();
     if (b === "Safari" || b === "Firefox") {
-        return new FileApi(logMessage, sendBytesToWasm, onMetadataSuccess, onExtractionSuccess)
+        return new FileApi(logMessage, onMetadataSuccess, onExtractionSuccess)
     } else {
-        return new FileSystemAccessApi(logMessage, sendBytesToWasm, onMetadataSuccess, onExtractionSuccess);
+        return new FileSystemAccessApi(logMessage, onMetadataSuccess, onExtractionSuccess);
     }
-}
-
-
-async function sendBytesToWasm(bytes: Uint8Array, key: number): Promise<void> {
-    receiveBytes(bytes, key);
-}
-
-const go = new Go();
-let wasmModule: any;
-
-async function initWasm(wasm_path: string): Promise<void> {
-    const resp = await fetch('wasm/unrpa.wasm');
-    const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
-    wasmModule = wasm.instance;
-    go.run(wasmModule);
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {

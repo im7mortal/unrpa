@@ -1,5 +1,13 @@
 declare var JSZip: any;
 
+declare var receiveBytes: (input: Uint8Array, key: number) => void;
+declare var Go: any;
+
+
+async function sendBytesToWasm(bytes: Uint8Array, key: number): Promise<void> {
+    receiveBytes(bytes, key);
+}
+
 interface FileHeader {
     Name: string
     Offset: number,
@@ -7,6 +15,15 @@ interface FileHeader {
     Field: string // I don't know what is it
 }
 
+const go = new Go();
+let wasmModule: any;
+
+async function initWasm(wasm_path: string): Promise<void> {
+    const resp = await fetch('wasm/unrpa.wasm');
+    const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
+    wasmModule = wasm.instance;
+    go.run(wasmModule);
+}
 
 // interface WASMMetadataResponse {
 //     Error: string
@@ -50,11 +67,9 @@ function newMetadataResponse(FileHeaders: FileHeader[], err: string): MetadataRe
 class Extractor {
     v3String: string = "RPA-3.0";
     logMessage: Function;
-    sendBytesToWasm: Function;
 
-    constructor(logMessage: Function, sendBytesToWasm: Function) {
+    constructor(logMessage: Function) {
         this.logMessage = logMessage
-        this.sendBytesToWasm = sendBytesToWasm
     }
 
     isV1(fileName: string): boolean {
@@ -72,7 +87,6 @@ class Extractor {
     async parseHeader(filename: string, headerString: string): Promise<RPAHeader> {
 
         try {
-            this.logMessage(`Analyze "${filename}"`);
             if (this.isV1(filename)) {
                 console.log("The RPA-1.0 which has extension '.rpi' is not supported")
                 return failedRPAHeader("Is it RPA file? The archive has errors")
@@ -139,7 +153,7 @@ class Extractor {
                         const arrayBuffer = e.target.result;
                         const bytes = new Uint8Array(arrayBuffer);
                         // some reason direct return always give back undefined
-                        let metadataString: string = this.sendBytesToWasm(bytes, keyNumber);
+                        let metadataString: string = sendBytesToWasm(bytes, keyNumber);
                     } catch (err) {
                         reject(err);
                     }
@@ -203,8 +217,8 @@ class FileSystemAccessApi extends Extractor {
     onMetadataSuccess: Function;
     logMessage: Function;
 
-    constructor(logMessage: Function, sendBytesToWasm: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
-        super(logMessage, sendBytesToWasm)
+    constructor(logMessage: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
+        super(logMessage)
         this.logMessage = logMessage
         this.onExtractionSuccess = onExtractionSuccess
         this.onMetadataSuccess = onMetadataSuccess
@@ -295,8 +309,8 @@ class FileApi extends Extractor {
     onMetadataSuccess: Function;
     logMessage: Function;
 
-    constructor(logMessage: Function, sendBytesToWasm: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
-        super(logMessage, sendBytesToWasm)
+    constructor(logMessage: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
+        super(logMessage)
         this.logMessage = logMessage
         this.onExtractionSuccess = onExtractionSuccess
         this.onMetadataSuccess = onMetadataSuccess
@@ -304,6 +318,8 @@ class FileApi extends Extractor {
 
     async extractMetadata(file: File): Promise<MetadataResponse> {
         this.file = file
+
+        this.logMessage(`Analyze "${file.name}"`);
         let metadata: MetadataResponse = await super.extractMetadata(file)
         if (metadata.Error === "") {
             this.Metadata = metadata.FileHeaders
