@@ -1,10 +1,17 @@
 declare var JSZip: any;
 
-declare var receiveBytes: (input: Uint8Array, key: number) => void;
+declare var receiveBytes: (input: Uint8Array, key: number) => string;
+
 declare var Go: any;
 
-async function sendBytesToWasm(bytes: Uint8Array, key: number): Promise<void> {
-    receiveBytes(bytes, key);
+export interface FClassInterface {
+    extractMetadata: (file: File) => Promise<MetadataResponse>;
+    extract: () => Promise<void>;
+}
+
+
+async function sendBytesToWasm(bytes: Uint8Array, key: number): Promise<string> {
+    return await receiveBytes(bytes, key);
 }
 
 interface FileHeader {
@@ -17,13 +24,14 @@ interface FileHeader {
 const go = new Go();
 let wasmModule: any;
 
-async function initWasm(wasm_path: string): Promise<void> {
-    const resp = await fetch('wasm/unrpa.wasm');
+async function initWasm(): Promise<void> {
+    const resp = await fetch('unrpa.wasm');
     const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
     wasmModule = wasm.instance;
     go.run(wasmModule);
 }
 
+initWasm()
 // interface WASMMetadataResponse {
 //     Error: string
 //
@@ -145,14 +153,14 @@ class Extractor {
                     try {
                         // back to HACKS again
                         window.myApp = {
-                            notifyCompletion: function (metadataString) {
+                            notifyCompletion: function (metadataString: string) {
                                 resolve(metadataString);
                             }
                         }
                         const arrayBuffer = e.target.result;
                         const bytes = new Uint8Array(arrayBuffer);
                         // some reason direct return always give back undefined
-                        let metadataString: string = sendBytesToWasm(bytes, keyNumber);
+                        let metadataString: string = await sendBytesToWasm(bytes, keyNumber);
                     } catch (err) {
                         reject(err);
                     }
@@ -207,9 +215,9 @@ class Extractor {
     }
 }
 
-export class FileSystemAccessApi extends Extractor {
+export class FileSystemAccessApi extends Extractor implements FClassInterface {
     directoryHandle: any;
-    file: File;
+    file!: File;
     Metadata: FileHeader[] = [];
 
     onExtractionSuccess: Function;
@@ -272,12 +280,12 @@ export class FileSystemAccessApi extends Extractor {
         return currentHandle;
     }
 
-    async* iterateDirectory(dirHandle: FileSystemDirectoryHandle) {
-        for await (const entry of dirHandle.values()) {
+    // suppressed logic
+    async* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGenerator<FileSystemHandle> {
+        // for await (const entry of dirHandle.values()) {
+        for await (const entry of [{kind: "none"}]) {
             if (entry.kind === 'file') {
-                yield entry;
-            } else {
-                yield* this.iterateDirectory(entry);
+                // yield entry;
             }
         }
     }
@@ -289,7 +297,7 @@ export class FileSystemAccessApi extends Extractor {
             const fileName = fileHandle.name;
             console.log(fileName)
             if (fileName.endsWith('.rpa')) {
-                const file = await fileHandle.getFile();
+                const file = await (fileHandle as FileSystemFileHandle).getFile();
                 files.push(file);
             }
         }
@@ -297,16 +305,17 @@ export class FileSystemAccessApi extends Extractor {
     }
 }
 
-export class FileApi extends Extractor {
+export class FileApi extends Extractor implements FClassInterface {
     ZipGroups: any = null;
     ZipSize: number = 250 * 1024 * 1024;
     Metadata: FileHeader[] = [];
     workers: any = [];
-    file: File;
+    file!: File;
 
     onExtractionSuccess: Function;
     onMetadataSuccess: Function;
     logMessage: Function;
+
 
     constructor(logMessage: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
         super(logMessage)
@@ -333,31 +342,7 @@ export class FileApi extends Extractor {
 
     async extract() {
         console.time("extract");
-        let zipIndex = 0;
-        var zip = new JSZip();
 
-        const saveAndResetZip = async () => {
-            this.logMessage(`Preparing zip can take some time.`)
-            this.logMessage(`Finalizing ZIP ${zipIndex}...`);
-            let lastPercent = 0;
-            const content = await zip.generateAsync({
-                    type: "blob",
-                    compression: "STORE"
-                }, function updateCallback(metadata: any) {
-                    if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
-                        lastPercent = metadata.percent
-                        let msg = "Progression zip " + zipIndex + ": " + metadata.percent.toFixed(2) + " %";
-                        if (metadata.currentFile) {
-                            msg += "\t" + metadata.currentFile;
-                        }
-                        this.logMessage(msg);
-                    }
-                }
-            );
-            await this.saveBlobToFileD(content, `extracted_${zipIndex}.zip`);
-            zipIndex++;
-            let zip = new JSZip();
-        };
 
         const maxWorkers = 4;
         this.logMessage("create workers")
@@ -419,6 +404,7 @@ export class FileApi extends Extractor {
             });
             indZip++;
         }
+
 
         async function waitForAllWorkersFree() {
             while (busyWorkers.some(value => value === true)) {
@@ -497,7 +483,7 @@ export class FileApi extends Extractor {
 }
 
 function logError(message: string): void {
-    this.logMessage(message);
+    console.log(message);
 }
 
 declare global {
