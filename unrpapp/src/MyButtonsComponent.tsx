@@ -79,17 +79,33 @@ function MyButtonsComponent() {
 
 
     const scanDirectory = () => alert('To directory clicked');
+    if (isFilePicked) {
+        return (
+            <div className="col">
+                <button id="filePick" className={`btn ${isFilePicked ? 'btn-success' : 'btn-primary'} me-3`} onClick={chooseFile}>Select archive</button>
+                <button id="dirrPick" className={`btn ${isFilePicked ? (isDirectoryPicked ? 'btn-success' : 'btn-primary') : 'btn-secondary'} me-3`} onClick={chooseDirectory} disabled={!isFilePicked}>To directory</button>
+                <button id="startExt" className={`btn ${isDirectoryPicked ? (isExtracted ? 'btn-success' : 'btn-primary') : 'btn-secondary'} `} onClick={start} disabled={!isDirectoryPicked}>Extract</button>
+            </div>
+        );
+    } else {
+        return (
+            <div>
+                <div className="col">
+                    <button id="filePick" className={`btn ${isFilePicked ? 'btn-success' : 'btn-primary'} me-3`}
+                            onClick={chooseFile}>Select archive
+                    </button>
+                    <span className={`fs-2 font-weight-bold me-3 ms-3`}>OR</span>
+                    <button id="selectDirectory" className="btn btn-primary" onClick={chooseDirectory}>Scan directory
+                    </button>
+                </div>
+                <div className="col">
+                    <span className="fs-2 font-weight-bold me-3 ms-3">DRAG AND DROP FILES</span>
+                </div>
+            </div>
+        )
+            ;
 
-    return (
-        <div className="col">
-
-            <button id="filePick" className={`btn ${isFilePicked ? 'btn-success' : 'btn-primary'} me-3`} onClick={chooseFile}>Select archive</button>
-            <button id="dirrPick" className={`btn ${isFilePicked ? (isDirectoryPicked ? 'btn-success' : 'btn-primary') : 'btn-secondary'} me-3`} onClick={chooseDirectory} disabled={!isFilePicked}>To directory</button>
-            <button id="startExt" className={`btn ${isDirectoryPicked ? (isExtracted ? 'btn-success' : 'btn-primary') : 'btn-secondary'} `} onClick={start} disabled={!isDirectoryPicked}>Extract</button>
-            {/*<span className={`fs-2 font-weight-bold me-3 ms-3 ${isFilePicked ? 'invisible' : ''}`}>OR</span>*/}
-            {/*<button id="selectDirectory" className="btn btn-primary" onClick={chooseDirectory}>Scan directory</button>*/}
-        </div>
-    );
+    }
 
 }
 
