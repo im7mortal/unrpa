@@ -17,11 +17,12 @@ interface FileSystemDirectoryHandle extends FileSystemHandle {
 }
 
 interface FileSystemHandleEntry {
-    kind: FileSystemHandleKind;  // Changed here from `string` to `FileSystemHandleKind`
+    kind: FileSystemHandleKind;
     name: string;
     isSameEntry: (entry: FileSystemHandle) => Promise<boolean>;
     queryPermission: (opts: any) => Promise<PermissionState>;
     requestPermission: (opts: any) => Promise<PermissionState>;
+    getDirectoryHandle: (name: string) => Promise<FileSystemDirectoryHandle>;
 }
 
 interface FilePickerOptions {
