@@ -9,6 +9,9 @@ export interface FClassInterface {
     extract: () => Promise<void>;
 }
 
+export interface FileSystemAccessApiInterface extends FClassInterface {
+    setDirectoryHandle: (handle: FileSystemDirectoryHandle) => void;
+}
 
 async function sendBytesToWasm(bytes: Uint8Array, key: number): Promise<string> {
     return await receiveBytes(bytes, key);
@@ -59,7 +62,7 @@ function failedRPAHeader(err: string): RPAHeader {
     }
 }
 
-interface MetadataResponse {
+export interface MetadataResponse {
     FileHeaders: FileHeader[]
     Error: string,
 }
@@ -215,24 +218,21 @@ class Extractor {
     }
 }
 
-export class FileSystemAccessApi extends Extractor implements FClassInterface {
-    directoryHandle: any;
+export class FileSystemAccessApi extends Extractor implements FileSystemAccessApiInterface {
+    directoryHandle!: FileSystemDirectoryHandle;
     file!: File;
     Metadata: FileHeader[] = [];
 
-    onExtractionSuccess: Function;
-    onMetadataSuccess: Function;
     logMessage: Function;
 
-    constructor(logMessage: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
+    constructor(logMessage: Function) {
         super(logMessage)
         this.logMessage = logMessage
-        this.onExtractionSuccess = onExtractionSuccess
-        this.onMetadataSuccess = onMetadataSuccess
     }
 
-    async setDir(directoryHandle: any) {
-        this.directoryHandle = directoryHandle
+    setDirectoryHandle(handle: FileSystemDirectoryHandle) {
+        this.directoryHandle = handle
+        console.log(this.Metadata)
     }
 
     async extractMetadata(file: File): Promise<MetadataResponse> {
@@ -240,12 +240,27 @@ export class FileSystemAccessApi extends Extractor implements FClassInterface {
         let metadata: MetadataResponse = await super.extractMetadata(file)
         if (metadata.Error === "") {
             this.Metadata = metadata.FileHeaders
+            console.log(this.Metadata)
         }
         return metadata
     }
 
+    async ensureDirectoryHandle(directoryHandle: any, subPath: string) {
+        const names = subPath.split('/').filter(p => p.length > 0);
+        let currentHandle = directoryHandle;
+        for (const name of names) {
+            currentHandle = await currentHandle.getDirectoryHandle(name, {create: true});
+        }
+        return currentHandle;
+    }
+
     async extract() {
+        console.log(this.Metadata)
+        console.log(this.Metadata)
+        console.log(this.Metadata)
+        console.log(this.Metadata)
         for (let i = 0; i < this.Metadata.length; i++) {
+
             let fileInfo = this.Metadata[i]
             console.log(fileInfo)
             const blob = await this.file.slice(fileInfo.Offset, fileInfo.Offset + fileInfo.Len);
@@ -270,39 +285,6 @@ export class FileSystemAccessApi extends Extractor implements FClassInterface {
             console.error(`Could not write file: ${fileName}`, err);
         }
     }
-
-    async ensureDirectoryHandle(directoryHandle: any, subPath: string) {
-        const names = subPath.split('/').filter(p => p.length > 0);
-        let currentHandle = directoryHandle;
-        for (const name of names) {
-            currentHandle = await currentHandle.getDirectoryHandle(name, {create: true});
-        }
-        return currentHandle;
-    }
-
-    // suppressed logic
-    async* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGenerator<FileSystemHandle> {
-        // for await (const entry of dirHandle.values()) {
-        for await (const entry of [{kind: "none"}]) {
-            if (entry.kind === 'file') {
-                // yield entry;
-            }
-        }
-    }
-
-    async scanDir(dirHandle: FileSystemDirectoryHandle) {
-        const files: File[] = [];
-        for await (const fileHandle of this.iterateDirectory(dirHandle)) {
-            // TypeScript infers fileHandle as FileSystemFileHandle
-            const fileName = fileHandle.name;
-            console.log(fileName)
-            if (fileName.endsWith('.rpa')) {
-                const file = await (fileHandle as FileSystemFileHandle).getFile();
-                files.push(file);
-            }
-        }
-        return files;
-    }
 }
 
 export class FileApi extends Extractor implements FClassInterface {
@@ -312,16 +294,12 @@ export class FileApi extends Extractor implements FClassInterface {
     workers: any = [];
     file!: File;
 
-    onExtractionSuccess: Function;
-    onMetadataSuccess: Function;
     logMessage: Function;
 
 
-    constructor(logMessage: Function, onMetadataSuccess: Function, onExtractionSuccess: Function) {
+    constructor(logMessage: Function) {
         super(logMessage)
         this.logMessage = logMessage
-        this.onExtractionSuccess = onExtractionSuccess
-        this.onMetadataSuccess = onMetadataSuccess
     }
 
     async extractMetadata(file: File): Promise<MetadataResponse> {
@@ -335,8 +313,6 @@ export class FileApi extends Extractor implements FClassInterface {
 
         this.ZipGroups = await this.groupBySubdirectory(this.Metadata, this.ZipSize)
         this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`)
-        this.onMetadataSuccess()
-
         return metadata
     }
 
@@ -415,7 +391,6 @@ export class FileApi extends Extractor implements FClassInterface {
 
         await waitForAllWorkersFree()
 
-        this.onExtractionSuccess()
 
         this.logMessage(`EXTRACTION IS DONE`);
         console.timeEnd("extract");
@@ -497,4 +472,48 @@ window.glog = {
     error: function (result: any) {
         console.log(result)
     }
+}
+
+export interface FileExtraction {
+    Fs: FileSystemAccessApiInterface
+    FileName: string,
+    DirectoryPicked: boolean,
+    Extracted: boolean
+}
+
+
+// suppressed logic
+async function* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGenerator<FileSystemHandle, void, undefined> {
+    for await (const entry of dirHandle.values()) {
+        if (entry.kind === 'file') {
+            yield entry;
+        }
+    }
+}
+
+export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: Function): Promise<FileExtraction[]> {
+    let ff: FileExtraction[] = [];
+    for await (const fileHandle of iterateDirectory(dirHandle)) {
+        // TypeScript infers fileHandle as FileSystemFileHandle
+        const fileName: string = fileHandle.name;
+        console.log(fileName)
+        if (fileName.endsWith('.rpa')) {
+            const file: File = await (fileHandle as FileSystemFileHandle).getFile();
+            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMessage)
+            let metadata: MetadataResponse = await fs.extractMetadata(file)
+            if (metadata.Error === "") {
+                ff.push({
+                        Fs: fs,
+                        FileName: fileName,
+                        DirectoryPicked: false,
+                        Extracted: false,
+                    }
+                );
+            } else {
+                logMessage(metadata.Error)
+                console.log(metadata.Error);
+            }
+        }
+    }
+    return ff;
 }

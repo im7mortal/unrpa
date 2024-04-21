@@ -1,5 +1,7 @@
+type FileSystemHandleKind = "file" | "directory";
+
 interface FileSystemHandle {
-    kind: string;
+    kind: FileSystemHandleKind;
     name: string;
     queryPermission(opts: any): Promise<PermissionState>;
     requestPermission(opts: any): Promise<PermissionState>;
@@ -15,8 +17,11 @@ interface FileSystemDirectoryHandle extends FileSystemHandle {
 }
 
 interface FileSystemHandleEntry {
-    kind: string;
+    kind: FileSystemHandleKind;  // Changed here from `string` to `FileSystemHandleKind`
     name: string;
+    isSameEntry: (entry: FileSystemHandle) => Promise<boolean>;
+    queryPermission: (opts: any) => Promise<PermissionState>;
+    requestPermission: (opts: any) => Promise<PermissionState>;
 }
 
 interface FilePickerOptions {
