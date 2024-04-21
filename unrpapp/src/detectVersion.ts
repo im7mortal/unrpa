@@ -1,5 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
 declare var JSZip: any;
-
 declare var receiveBytes: (input: Uint8Array, key: number) => string;
 
 declare var Go: any;
@@ -233,6 +233,7 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
     setDirectoryHandle(handle: FileSystemDirectoryHandle) {
         this.directoryHandle = handle
         console.log(this.Metadata)
+        console.log(this.directoryHandle)
     }
 
     async extractMetadata(file: File): Promise<MetadataResponse> {
@@ -258,7 +259,7 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
         console.log(this.Metadata)
         console.log(this.Metadata)
         console.log(this.Metadata)
-        console.log(this.Metadata)
+        console.log(this.directoryHandle)
         for (let i = 0; i < this.Metadata.length; i++) {
 
             let fileInfo = this.Metadata[i]
@@ -475,21 +476,29 @@ window.glog = {
 }
 
 export interface FileExtraction {
+    Id: string
     Fs: FileSystemAccessApiInterface
     FileName: string,
-    DirectoryPicked: boolean,
-    Extracted: boolean
 }
 
 
-// suppressed logic
 async function* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGenerator<FileSystemHandle, void, undefined> {
     for await (const entry of dirHandle.values()) {
         if (entry.kind === 'file') {
             yield entry;
+        } else if (entry.kind === 'directory') {
+            const dirEntry = entry as FileSystemDirectoryHandle;
+            yield* iterateDirectory(dirEntry);
         }
     }
 }
+
+function getExtractionF(fs: FileSystemAccessApiInterface): () => Promise<void> {
+    return async () => {
+        await fs.extract
+    }
+}
+
 
 export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: Function): Promise<FileExtraction[]> {
     let ff: FileExtraction[] = [];
@@ -505,8 +514,7 @@ export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: 
                 ff.push({
                         Fs: fs,
                         FileName: fileName,
-                        DirectoryPicked: false,
-                        Extracted: false,
+                        Id: uuidv4(),
                     }
                 );
             } else {
