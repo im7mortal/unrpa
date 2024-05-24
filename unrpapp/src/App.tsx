@@ -1,9 +1,13 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import GitHubButton from 'react-github-btn'
 import MyButtonsComponent from './MyButtonsComponent';
+import FirefoxComponent from './FirefoxComponent';
+import * as bowser from "bowser";
+
+const browser = bowser.getParser(window.navigator.userAgent).getBrowserName();
+const chromium: boolean = !(browser === "Safari" || browser === "Firefox")
 
 
 function App() {
@@ -40,7 +44,9 @@ function App() {
 
                 <div id="system_access_extraction" className="row justify-content-center">
                     <div className="col">
-                        <MyButtonsComponent/>
+                        {chromium ? (
+                            <MyButtonsComponent/>
+                        ) : (<FirefoxComponent/>)}
                     </div>
                 </div>
 
