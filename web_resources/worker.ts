@@ -1,6 +1,6 @@
 // Import JSZip library (replace the path with your actual path to the library)
 importScripts("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js");
-
+declare var JSZip: any;
 // Initialize JSZip
 let zip = new JSZip();
 let zipIndex: number = 0;
