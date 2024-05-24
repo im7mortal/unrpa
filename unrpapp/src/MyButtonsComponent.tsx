@@ -1,11 +1,8 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {v4 as uuidv4} from 'uuid';
 
-import * as bowser from "bowser";
 import {
-    FClassInterface,
-    FileApi,
     FileSystemAccessApi,
     MetadataResponse,
     FileSystemAccessApiInterface,
