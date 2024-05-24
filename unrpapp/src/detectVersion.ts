@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 declare var JSZip: any;
 declare var receiveBytes: (input: Uint8Array, key: number) => string;
 
@@ -324,7 +324,7 @@ export class FileApi extends Extractor implements FClassInterface {
         const maxWorkers = 4;
         this.logMessage("create workers")
         const workers = Array.from({length: maxWorkers}, (_, index) => {
-            const worker: Worker = new Worker('web_resources/worker.js');
+            const worker: Worker = new Worker('worker.js');
             // worker.name = `Worker-${index}`;
             return worker;
         });
