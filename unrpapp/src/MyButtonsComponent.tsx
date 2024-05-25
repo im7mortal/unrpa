@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {v4 as uuidv4} from 'uuid';
 
+import { useLogs } from './LogProvider';
+
 import {
     FileSystemAccessApi,
     MetadataResponse,
@@ -18,12 +20,13 @@ function logMock(s: string) {
 function MyButtonsComponent() {
     // Implement your functions
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
-
+    const { recordLog } = useLogs();
     const chooseFile = async () => {
+        recordLog("data provider")
         try {
             let [fileHandle] = await window.showOpenFilePicker();
             const file = await fileHandle.getFile();
-            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMock)
+            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(recordLog)
             let resp: MetadataResponse = await fs.extractMetadata(file);
             if (resp.Error === "") {
                 setArchives([{

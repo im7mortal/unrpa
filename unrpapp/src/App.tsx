@@ -5,7 +5,8 @@ import GitHubButton from 'react-github-btn'
 import MyButtonsComponent from './MyButtonsComponent';
 import FirefoxComponent from './FirefoxComponent';
 import * as bowser from "bowser";
-
+import { LogProvider } from './LogProvider';
+import Logs from './Logs';
 const browser = bowser.getParser(window.navigator.userAgent).getBrowserName();
 const chromium: boolean = !(browser === "Safari" || browser === "Firefox")
 
@@ -41,7 +42,7 @@ function App() {
 
             <div id="options" className="container text-center">
 
-
+            <LogProvider>
                 <div id="system_access_extraction" className="row justify-content-center">
                     <div className="col">
                         {chromium ? (
@@ -49,6 +50,8 @@ function App() {
                         ) : (<FirefoxComponent/>)}
                     </div>
                 </div>
+                <Logs/>
+            </LogProvider>
 
 
                 {/*<div className="row">
