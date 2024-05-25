@@ -14,7 +14,7 @@ const Logs = () => {
             width={500}
             height={400}
             itemCount={logs.length}
-            itemSize={35}
+            itemSize={20}
         >
             {Row}
         </FixedSizeList>
