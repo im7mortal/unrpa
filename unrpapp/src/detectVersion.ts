@@ -1,5 +1,4 @@
 import {v4 as uuidv4} from 'uuid';
-declare var JSZip: any;
 declare var receiveBytes: (input: Uint8Array, key: number) => string;
 
 declare var Go: any;
