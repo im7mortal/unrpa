@@ -1,4 +1,7 @@
 import {v4 as uuidv4} from 'uuid';
+
+import {logLevelFunction, LogLevel} from './logInterface';
+
 declare var receiveBytes: (input: Uint8Array, key: number) => string;
 
 declare var Go: any;
@@ -75,9 +78,9 @@ function newMetadataResponse(FileHeaders: FileHeader[], err: string): MetadataRe
 
 class Extractor {
     v3String: string = "RPA-3.0";
-    logMessage: Function;
+    logMessage: logLevelFunction;
 
-    constructor(logMessage: Function) {
+    constructor(logMessage: logLevelFunction) {
         this.logMessage = logMessage
     }
 
@@ -135,7 +138,7 @@ class Extractor {
                 logError("Is it RPA file? It doesn't match to any RPA version");
                 return failedRPAHeader("Is it RPA file? The archive has errors")
             } else {
-                this.logMessage("Detected version " + this.v3String)
+                this.logMessage("Detected version " + this.v3String, LogLevel.Info)
             }
 
             return newRPAHeader(Number(offsetNumber), Number(keyNumber), "")
@@ -222,9 +225,9 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
     file!: File;
     Metadata: FileHeader[] = [];
 
-    logMessage: Function;
+    logMessage: logLevelFunction;
 
-    constructor(logMessage: Function) {
+    constructor(logMessage: logLevelFunction) {
         super(logMessage)
         this.logMessage = logMessage
     }
@@ -271,7 +274,7 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
             await this.saveBlobToFile(blob, fileName, targetDirectoryHandle);
         }
 
-        this.logMessage(`EXTRACTION IS DONE`);
+        this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
     }
 
     async saveBlobToFile(blob: Blob, fileName: string, directoryHandle: any) {
@@ -280,7 +283,7 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
             const writable = await fileHandle.createWritable();
             await writable.write(blob);
             await writable.close();
-            this.logMessage(`File written: ${fileName}`);
+            this.logMessage(`File written: ${fileName}`, LogLevel.Info);
         } catch (err) {
             console.error(`Could not write file: ${fileName}`, err);
         }
@@ -294,10 +297,10 @@ export class FileApi extends Extractor implements FClassInterface {
     workers: any = [];
     file!: File;
 
-    logMessage: Function;
+    logMessage: logLevelFunction;
 
 
-    constructor(logMessage: Function) {
+    constructor(logMessage: logLevelFunction) {
         super(logMessage)
         this.logMessage = logMessage
     }
@@ -305,14 +308,14 @@ export class FileApi extends Extractor implements FClassInterface {
     async extractMetadata(file: File): Promise<MetadataResponse> {
         this.file = file
 
-        this.logMessage(`Analyze "${file.name}"`);
+        this.logMessage(`Analyze "${file.name}"`, LogLevel.Info);
         let metadata: MetadataResponse = await super.extractMetadata(file)
         if (metadata.Error === "") {
             this.Metadata = metadata.FileHeaders
         }
 
         this.ZipGroups = await this.groupBySubdirectory(this.Metadata, this.ZipSize)
-        this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`)
+        this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`, LogLevel.Info)
         return metadata
     }
 
@@ -320,14 +323,14 @@ export class FileApi extends Extractor implements FClassInterface {
         console.time("extract");
 
 
-        const maxWorkers = 4;
-        this.logMessage("create workers")
+        const maxWorkers: number = 4;
+        this.logMessage("create workers", LogLevel.Info)
         const workers = Array.from({length: maxWorkers}, (_, index) => {
             const worker: Worker = new Worker('worker.js');
             // worker.name = `Worker-${index}`;
             return worker;
         });
-        this.logMessage("workers created")
+        this.logMessage("workers created", LogLevel.Info)
 
         let busyWorkers = new Array(maxWorkers).fill(false);
 
@@ -335,15 +338,15 @@ export class FileApi extends Extractor implements FClassInterface {
             worker.onmessage = (e: any) => {
 
                 if (e.data.status === 'finished') {
-                    this.logMessage("ITS DNE MESSAG")
+                    this.logMessage("ITS DNE MESSAG", LogLevel.Info)
                     // this.logMessage(`${worker.name} is free!`);
                     busyWorkers[index] = false;
                     this.saveBlobToFileD(e.data.content, `extracted_${e.data.zipIndex}.zip`)
-                    this.logMessage("saved")
+                    this.logMessage("saved", LogLevel.Info)
                 }
 
                 if (e.data.status === 'progress') {
-                    this.logMessage(e.data.content)
+                    this.logMessage(e.data.content, LogLevel.Info)
                 }
 
             }
@@ -361,7 +364,7 @@ export class FileApi extends Extractor implements FClassInterface {
 
         let indZip = 0;
         for (let group of this.ZipGroups) {
-            this.logMessage("STARTED NEW GROUP")
+            this.logMessage("STARTED NEW GROUP", LogLevel.Info)
             const workerIndex = await getFreeWorker();
             for (let subGroup of group) {
                 for (let entry of subGroup.entries) {
@@ -392,7 +395,7 @@ export class FileApi extends Extractor implements FClassInterface {
         await waitForAllWorkersFree()
 
 
-        this.logMessage(`EXTRACTION IS DONE`);
+        this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
         console.timeEnd("extract");
     }
 
@@ -411,7 +414,7 @@ export class FileApi extends Extractor implements FClassInterface {
         a.click();
         URL.revokeObjectURL(url);
         document.body.removeChild(a);
-        this.logMessage(`File saved: ${fileName}`);
+        this.logMessage(`File saved: ${fileName}`, LogLevel.Info);
     }
 
     async groupBySubdirectory(entries: any, maxSizeInBytes: number = 250 * 1024 * 1024) {
@@ -499,7 +502,7 @@ function getExtractionF(fs: FileSystemAccessApiInterface): () => Promise<void> {
 }
 
 
-export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: Function): Promise<FileExtraction[]> {
+export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: logLevelFunction): Promise<FileExtraction[]> {
     let ff: FileExtraction[] = [];
     for await (const fileHandle of iterateDirectory(dirHandle)) {
         // TypeScript infers fileHandle as FileSystemFileHandle
@@ -517,7 +520,7 @@ export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: 
                     }
                 );
             } else {
-                logMessage(metadata.Error)
+                logMessage(metadata.Error, LogLevel.Info)
                 console.log(metadata.Error);
             }
         }

@@ -22,7 +22,7 @@ function MyButtonsComponent() {
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
     const { recordLog } = useLogs();
     const chooseFile = async () => {
-        recordLog("data provider")
+
         try {
             let [fileHandle] = await window.showOpenFilePicker();
             const file = await fileHandle.getFile();
