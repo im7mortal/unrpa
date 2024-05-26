@@ -4,10 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {logLevelFunction} from './logInterface';
 
 import {
-    FClassInterface,
-    FileApi,
     FileSystemAccessApi,
-    MetadataResponse,
     FileSystemAccessApiInterface,
     FileExtraction
 } from './detectVersion';

@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {
     FClassInterface,
     FileApi,
-    MetadataResponse,
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
 
@@ -21,7 +20,7 @@ function FirefoxSafari() {
     useEffect(() => {
 
         fClass.current = new FileApi(recordLog)
-    }, []);
+    }, [recordLog]);
 
 
     // const chooseFile = async () => {

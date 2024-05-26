@@ -165,7 +165,7 @@ class Extractor {
                         const arrayBuffer = e.target.result;
                         const bytes = new Uint8Array(arrayBuffer);
                         // some reason direct return always give back undefined
-                        let metadataString: string = await sendBytesToWasm(bytes, keyNumber);
+                        await sendBytesToWasm(bytes, keyNumber);
                     } catch (err) {
                         reject(err);
                     }
@@ -494,13 +494,6 @@ async function* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGen
         }
     }
 }
-
-function getExtractionF(fs: FileSystemAccessApiInterface): () => Promise<void> {
-    return async () => {
-        await fs.extract
-    }
-}
-
 
 export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: logLevelFunction): Promise<FileExtraction[]> {
     let ff: FileExtraction[] = [];
