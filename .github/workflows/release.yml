@@ -114,15 +114,33 @@ jobs:
 
           #sed -i "s/ITWILLBEREPLACEDWITHVERSION/$NEW_TAG/g" index.html
 
-          # Commit and push changes
-          git add resources.json
-          git add wasm/unrpa.wasm
-          mv build/ docs/
-          git add docs/
-          git commit -m 'Update resources.json with latest release URLs and add JS files'
+          ## Commit and push changes
+          #git add resources.json
+          #git add wasm/unrpa.wasm
+          #mv build/ docs/
+          #git add docs/
+          #git commit -m 'Update resources.json with latest release URLs and add JS files'
 
-          # override gh_pages every time as it has unneeded bins
-          git checkout -b ${GH_PAGES}
-          git push -f origin ${GH_PAGES}
+          ## override gh_pages every time as it has unneeded bins
+          #git checkout -b ${GH_PAGES}
+          #git push -f origin ${GH_PAGES}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Publish current workdir (which contains generated content) to GitHub Pages
+        uses: rayluo/github-pages-overwriter@v1.3
+
+        with:
+
+          # Optional. Default value "." means the root directory of your project will be published.
+          # You can use whatever directory your project uses, for example "wwwroot".
+          # Such a directory does *not* have to already exist in your repo,
+          # it could be an output directory created dynamically by your static website builder.
+          source-directory: build
+
+          # Optional. Default value "gh-pages".
+          # It specifies the temporary branch which hosts the static website.
+          # Each build will OVERWRITE this branch.
+          target-branch: gh-pages
+
