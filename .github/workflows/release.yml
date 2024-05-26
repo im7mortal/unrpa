@@ -64,15 +64,10 @@ jobs:
           npm install
           npm run build
 
-#      - name: Build
-#        run: npm run build
-#        continue-on-error: true
-
       - name: Checkout the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: github-actions
 
       - name: Update resources.json
         run: |
