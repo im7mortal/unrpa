@@ -32,26 +32,27 @@ interface LogProviderProps {
 }
 
 // Declare logProvider function as of type (message: string) => void
-export const DefaultLoggerFunc: (message: string) => void = function logProvider(message: string) {
+export const DefaultExternalLoggerFunc: (message: string) => void = function logProvider(message: string) {
   console.log("THIS FUNCTIONS MUST NOT BE CALLED")
 };
 
 export const LogProvider: React.FC<LogProviderProps> = ({ children, loggers }) => {
   const [logs, dispatch] = useReducer(logReducer, []);
-  console.log("GET HERE GOOD")
-  // Iterate over loggers and replace logFunction of the one that matches fromThisPackage
-  for(let i = 0; i < loggers.length; i++) {
-    if(loggers[i].logFunction === DefaultLoggerFunc) {
-      loggers[i].logFunction = (message: string) => {
-        console.log("GET IN GOOD")
-        dispatch({ type: 'ADD_LOG', payload: message });
-      };
-    }
-  }
 
-  const recordLog = (message: string, logLevel: LogLevel) => {
-    loggers.filter(logger => logger.logLevel >= logLevel)
-        .forEach(logger => logger.logFunction(message));
+  const recordLog = (message: string, logLevel: LogLevel): void => {
+    for (let i = 0; i < loggers.length; i++) {
+      // check if logLevel is adequate
+      if (loggers[i].logLevel >= logLevel) {
+        // decide if it internal or external function
+        if (loggers[i].logFunction === DefaultExternalLoggerFunc) {
+          loggers[i].logFunction = (message: string) => {
+            dispatch({type: 'ADD_LOG', payload: message});
+          };
+        } else {
+          loggers[i].logFunction(message)
+        }
+      }
+    }
   };
 
   return (
