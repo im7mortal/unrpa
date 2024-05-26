@@ -103,7 +103,9 @@ jobs:
 
           npm install
           npm run build
-
+          
+          
+          cp wasm/unrpa.wasm build
 
           # Prepare the download URL
           LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
@@ -113,7 +115,7 @@ jobs:
           #echo "{\"linux_exe\": \"${LINUX_EXE}\"}" > resources.json
 
           #sed -i "s/ITWILLBEREPLACEDWITHVERSION/$NEW_TAG/g" index.html
-
+          
           ## Commit and push changes
           #git add resources.json
           #git add wasm/unrpa.wasm
