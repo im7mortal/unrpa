@@ -54,8 +54,12 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
 
     return (
         <div className="row">
-            <div className="col">
+            <div className="col-3">
+            </div>
+            <div className="col-1">
                 <span>{fClassE.FileName}</span>
+            </div>
+            <div className="col-5">
                 <button
                     className={`btn ${isDirectoryPicked ? 'btn-success' : 'btn-primary'} me-3`}
                     onClick={chooseDirectory}>To
