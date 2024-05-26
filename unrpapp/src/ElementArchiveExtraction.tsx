@@ -20,6 +20,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
 
     const [isDirectoryPicked, setDirectoryPicked] = useState(false);
     const [isExtracted, setExtracted] = useState(false);
+    const [isExtracting, setExtracting] = useState(false);
 
     const fClass = useRef<FileSystemAccessApiInterface>(fClassE.Fs);
 
@@ -41,6 +42,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         }
     };
     const start = async () => {
+        setExtracting(true)
         await fClass.current?.extract()
         setExtracted(true)
     }
@@ -62,15 +64,15 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
             <div className="col-5">
                 <button
                     className={`btn ${isDirectoryPicked ? 'btn-success' : 'btn-primary'} me-3`}
-                    onClick={chooseDirectory}>To
+                    onClick={chooseDirectory} disabled={isExtracting}>To
                     directory
                 </button>
                 <button
                     className={`btn ${isDirectoryPicked ? (isExtracted ? 'btn-success' : 'btn-primary') : 'btn-secondary'} me-3`}
-                    onClick={start} disabled={!isDirectoryPicked}>Extract
+                    onClick={start} disabled={!isDirectoryPicked || isExtracting}>Extract
                 </button>
-                <button className="btn btn-danger" onClick={cancelOperation}>
-                    <span>&#x2715;</span> Cancel
+                <button className={`btn ${isExtracted ? 'btn-success' : 'btn-danger'}`} onClick={cancelOperation}>
+                    <span>&#x2715;</span> {isExtracted ? "Close" : "Cancel"}
                 </button>
             </div>
         </div>
