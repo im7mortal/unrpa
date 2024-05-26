@@ -46,7 +46,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.4.1
         with:
-          node-version: '21'
+          node-version: '22'
 
 #      - name: Cache Node.js modules
 #        uses: actions/cache@v2
@@ -59,71 +59,74 @@ jobs:
 #            ${{ runner.OS }}-
 
       - name: Install Dependencies
-        run: npm install
-
-      - name: Build
-        run: npm run build
-        continue-on-error: true
-
-      - name: Checkout the repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Update resources.json
         run: |
-          
-          GIT_TAG=$(git describe --tags)
-          GIT_SHORT_HASH=$(git rev-parse --short HEAD)
-          NEW_TAG="${GIT_TAG}-${GIT_SHORT_HASH}"
-          
-          # Configure git
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-
-          # create tmp branch in current position
-          TMP_BRANCH_NAME=${{ github.ref_name }}-$(date +%s)$RANDOM
-          git checkout -b ${TMP_BRANCH_NAME}
-          # Commit
-          rm -r .github
-          git add -A .github
-          git commit -m 'Remove github workflows which require additional permission'
-          
-          # merge current state with prepared gh-pages-base
-          GH_PAGES_BASE=gh-pages-base
-          GH_PAGES=gh-pages
-          
-          echo $GH_PAGES_BASE
-          echo $GH_PAGES
-          
-          git fetch --all
-          git checkout ${GH_PAGES_BASE}
-          git merge --no-ff ${TMP_BRANCH_NAME}
-          
-          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
-
+          cd unrpapp
           npm install
-          npm run build || true
+          npm run build
 
-
-          # Prepare the download URL
-          LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
-          
-          # Update resources.json
-          echo "{\"linux_exe\": \"${LINUX_EXE}\"}"
-          echo "{\"linux_exe\": \"${LINUX_EXE}\"}" > resources.json
-          
-          sed -i "s/ITWILLBEREPLACEDWITHVERSION/$NEW_TAG/g" index.html
-
-          # Commit and push changes
-          git add resources.json
-          git add wasm/unrpa.wasm
-          git add index.html
-          git add web_resources/*.js  # added this line to include the JS files in the commit
-          git commit -m 'Update resources.json with latest release URLs and add JS files'
-
-          # override gh_pages every time as it has unneeded bins
-          git checkout -b ${GH_PAGES}
-          git push -f origin ${GH_PAGES}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Build
+#        run: npm run build
+#        continue-on-error: true
+#
+#      - name: Checkout the repo
+#        uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Update resources.json
+#        run: |
+#
+#          GIT_TAG=$(git describe --tags)
+#          GIT_SHORT_HASH=$(git rev-parse --short HEAD)
+#          NEW_TAG="${GIT_TAG}-${GIT_SHORT_HASH}"
+#
+#          # Configure git
+#          git config --global user.name 'GitHub Actions'
+#          git config --global user.email 'actions@github.com'
+#
+#          # create tmp branch in current position
+#          TMP_BRANCH_NAME=${{ github.ref_name }}-$(date +%s)$RANDOM
+#          git checkout -b ${TMP_BRANCH_NAME}
+#          # Commit
+#          rm -r .github
+#          git add -A .github
+#          git commit -m 'Remove github workflows which require additional permission'
+#
+#          # merge current state with prepared gh-pages-base
+#          GH_PAGES_BASE=gh-pages-base
+#          GH_PAGES=gh-pages
+#
+#          echo $GH_PAGES_BASE
+#          echo $GH_PAGES
+#
+#          git fetch --all
+#          git checkout ${GH_PAGES_BASE}
+#          git merge --no-ff ${TMP_BRANCH_NAME}
+#
+#          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
+#
+#          npm install
+#          npm run build || true
+#
+#
+#          # Prepare the download URL
+#          LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
+#
+#          # Update resources.json
+#          echo "{\"linux_exe\": \"${LINUX_EXE}\"}"
+#          echo "{\"linux_exe\": \"${LINUX_EXE}\"}" > resources.json
+#
+#          sed -i "s/ITWILLBEREPLACEDWITHVERSION/$NEW_TAG/g" index.html
+#
+#          # Commit and push changes
+#          git add resources.json
+#          git add wasm/unrpa.wasm
+#          git add index.html
+#          git add web_resources/*.js  # added this line to include the JS files in the commit
+#          git commit -m 'Update resources.json with latest release URLs and add JS files'
+#
+#          # override gh_pages every time as it has unneeded bins
+#          git checkout -b ${GH_PAGES}
+#          git push -f origin ${GH_PAGES}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
