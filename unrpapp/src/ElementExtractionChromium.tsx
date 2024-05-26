@@ -17,7 +17,7 @@ function logMock(s: string) {
 }
 
 
-function MyButtonsComponent() {
+function ElementExtractionChromium() {
     // Implement your functions
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
     const { recordLog } = useLogs();
@@ -97,4 +97,4 @@ function MyButtonsComponent() {
     }
 }
 
-export default MyButtonsComponent;
+export default ElementExtractionChromium;
