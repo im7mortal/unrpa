@@ -6,6 +6,7 @@ import {
     FileApi,
     MetadataResponse,
 } from './detectVersion';
+import {useLogs} from "./LogProvider";
 
 function FirefoxSafari() {
     // Implement your functions
@@ -14,11 +15,12 @@ function FirefoxSafari() {
 
     const inputRef = React.useRef<HTMLInputElement>(null);
 
+    const {recordLog} = useLogs();
+
     const fClass = useRef<FClassInterface | null>(null);
     useEffect(() => {
 
-        fClass.current = new FileApi((s: string) => {
-        })
+        fClass.current = new FileApi(recordLog)
     }, []);
 
 
