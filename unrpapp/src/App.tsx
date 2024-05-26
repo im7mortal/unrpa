@@ -78,14 +78,7 @@ function App() {
           </div>*/}
 
 
-                <div className="row">
-                    <div className="col">
-                        <div className="card">
-                            <div id="log" className="card-body">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
 

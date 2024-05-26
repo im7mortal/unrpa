@@ -5,7 +5,9 @@ const Logs = () => {
 
     const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => (
         <div style={style}>
-            {logs[index]}
+            <div style={{textAlign: 'left'}}>
+                {logs[index]}
+            </div>
         </div>
     );
 
