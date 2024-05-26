@@ -1,22 +1,9 @@
-# Use a Debian base image
-FROM registry.hub.docker.com/library/golang:1.22.1-bullseye
+# Use a Node base image
+FROM registry.hub.docker.com/library/node:21
 
-# Install GTK and its dependencies
+# Install build-essential for native dependencies
 RUN apt-get update && apt-get install -y \
-     libgtk-3-dev \
-     libwebkit2gtk-4.0-dev \
-     build-essential \
-     libxxf86vm-dev
-
-# Speed up local development with precompiled cache for GUI libs
-WORKDIR /warmup_cache
-COPY docker.cache .
-RUN go list -e $(go list -f '{{.Path}}' -m all); exit 0
-RUN go install .
-# Cache actual dependencies
-COPY go.mod .
-COPY go.sum .
-RUN go list -e $(go list -f '{{.Path}}' -m all); exit 0
+     build-essential
 
 # Set the working directory inside the container
 WORKDIR /app
