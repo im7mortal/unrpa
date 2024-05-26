@@ -507,7 +507,7 @@ export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: 
     for await (const fileHandle of iterateDirectory(dirHandle)) {
         // TypeScript infers fileHandle as FileSystemFileHandle
         const fileName: string = fileHandle.name;
-        console.log(fileName)
+        logMessage(fileName, LogLevel.Debug)
         if (fileName.endsWith('.rpa')) {
             const file: File = await (fileHandle as FileSystemFileHandle).getFile();
             let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMessage)
@@ -520,7 +520,7 @@ export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: 
                     }
                 );
             } else {
-                logMessage(metadata.Error, LogLevel.Info)
+                logMessage(metadata.Error, LogLevel.Error)
                 console.log(metadata.Error);
             }
         }

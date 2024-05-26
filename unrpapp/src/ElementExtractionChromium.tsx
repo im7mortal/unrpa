@@ -12,11 +12,6 @@ import {
 } from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
 
-function logMock(s: string) {
-
-}
-
-
 function ElementExtractionChromium() {
     // Implement your functions
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
@@ -53,7 +48,7 @@ function ElementExtractionChromium() {
     const scan = async () => {
         if (window.showDirectoryPicker) {
             try {
-                setArchives(await scanDir(await window.showDirectoryPicker(), logMock));
+                setArchives(await scanDir(await window.showDirectoryPicker(), recordLog));
             } catch (err) {
                 if (err instanceof DOMException && err.name === 'AbortError') {
                     console.log('Directory picker was cancelled');
@@ -72,7 +67,7 @@ function ElementExtractionChromium() {
         return (
             <div>
                 {Archives.map((item: FileExtraction, index: number) => (
-                    <ElementArchiveExtraction fClassE={item} logF={logMock} handleRemove={() => {
+                    <ElementArchiveExtraction fClassE={item} logF={recordLog} handleRemove={() => {
                         setArchives(Archives.filter((_, i) => i !== index))  // This will remove current item from Archives
                     }} key={item.Id}/>
                 ))}

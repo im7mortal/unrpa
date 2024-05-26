@@ -1,6 +1,8 @@
 import React, {useState, useRef} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import {logLevelFunction} from './logInterface';
+
 import {
     FClassInterface,
     FileApi,
@@ -13,7 +15,7 @@ import {
 interface ElementArchiveExtractionProps {
     fClassE: FileExtraction;
     handleRemove: () => void
-    logF: (s: string) => void
+    logF: logLevelFunction
 }
 
 function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveExtractionProps) {

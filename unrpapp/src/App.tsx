@@ -45,7 +45,7 @@ function App() {
             <div id="options" className="container text-center">
 
                 <LogProvider loggers={[
-                    {logFunction: DefaultExternalLoggerFunc, logLevel: LogLevel.Info},
+                    {logFunction: DefaultExternalLoggerFunc, logLevel: LogLevel.Error},
                     {logFunction: console.log, logLevel: LogLevel.Debug}
                 ]}>
                     <div id="system_access_extraction" className="row justify-content-center">
