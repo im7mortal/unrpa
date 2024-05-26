@@ -106,6 +106,9 @@ jobs:
           
           
           cp wasm/unrpa.wasm build
+          
+          FIND_PATTERN="ITWILLBEREPLACEDWITHVERSION"
+          find ./build -type f -exec sed -i "s/$FIND_PATTERN/$NEW_TAG/g" {};
 
           # Prepare the download URL
           LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
