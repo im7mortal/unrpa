@@ -117,7 +117,8 @@ jobs:
           # Commit and push changes
           git add resources.json
           git add wasm/unrpa.wasm
-          git add build/
+          mv build/ docs/
+          git add docs/
           git commit -m 'Update resources.json with latest release URLs and add JS files'
 
           # override gh_pages every time as it has unneeded bins
