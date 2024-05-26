@@ -1,25 +1,26 @@
-import { FixedSizeList } from 'react-window';
+import { VariableSizeList } from "react-window";
 import { useLogs } from './LogProvider';
 const Logs = () => {
     const { logs } = useLogs();
-
+    const getItemSize = (index:number) :number => {
+        // it can be usefull for soft wrapping in the future
+        return 20;
+    };
     const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => (
         <div style={style}>
-            <div style={{textAlign: 'left'}}>
-                {logs[index]}
-            </div>
+            <div style={{ textAlign: "left" }}>{logs[index]}</div>
         </div>
     );
 
     return (
-        <FixedSizeList
-            width={500}
+        <VariableSizeList
+            width={1000}
             height={400}
             itemCount={logs.length}
-            itemSize={20}
+            itemSize={getItemSize}
         >
             {Row}
-        </FixedSizeList>
+        </VariableSizeList>
     );
 };
 
