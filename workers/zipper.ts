@@ -43,7 +43,6 @@ async function finalizeZip() {
             }
         }
     );
-    console.log("DONE ON WORKER SIDE")
     self.postMessage({status: 'finished', content: content, zipIndex: zipIndex});
 
 }
