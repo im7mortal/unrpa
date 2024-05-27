@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "outDir": "../build/",
+        "lib": ["ESNext","WebWorker"],
+        "module": "ESNext",
+        "target": "ESNext"
+    },
+    "include": ["./workers/zipper.ts"]
+}
