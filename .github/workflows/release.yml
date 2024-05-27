@@ -86,17 +86,12 @@ jobs:
 
       - name: Push the build output to github pages
         shell: bash
-        ##if: ${{ inputs.source-directory == '.' }}
-        # Astonishedly, the "if" command does not work in an action shipped to marketplace,
-        # so that there is even a 3rd-party github action to do that
-        # (https://github.com/marketplace/actions/conditional-value-for-github-action)
-        # But that seems like an overkill. So, we'd use "if" in bash instead.
-        run: >  # https://yaml-multiline.info/
+        run: |
           if [ "build" == "." ]; then
-          git push -f origin HEAD:refs/heads/gh-pages
+            git push -f origin HEAD:refs/heads/gh-pages
           else
-          # Inspired from https://gist.github.com/cobyism/4730490#gistcomment-1374989
-          git push -f origin `git subtree split -P build`:refs/heads/gh-pages
+            # Inspired from https://gist.github.com/cobyism/4730490#gistcomment-1374989
+            git push -f origin `git subtree split -P build`:refs/heads/gh-pages
           fi
           
 
