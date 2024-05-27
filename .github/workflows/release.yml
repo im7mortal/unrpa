@@ -58,21 +58,47 @@ jobs:
 
 
 
+      - shell: bash
+        run: |
+          # The following 2 lines are not really necessary,
+          # because we do not intend to push current branch.
+          # But we choose to use target branch name as a temporary local work branch,
+          # thus avoid a potential error of committing to the trigger branch.
+          git branch -f gh-pages HEAD
+          git checkout gh-pages
+  
+          # The commit and push happen to work without authentication
+          # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
+          git config user.name "Github Pages Overwriter"
+          git config user.email "GithubPagesOverwriter@users.noreply.github.com"
+  
+          # The previous commit message may contain reference to github issues,
+          # we wipe it out, so that it won't show up in the inevitable duplicate commit.
+          git commit --amend -m "This commit will be automatically published"
+  
+          # Generate such a new file to make sure the subsequent commit would succeed
+          # Such a file WITHOUT leading dot (.) is also visible in outcome website.
+          # FYI: filename with leading dot (.) or underscore (_) would be ignored by Jekyll,
+          # which Github Pages depends on. So we use a normal filename here.
+          date > ${{ inputs.source-directory}}/publish_date.txt
+          git add --force build
+          git commit -m "Automated publish"
 
+      - name: Push the build output to github pages
+        shell: bash
+        ##if: ${{ inputs.source-directory == '.' }}
+        # Astonishedly, the "if" command does not work in an action shipped to marketplace,
+        # so that there is even a 3rd-party github action to do that
+        # (https://github.com/marketplace/actions/conditional-value-for-github-action)
+        # But that seems like an overkill. So, we'd use "if" in bash instead.
+        run: >  # https://yaml-multiline.info/
+          if [ "build" == "." ]; then
+          git push -f origin HEAD:refs/heads/gh-pages
+          else
+          # Inspired from https://gist.github.com/cobyism/4730490#gistcomment-1374989
+          git push -f origin `git subtree split -P build`:refs/heads/gh-pages
+          fi
+          
+          
 
-      - name: Publish build directory to GitHub Pages
-        uses: rayluo/github-pages-overwriter@v1.3
-
-        with:
-
-          # Optional. Default value "." means the root directory of your project will be published.
-          # You can use whatever directory your project uses, for example "wwwroot".
-          # Such a directory does *not* have to already exist in your repo,
-          # it could be an output directory created dynamically by your static website builder.
-          source-directory: build
-
-          # Optional. Default value "gh-pages".
-          # It specifies the temporary branch which hosts the static website.
-          # Each build will OVERWRITE this branch.
-          target-branch: gh-pages
 
