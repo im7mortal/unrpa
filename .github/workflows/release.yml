@@ -69,72 +69,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Update resources.json
+      - name: Build
         run: |
-
-          GIT_TAG=$(git describe --tags)
-          GIT_SHORT_HASH=$(git rev-parse --short HEAD)
-          NEW_TAG="${GIT_TAG}-${GIT_SHORT_HASH}"
-
-          # Configure git
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-
-          # create tmp branch in current position
-          TMP_BRANCH_NAME=${{ github.ref_name }}-$(date +%s)$RANDOM
-          git checkout -b ${TMP_BRANCH_NAME}
-          # Commit
-          rm -r .github
-          git add -A .github
-          git commit -m 'Remove github workflows which require additional permission'
-
-          # merge current state with prepared gh-pages-base
-          GH_PAGES_BASE=gh-pages-base
-          GH_PAGES=gh-pages
-
-          echo $GH_PAGES_BASE
-          echo $GH_PAGES
-
-          git fetch --all
-          git checkout ${GH_PAGES_BASE}
-          git merge --no-ff ${TMP_BRANCH_NAME}
-
-          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
-
+          # build react
           npm install
           npm run build
           
-          
+          # compile wasm
+          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
           cp wasm/unrpa.wasm build
           
+          # substitute version
+          GIT_TAG=$(git describe --tags)
+          GIT_SHORT_HASH=$(git rev-parse --short HEAD)
+          NEW_TAG="${GIT_TAG}-${GIT_SHORT_HASH}" 
           FIND_PATTERN="ITWILLBEREPLACEDWITHVERSION"
           find ./build -type f -exec sed -i "s/$FIND_PATTERN/$NEW_TAG/g" {} \;
           
           # compile worker.js separately
           tsc --project workers.tsconfig.json
           
-
-          # Prepare the download URL
-          LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
-
-          ## Update resources.json
-          #echo "{\"linux_exe\": \"${LINUX_EXE}\"}"
-          #echo "{\"linux_exe\": \"${LINUX_EXE}\"}" > resources.json
-
-          #sed -i "s/ITWILLBEREPLACEDWITHVERSION/$NEW_TAG/g" index.html
-          
-          ## Commit and push changes
-          #git add resources.json
-          #git add wasm/unrpa.wasm
-          #mv build/ docs/
-          #git add docs/
-          #git commit -m 'Update resources.json with latest release URLs and add JS files'
-
-          ## override gh_pages every time as it has unneeded bins
-          #git checkout -b ${GH_PAGES}
-          #git push -f origin ${GH_PAGES}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Publish current workdir (which contains generated content) to GitHub Pages
