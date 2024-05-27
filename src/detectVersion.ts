@@ -326,7 +326,7 @@ export class FileApi extends Extractor implements FClassInterface {
         const maxWorkers: number = 4;
         this.logMessage("create workers", LogLevel.Info)
         const workers = Array.from({length: maxWorkers}, (_, index) => {
-            const worker: Worker = new Worker('worker.js');
+            const worker: Worker = new Worker('zipper.js');
             // worker.name = `Worker-${index}`;
             return worker;
         });
