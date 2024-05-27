@@ -33,54 +33,32 @@ jobs:
           cd unrpapp
           npm install
           npm run build
-      - name: Checkout the repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+
       - name: Build
         run: |
-
-          GIT_TAG=$(git describe --tags)
-          GIT_SHORT_HASH=$(git rev-parse --short HEAD)
-          NEW_TAG="${GIT_TAG}-${GIT_SHORT_HASH}"
-
-
-          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
-
+          
+          # compile worker.js separately
+          # compile them before project so .js would present in public directory of project before main build
+          tsc --project workers.tsconfig.json
+          
+          # build react
           npm install
           npm run build
           
-          
+          # compile wasm
+          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
           cp wasm/unrpa.wasm build
           
+          # substitute version
+          GIT_TAG=$(git describe --tags)
+          GIT_SHORT_HASH=$(git rev-parse --short HEAD)
+          NEW_TAG="${GIT_TAG}-${GIT_SHORT_HASH}" 
           FIND_PATTERN="ITWILLBEREPLACEDWITHVERSION"
           find ./build -type f -exec sed -i "s/$FIND_PATTERN/$NEW_TAG/g" {} \;
-          
-          # compile worker.js separately
-          tsc --project workers.tsconfig.json
-          
-          
-          # Prepare the download URL
-          LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
 
-          ## Update resources.json
-          #echo "{\"linux_exe\": \"${LINUX_EXE}\"}"
-          #echo "{\"linux_exe\": \"${LINUX_EXE}\"}" > resources.json
 
-          #sed -i "s/ITWILLBEREPLACEDWITHVERSION/$NEW_TAG/g" index.html
-          
-          ## Commit and push changes
-          #git add resources.json
-          #git add wasm/unrpa.wasm
-          #mv build/ docs/
-          #git add docs/
-          #git commit -m 'Update resources.json with latest release URLs and add JS files'
 
-          ## override gh_pages every time as it has unneeded bins
-          #git checkout -b ${GH_PAGES}
-          #git push -f origin ${GH_PAGES}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Publish build directory to GitHub Pages
         uses: rayluo/github-pages-overwriter@v1.3
