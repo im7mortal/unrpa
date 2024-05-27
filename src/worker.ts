@@ -30,7 +30,7 @@ async function finalizeZip() {
     const content: Blob = await zip.generateAsync({
             type: "blob",
             compression: "STORE"
-        }, function updateCallback(metadata) {
+        }, function updateCallback(metadata: any) : void {
             // Check if the current percentage is different from the last reported
             if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
                 lastPercent = metadata.percent
@@ -47,3 +47,6 @@ async function finalizeZip() {
     self.postMessage({status: 'finished', content: content, zipIndex: zipIndex});
 
 }
+
+
+export {}
