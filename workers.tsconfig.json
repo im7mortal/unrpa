@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "build",
+        "outDir": "public",
         "lib": ["ESNext","WebWorker"],
         "module": "ESNext",
         "target": "ESNext",

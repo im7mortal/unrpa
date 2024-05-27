@@ -36,6 +36,11 @@ jobs:
 
       - name: Build
         run: |
+          
+          # compile worker.js separately
+          # compile them before project so .js would present in public directory of project before main build
+          tsc --project workers.tsconfig.json
+          
           # build react
           npm install
           npm run build
@@ -51,8 +56,7 @@ jobs:
           FIND_PATTERN="ITWILLBEREPLACEDWITHVERSION"
           find ./build -type f -exec sed -i "s/$FIND_PATTERN/$NEW_TAG/g" {} \;
           
-          # compile worker.js separately
-          tsc --project workers.tsconfig.json
+
           
 
 
