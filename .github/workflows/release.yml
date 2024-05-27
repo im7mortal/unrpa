@@ -33,7 +33,10 @@ jobs:
           cd unrpapp
           npm install
           npm run build
-
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Build
         run: |
 
