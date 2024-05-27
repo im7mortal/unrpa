@@ -109,6 +109,10 @@ jobs:
           
           FIND_PATTERN="ITWILLBEREPLACEDWITHVERSION"
           find ./build -type f -exec sed -i "s/$FIND_PATTERN/$NEW_TAG/g" {} \;
+          
+          # compile worker.js separately
+          tsc --outDir ./build src/worker.ts
+          
 
           # Prepare the download URL
           LINUX_EXE="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/unrpa-linux-amd64"
