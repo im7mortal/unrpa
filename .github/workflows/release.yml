@@ -10,43 +10,13 @@ jobs:
     name: Build and Release
     runs-on: ubuntu-20.04
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
-
-      - name: Check out code
-        uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential libxxf86vm-dev jq
-
-      - name: Build binary for Linux
-        run: |
-          GOOS=linux GOARCH=amd64 go build -o unrpa-linux-amd64 .
-
-      #      - name: Build binary for Windows
-      #        run: |
-      #          GOOS=windows GOARCH=amd64 go build -o unrpa-windows-amd64.exe .
-
-      # Use a single action for creating the release and uploading assets
-      - name: Create Release and Upload Assets
-        uses: softprops/action-gh-release@v1
+          go-version: '^1.22'
+      - uses: actions/setup-node@v4
         with:
-          files: |
-            unrpa-linux-amd64
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v2.4.1
-        with:
-          node-version: '22'
+          node-version: 22
 
 #      - name: Cache Node.js modules
 #        uses: actions/cache@v2
@@ -63,11 +33,6 @@ jobs:
           cd unrpapp
           npm install
           npm run build
-
-      - name: Checkout the repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       - name: Build
         run: |
