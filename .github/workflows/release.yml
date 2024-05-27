@@ -80,7 +80,7 @@ jobs:
           # Such a file WITHOUT leading dot (.) is also visible in outcome website.
           # FYI: filename with leading dot (.) or underscore (_) would be ignored by Jekyll,
           # which Github Pages depends on. So we use a normal filename here.
-          date > ${{ inputs.source-directory}}/publish_date.txt
+          date > build/publish_date.txt
           git add --force build
           git commit -m "Automated publish"
 
@@ -100,5 +100,19 @@ jobs:
           fi
           
           
+          - name: Publish build directory to GitHub Pages
+        uses: rayluo/github-pages-overwriter@v1.3
 
+        with:
+
+          # Optional. Default value "." means the root directory of your project will be published.
+          # You can use whatever directory your project uses, for example "wwwroot".
+          # Such a directory does *not* have to already exist in your repo,
+          # it could be an output directory created dynamically by your static website builder.
+          source-directory: build
+
+          # Optional. Default value "gh-pages".
+          # It specifies the temporary branch which hosts the static website.
+          # Each build will OVERWRITE this branch.
+          target-branch: gh-pages
 
