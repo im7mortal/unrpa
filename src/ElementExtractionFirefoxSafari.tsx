@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {
     FClassInterface,
     FileApi,
-    MetadataResponse,
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
 
@@ -21,6 +20,11 @@ function FirefoxSafari() {
     useEffect(() => {
 
         fClass.current = new FileApi(recordLog)
+
+        // TODO We ignore following warning as if we fix it, it will cause rerendering of the element and lose of FileApi instance
+        // React Hook useEffect has a missing dependency: 'recordLog'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+        // eslint-disable-next-line
     }, []);
 
 

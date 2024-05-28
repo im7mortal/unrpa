@@ -1,4 +1,4 @@
-import React, { useReducer, createContext, Dispatch } from 'react';
+import React, { useReducer, createContext } from 'react';
 import { logLevelFunction, Logger, LogLevel } from './logInterface';
 
 type LogAction = {

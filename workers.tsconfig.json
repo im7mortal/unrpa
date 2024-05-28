@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "outDir": "public",
+        "lib": ["ESNext","WebWorker"],
+        "module": "ESNext",
+        "target": "ESNext",
+        "moduleResolution": "node"
+    },
+    "include": ["workers"]
+}
