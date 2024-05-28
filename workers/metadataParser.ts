@@ -27,21 +27,24 @@ let wasmInition: Promise<void> = initWasm()
 
 // The worker listens for the 'message' event
 self.addEventListener('message', async (e: MessageEvent) => {
-    if (e.data) {
-        const {action, payload} = e.data;
-
-        switch (action) {
-            case 'addTask':
-                const {data, keyNumber} = payload;
-                await wasmInition;
-                self.postMessage({
-                    status: 'finished',
-                    content: await receiveBytes(data, keyNumber)
-                })
-                break;
-            default:
-                console.error('Unknown action received: ', action);
+    try {
+        if (e.data) {
+            const {action, payload} = e.data;
+            switch (action) {
+                case 'addTask':
+                    const {data, keyNumber} = payload;
+                    await wasmInition;
+                    self.postMessage({
+                        status: 'finished',
+                        content: receiveBytes(data, keyNumber)
+                    })
+                    break;
+                default:
+                    console.error('Unknown action received: ', action);
+            }
         }
+    } catch (err) {
+        console.log(err)
     }
 }, false);
 
