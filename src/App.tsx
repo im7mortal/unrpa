@@ -8,9 +8,10 @@ import {LogProvider, DefaultExternalLoggerFunc} from './LogProvider';
 import {LogLevel} from './logInterface';
 import Logs from './Logs';
 
-const browser = bowser.getParser(window.navigator.userAgent).getBrowserName();
-const chromium: boolean = !(browser === "Safari" || browser === "Firefox")
-
+const parser = bowser.getParser(window.navigator.userAgent);
+const browserName: string = parser.getBrowserName();
+const chromium: boolean = !(browserName === "Safari" || browserName === "Firefox");
+const isDesktope: boolean = (parser.getPlatform().type === "desktop")
 
 function App() {
     return (
@@ -49,9 +50,16 @@ function App() {
                 ]}>
                     <div id="system_access_extraction" className="row justify-content-center">
                         <div className="col">
-                            {chromium ? (
-                                <ElementExtractionChromium/>
-                            ) : (<FirefoxComponent/>)}
+                            {isDesktope ?
+                                (chromium ? (<ElementExtractionChromium/>) :
+                                    (<FirefoxComponent/>)) : (
+                                    <div>
+                                        <h2>🖥️ Desktop View Only! 🖥️</h2>
+                                        <p>Sorry, but UNRPA extractor is designed for desktop browsers. Please visit this
+                                            site on your desktop computer to access this feature.</p>
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
                     <Logs/>
@@ -75,7 +83,6 @@ function App() {
               </div>
             </div>
           </div>*/}
-
 
 
             </div>
