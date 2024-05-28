@@ -5,6 +5,7 @@ import {logLevelFunction, LogLevel} from './logInterface';
 export interface FClassInterface {
     extractMetadata: (file: File) => Promise<MetadataResponse>;
     extract: () => Promise<void>;
+    cancel: () => Promise<void>;
 }
 
 export interface FileSystemAccessApiInterface extends FClassInterface {
@@ -203,12 +204,17 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
     directoryHandle!: FileSystemDirectoryHandle;
     file!: File;
     Metadata: FileHeader[] = [];
+    canceled: boolean = false
 
     logMessage: logLevelFunction;
 
     constructor(logMessage: logLevelFunction) {
         super(logMessage)
         this.logMessage = logMessage
+    }
+
+    async cancel() {
+        this.canceled = true
     }
 
     setDirectoryHandle(handle: FileSystemDirectoryHandle) {
@@ -237,12 +243,11 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
     }
 
     async extract() {
-        console.log(this.Metadata)
-        console.log(this.Metadata)
-        console.log(this.Metadata)
-        console.log(this.directoryHandle)
         for (let i = 0; i < this.Metadata.length; i++) {
-
+            if (this.canceled) {
+                this.logMessage(`EXTRACTION IS CANCELED`, LogLevel.Info);
+                return
+            }
             let fileInfo = this.Metadata[i]
             console.log(fileInfo)
             const blob = await this.file.slice(fileInfo.Offset, fileInfo.Offset + fileInfo.Len);
@@ -275,6 +280,7 @@ export class FileApi extends Extractor implements FClassInterface {
     Metadata: FileHeader[] = [];
     workers: any = [];
     file!: File;
+    canceled: boolean = false
 
     logMessage: logLevelFunction;
 
@@ -282,6 +288,10 @@ export class FileApi extends Extractor implements FClassInterface {
     constructor(logMessage: logLevelFunction) {
         super(logMessage)
         this.logMessage = logMessage
+    }
+
+    async cancel() {
+        this.canceled = true
     }
 
     async extractMetadata(file: File): Promise<MetadataResponse> {

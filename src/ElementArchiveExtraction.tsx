@@ -47,6 +47,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     }
 
     const cancelOperation = async () => {
+        fClass.current.cancel()
         fClass.current = new FileSystemAccessApi(logF);
         setDirectoryPicked(false)
         setExtracted(false)
