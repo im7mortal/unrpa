@@ -37,7 +37,7 @@ func receiveBytes(this js.Value, inputs []js.Value) any {
 	}
 	//js.Global().Get("glog").Call("error", fmt.Sprintf("from wasm %d\n", string(bs)))
 
-	js.Global().Get("myApp").Call("notifyCompletion", string(bs))
+    // 	js.Global().Get("myApp").Call("notifyCompletion", string(bs))
 
 	return js.ValueOf(string(bs))
 }

@@ -156,16 +156,11 @@ class Extractor {
                 const reader = new FileReader();
                 reader.onload = async (e: any): Promise<void> => {
                     try {
-                        // back to HACKS again
-                        window.myApp = {
-                            notifyCompletion: function (metadataString: string) {
-                                resolve(metadataString);
-                            }
-                        }
                         const arrayBuffer = e.target.result;
                         const bytes = new Uint8Array(arrayBuffer);
                         // some reason direct return always give back undefined
-                        await sendBytesToWasm(bytes, keyNumber);
+                        let resMetadataString = await sendBytesToWasm(bytes, keyNumber);
+                        resolve(resMetadataString)
                     } catch (err) {
                         reject(err);
                     }
