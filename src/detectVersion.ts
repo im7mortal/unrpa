@@ -2,10 +2,6 @@ import {v4 as uuidv4} from 'uuid';
 
 import {logLevelFunction, LogLevel} from './logInterface';
 
-declare var receiveBytes: (input: Uint8Array, key: number) => string;
-
-declare var Go: any;
-
 export interface FClassInterface {
     extractMetadata: (file: File) => Promise<MetadataResponse>;
     extract: () => Promise<void>;
@@ -15,32 +11,12 @@ export interface FileSystemAccessApiInterface extends FClassInterface {
     setDirectoryHandle: (handle: FileSystemDirectoryHandle) => void;
 }
 
-async function sendBytesToWasm(bytes: Uint8Array, key: number): Promise<string> {
-    return await receiveBytes(bytes, key);
-}
-
 interface FileHeader {
     Name: string
     Offset: number,
     Len: number
     Field: string // I don't know what is it
 }
-
-const go = new Go();
-let wasmModule: any;
-
-async function initWasm(): Promise<void> {
-    const resp = await fetch('unrpa.wasm');
-    const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
-    wasmModule = wasm.instance;
-    go.run(wasmModule);
-}
-
-initWasm()
-// interface WASMMetadataResponse {
-//     Error: string
-//
-// }
 
 interface RPAHeader {
     offsetNumber: number,
@@ -156,11 +132,19 @@ class Extractor {
                 const reader = new FileReader();
                 reader.onload = async (e: any): Promise<void> => {
                     try {
-                        const arrayBuffer = e.target.result;
-                        const bytes = new Uint8Array(arrayBuffer);
-                        // some reason direct return always give back undefined
-                        let resMetadataString = await sendBytesToWasm(bytes, keyNumber);
-                        resolve(resMetadataString)
+                        const worker: Worker = new Worker('metadataParser.js');
+                        worker.onmessage = (e: any) => {
+                            if (e.data.status === 'finished') {
+                                resolve(e.data.content)
+                            }
+                        }
+                        worker.postMessage({
+                            action: 'addTask',
+                            payload: {
+                                keyNumber: keyNumber,
+                                data: new Uint8Array(e.target.result),
+                            }
+                        })
                     } catch (err) {
                         reject(err);
                     }
