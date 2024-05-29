@@ -1,6 +1,8 @@
 import {v4 as uuidv4} from 'uuid';
 
 import {logLevelFunction, LogLevel} from './logInterface';
+import {Simulate} from "react-dom/test-utils";
+import cancel = Simulate.cancel;
 
 export interface FClassInterface {
     extractMetadata: (file: File) => Promise<MetadataResponse>;
@@ -281,6 +283,7 @@ export class FileApi extends Extractor implements FClassInterface {
     workers: any = [];
     file!: File;
     canceled: boolean = false
+    cancelExtraction: (() => void) | null = null;
 
     logMessage: logLevelFunction;
 
@@ -290,8 +293,12 @@ export class FileApi extends Extractor implements FClassInterface {
         this.logMessage = logMessage
     }
 
+
     async cancel() {
         this.canceled = true
+        if (this.cancelExtraction !== null) {
+            this.cancelExtraction()
+        }
     }
 
     async extractMetadata(file: File): Promise<MetadataResponse> {
@@ -309,6 +316,7 @@ export class FileApi extends Extractor implements FClassInterface {
     }
 
     async extract() {
+        let self = this;
         console.time("extract");
 
 
@@ -322,6 +330,12 @@ export class FileApi extends Extractor implements FClassInterface {
         this.logMessage("workers created", LogLevel.Info)
 
         let busyWorkers = new Array(maxWorkers).fill(false);
+
+        this.cancelExtraction = () => {
+            workers.forEach((worker, index) => {
+                worker.terminate();
+            })
+        }
 
         workers.forEach((worker, index) => {
             worker.onmessage = (e: any) => {
@@ -357,6 +371,10 @@ export class FileApi extends Extractor implements FClassInterface {
             const workerIndex = await getFreeWorker();
             for (let subGroup of group) {
                 for (let entry of subGroup.entries) {
+                    if (self.canceled) {
+                        this.logMessage(`EXTRACTON CANCELED`, LogLevel.Info)
+                        return
+                    }
                     let blob = await this.readBlobFromFileD(this.file, entry.Offset, entry.Len);
                     workers[workerIndex].postMessage({
                         action: 'addTask',
@@ -375,7 +393,7 @@ export class FileApi extends Extractor implements FClassInterface {
 
 
         async function waitForAllWorkersFree() {
-            while (busyWorkers.some(value => value === true)) {
+            while (busyWorkers.some(value => value === true) && !self.canceled) {
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
             console.log('All workers are free!');
@@ -383,7 +401,10 @@ export class FileApi extends Extractor implements FClassInterface {
 
         await waitForAllWorkersFree()
 
-
+        if (self.canceled) {
+            this.logMessage(`EXTRACTON CANCELED`, LogLevel.Info)
+            return
+        }
         this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
         console.timeEnd("extract");
     }
