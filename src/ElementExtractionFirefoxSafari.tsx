@@ -3,14 +3,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {
     FClassInterface,
-    FileApi,
+    FileApi, FileSystemAccessApi,
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
+import ElementExtractionChromium from "./ElementExtractionChromium";
 
 function FirefoxSafari() {
     // Implement your functions
     const [isFilePicked, setFilePicked] = useState(false);
     const [isExtracted, setExtracted] = useState(false);
+    const [isExtracting, setExtracting] = useState(false);
 
     const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -51,33 +53,47 @@ function FirefoxSafari() {
 
     function chooseFile() {
         inputRef.current?.click();
-        setFilePicked(true)
     }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {
             fClass.current?.extractMetadata(e.target.files[0]);
+            setFilePicked(true)
         } else {
             alert('Please select a file.');
         }
     };
 
     const start = async () => {
+        setExtracting(true)
         await fClass.current?.extract()
         setExtracted(true)
     }
 
+    const cancelOperation = async () => {
+        fClass.current?.cancel()
+        fClass.current = new FileApi(recordLog);
+        setExtracted(false)
+        setFilePicked(false)
+        setExtracting(false)
+    }
 
     return (
         <>
             <input type="file" className="invisible" onChange={handleFileChange} ref={inputRef}/>
-            <button className={`btn ${isFilePicked ? 'btn-success' : 'btn-primary'} me-3`} onClick={chooseFile}>Select
-                archive
+            <button className={`btn ${isFilePicked ? 'btn-success' : 'btn-primary'} me-3`} onClick={chooseFile}
+                    disabled={isExtracting}>
+                Select archive
             </button>
             <button
                 className={`btn ${isFilePicked ? (isExtracted ? 'btn-success' : 'btn-primary') : 'btn-secondary'} me-3`}
-                onClick={start} disabled={!isFilePicked}>Extract
+                onClick={start} disabled={!isFilePicked || isExtracting}>Extract
             </button>
+            {isFilePicked ?
+                <button className={`btn ${isExtracted ? 'btn-success' : 'btn-danger'}`} onClick={cancelOperation}>
+                    <span>&#x2715;</span> {isExtracted ? "Close" : "Cancel"}
+                </button> : <></>
+            }
         </>
     )
         ;
