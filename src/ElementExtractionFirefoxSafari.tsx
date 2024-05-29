@@ -3,10 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {
     FClassInterface,
-    FileApi, FileSystemAccessApi,
+    FileApi
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
-import ElementExtractionChromium from "./ElementExtractionChromium";
 
 function FirefoxSafari() {
     // Implement your functions

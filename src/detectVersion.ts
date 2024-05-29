@@ -2,7 +2,6 @@ import {v4 as uuidv4} from 'uuid';
 
 import {logLevelFunction, LogLevel} from './logInterface';
 import {Simulate} from "react-dom/test-utils";
-import cancel = Simulate.cancel;
 
 export interface FClassInterface {
     extractMetadata: (file: File) => Promise<MetadataResponse>;
