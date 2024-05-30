@@ -79,6 +79,9 @@ function FirefoxSafari() {
 
     return (
         <>
+            {/*<input type="file" className="invisible" onChange={handleFileChange}*/}
+            {/*       ref={inputRef}   {...({webkitdirectory: "true", directory: "true"} as any)}/>*/}
+
             <input type="file" className="invisible" onChange={handleFileChange} ref={inputRef}/>
             <button className={`btn ${isFilePicked ? 'btn-success' : 'btn-primary'} me-3`} onClick={chooseFile}
                     disabled={isExtracting}>

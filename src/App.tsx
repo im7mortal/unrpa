@@ -7,6 +7,7 @@ import * as bowser from "bowser";
 import {LogProvider, DefaultExternalLoggerFunc} from './LogProvider';
 import {LogLevel} from './logInterface';
 import Logs from './Logs';
+import MyDropzone from "./MyDropzone";
 
 const parser = bowser.getParser(window.navigator.userAgent);
 const browserName: string = parser.getBrowserName();
@@ -15,7 +16,7 @@ const isDesktope: boolean = (parser.getPlatform().type === "desktop")
 
 function App() {
     return (
-        <div id="drop_zone">
+        <>
 
             {/*<div id="overlay"*/}
             {/*     style="display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%; background-color: rgba(0,0,0, 0.5);">*/}
@@ -65,7 +66,9 @@ function App() {
                     <Logs/>
                 </LogProvider>
 
-
+                <div style={{maxWidth: '600px', margin: '0 auto'}}>
+                    <MyDropzone/>
+                </div>
                 {/*<div className="row">
             <div className="col">
               <div id="Firefox" className="container">
@@ -88,7 +91,7 @@ function App() {
             </div>
 
 
-        </div>
+        </>
     );
 }
 
