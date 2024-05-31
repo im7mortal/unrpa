@@ -4,7 +4,7 @@ import {
     FClassInterface,
     FileApi,
     FileSystemAccessApi,
-    FileSystemAccessApiInterface,
+    FileSystemAccessApiInterface, getIter,
     MetadataResponse, scanDir
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
@@ -23,9 +23,11 @@ export interface FileExtraction {
 export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
     const {recordLog} = useLogs();
     const inputRef = React.useRef<HTMLInputElement>(null);
+
     function chooseFile() {
         inputRef.current?.click();
     }
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {
 
@@ -43,7 +45,7 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
 
     return (
         <>
-            <input type="file" style={{display:'none'}} onChange={handleFileChange} ref={inputRef}/>
+            <input type="file" style={{display: 'none'}} onChange={handleFileChange} ref={inputRef}/>
             <button className={`btn btn-primary me-3`} onClick={chooseFile}>
                 Select archive
             </button>
@@ -53,70 +55,64 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
 };
 
 
-export const DirectoryScannerF: FC<FilePickerProps> = ({ onFileSelected}) => {
+export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
     const {recordLog} = useLogs();
     const inputRef = React.useRef<HTMLInputElement>(null);
+
     function chooseFile() {
         inputRef.current?.click();
     }
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files?.length) {
-            console.log(e.target.files)
-            onFileSelected({
-                    Fs: new FileApi(recordLog),
-                    FileName: e.target.files[0].name,
-                    Id: uuidv4()
-                }
-            )
 
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.length) {
+            const files = Array.from(e.target.files);
+            try {
+                const iterator = scanDir(getIter(e.target.files), (s: string, logLevel: number) => {
+                });
+                let fileArray: FileExtraction[] = [];
+                for await (const file of iterator) {
+                    onFileSelected(file);
+                }
+                // onFileSelected({
+                //         Fs: new FileApi(recordLog),
+                //         FileName: e.target.files[0].name,
+                //         Id: uuidv4()
+                //     }
+                // )
+            } catch (err) {
+                if (err instanceof DOMException && err.name === 'AbortError') {
+                    console.log('Directory picker was cancelled');
+                } else {
+
+                    console.error(err);
+                }
+            }
         } else {
-            alert('Please select a file.');
+            alert('Please select a directory.');
         }
     };
 
 
-    // const scan = async (e: MouseEvent<HTMLButtonElement>) => {
-    //     e.preventDefault();
-    //     try {
-    //         if (window.showDirectoryPicker) {
-    //             try {
-    //                 onFileSelected(await scanDir(await window.showDirectoryPicker(), (s: string, logLevel: number)=>{}));
-    //             } catch (err) {
-    //                 if (err instanceof DOMException && err.name === 'AbortError') {
-    //                     console.log('Directory picker was cancelled');
-    //                 } else {
-    //                     // Handle any other errors
-    //                     console.error(err);
-    //                 }
-    //             }
-    //         } else {
-    //             console.log('Directory picker is not supported in this browser');
-    //         }
-    //
-    //
-    //
-    //
-    //     } catch (err) {
-    //         if (err instanceof DOMException && err.name === 'AbortError') {
-    //
-    //         } else {
-    //             // Handle any other errors
-    //             console.error(err);
-    //         }
-    //     }
-    // };
-
+    const getIter = function (files: FileList): () => AsyncGenerator<File, void, undefined> {
+        return async function* (): AsyncGenerator<File, void, undefined> {
+            for await (const file of files) {
+                if (file.name.endsWith('.rpa')) {
+                    yield file;
+                }
+            }
+        }
+    }
 
 
     return (
         <>
-            <input type="file" style={{display:'none'}} onChange={handleFileChange}
+            <input type="file" style={{display: 'none'}} onChange={handleFileChange}
                    ref={inputRef}   {...({webkitdirectory: "true", directory: "true"} as any)}/>
             <button className={`btn btn-primary me-3`} onClick={chooseFile}>
                 Scan DIRR
             </button>
         </>
 
-)
-    ;
+    )
+        ;
 };
