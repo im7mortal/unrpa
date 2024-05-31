@@ -493,30 +493,30 @@ export interface FileExtraction {
 }
 
 
-async function* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGenerator<FileSystemHandle, void, undefined> {
+async function* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGenerator<File, void, undefined> {
     for await (const entry of dirHandle.values()) {
         if (entry.kind === 'file') {
-            yield entry;
+            if (entry.name.endsWith('.rpa')) {
+                const file = await (entry as FileSystemFileHandle).getFile();
+                yield file;
+            }
         } else if (entry.kind === 'directory') {
             const dirEntry = entry as FileSystemDirectoryHandle;
             yield* iterateDirectory(dirEntry);
         }
     }
 }
-
 export async function* scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: logLevelFunction): AsyncGenerator<FileExtraction, void, undefined> {
-    for await (const fileHandle of iterateDirectory(dirHandle)) {
+    for await (const file of iterateDirectory(dirHandle)) {
         // TypeScript infers fileHandle as FileSystemFileHandle
-        const fileName: string = fileHandle.name;
-        logMessage(fileName, LogLevel.Debug);
-        if (fileName.endsWith('.rpa')) {
-            const file: File = await (fileHandle as FileSystemFileHandle).getFile();
+        logMessage(file.name, LogLevel.Debug);
+        if (file.name.endsWith('.rpa')) { // TODO duplicate
             let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMessage);
             let metadata: MetadataResponse = await fs.extractMetadata(file);
             if (metadata.Error === "") {
                 yield {
                     Fs: fs,
-                    FileName: fileName,
+                    FileName: file.name,
                     Id: uuidv4(),
                 };
             } else {
