@@ -12,6 +12,7 @@ import {
 } from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
 import { FilePicker } from './ElementChromeFilePicker';
+import { FilePickerC } from './ElementFirefoxSafariFilePicker';
 function ElementExtractionChromium() {
     // Implement your functions
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
@@ -53,6 +54,7 @@ function ElementExtractionChromium() {
             <div>
                 <div className="col">
                     <FilePicker onFileSelected={handleFileSelection} />
+                    <FilePickerC onFileSelected={handleFileSelection} />
                     <span className={`fs-2 font-weight-bold me-3 ms-3`}>OR</span>
                     <button id="selectDirectory" className="btn btn-primary" onClick={scan}>Scan
                         directory

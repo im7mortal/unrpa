@@ -27,7 +27,12 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         if (window.showDirectoryPicker) {
             try {
                 let directoryHandle = await window.showDirectoryPicker();
-                fClass.current?.setDirectoryHandle(directoryHandle);
+                if (fClass.current?.setDirectoryHandle) {
+                    fClass.current.setDirectoryHandle(directoryHandle);
+                    setDirectoryPicked(true);
+                } else {
+                    // TODO handle error or fall back to some default behavior
+                };
                 setDirectoryPicked(true);
             } catch (err) {
                 if (err instanceof DOMException && err.name === 'AbortError') {

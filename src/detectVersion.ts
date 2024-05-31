@@ -10,7 +10,7 @@ export interface FClassInterface {
 }
 
 export interface FileSystemAccessApiInterface extends FClassInterface {
-    setDirectoryHandle: (handle: FileSystemDirectoryHandle) => void;
+    setDirectoryHandle?: (handle: FileSystemDirectoryHandle) => void;
 }
 
 interface FileHeader {

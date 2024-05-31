@@ -52,7 +52,7 @@ function App() {
                     <div id="system_access_extraction" className="row justify-content-center">
                         <div className="col">
                             {isDesktope ?
-                                (chromium ? (<ElementExtractionChromium/>) :
+                                (true ? (<ElementExtractionChromium/>) :
                                     (<FirefoxComponent/>)) : (
                                     <div>
                                         <h2>🖥️ Desktop View Only! 🖥️</h2>
