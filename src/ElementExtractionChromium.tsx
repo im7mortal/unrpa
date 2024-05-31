@@ -11,8 +11,8 @@ import {
     scanDir, FileExtraction
 } from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
-import { FilePicker } from './ElementChromeFilePicker';
-import { FilePickerC } from './ElementFirefoxSafariFilePicker';
+import { FilePicker, DirectoryScanner } from './ElementChromeFilePicker';
+import {DirectoryScannerF, FilePickerF} from './ElementFirefoxSafariFilePicker';
 function ElementExtractionChromium() {
     // Implement your functions
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
@@ -22,22 +22,6 @@ function ElementExtractionChromium() {
         setArchives(archives);
     };
 
-    const scan = async () => {
-        if (window.showDirectoryPicker) {
-            try {
-                setArchives(await scanDir(await window.showDirectoryPicker(), recordLog));
-            } catch (err) {
-                if (err instanceof DOMException && err.name === 'AbortError') {
-                    console.log('Directory picker was cancelled');
-                } else {
-                    // Handle any other errors
-                    console.error(err);
-                }
-            }
-        } else {
-            console.log('Directory picker is not supported in this browser');
-        }
-    }
 
 
     if (Archives.length !== 0) {
@@ -54,11 +38,10 @@ function ElementExtractionChromium() {
             <div>
                 <div className="col">
                     <FilePicker onFileSelected={handleFileSelection} />
-                    <FilePickerC onFileSelected={handleFileSelection} />
+                    <FilePickerF onFileSelected={handleFileSelection} />
                     <span className={`fs-2 font-weight-bold me-3 ms-3`}>OR</span>
-                    <button id="selectDirectory" className="btn btn-primary" onClick={scan}>Scan
-                        directory
-                    </button>
+                    <DirectoryScanner onFileSelected={handleFileSelection} />
+                    <DirectoryScannerF onFileSelected={handleFileSelection} />
                 </div>
                 <div className="col">
                     <span className="fs-2 font-weight-bold me-3 ms-3 invisible">DRAG AND DROP FILES</span>

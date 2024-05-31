@@ -1,6 +1,6 @@
 import React, { FC, MouseEvent } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { FileSystemAccessApi, FileSystemAccessApiInterface, MetadataResponse } from './detectVersion';
+import {FileSystemAccessApi, FileSystemAccessApiInterface, MetadataResponse, scanDir} from './detectVersion';
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction[]) => void;
@@ -48,8 +48,50 @@ export const FilePicker: FC<FilePickerProps> = ({ onFileSelected}) => {
 
 
     return (
-        <button id="filePick" className="btn btn-primary me-3" onClick={chooseFile}>
+        <button className="btn btn-primary me-3" onClick={chooseFile}>
             Select archiveLOL
+        </button>
+    );
+};
+
+export const DirectoryScanner: FC<FilePickerProps> = ({ onFileSelected}) => {
+
+    const scan = async (e: MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        try {
+            if (window.showDirectoryPicker) {
+                try {
+                    onFileSelected(await scanDir(await window.showDirectoryPicker(), (s: string, logLevel: number)=>{}));
+                } catch (err) {
+                    if (err instanceof DOMException && err.name === 'AbortError') {
+                        console.log('Directory picker was cancelled');
+                    } else {
+                        // Handle any other errors
+                        console.error(err);
+                    }
+                }
+            } else {
+                console.log('Directory picker is not supported in this browser');
+            }
+
+
+
+
+        } catch (err) {
+            if (err instanceof DOMException && err.name === 'AbortError') {
+
+            } else {
+                // Handle any other errors
+                console.error(err);
+            }
+        }
+    };
+
+
+
+    return (
+        <button className="btn btn-primary" onClick={scan}>Scan
+            directory
         </button>
     );
 };
