@@ -1,6 +1,13 @@
 import React, {FC, MouseEvent} from 'react';
 import {v4 as uuidv4} from 'uuid';
-import {FileSystemAccessApi, FileSystemAccessApiInterface, MetadataResponse, scanDir, getIter} from './detectVersion';
+import {
+    FileSystemAccessApi,
+    FileSystemAccessApiInterface,
+    MetadataResponse,
+    scanDir,
+    getIter,
+    fileExtractionCreator
+} from './detectVersion';
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
@@ -59,7 +66,7 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
         try {
             if (window.showDirectoryPicker) {
                 try {
-                    const iterator = scanDir(getIter(await window.showDirectoryPicker()), (s: string, logLevel: number) => { });
+                    const iterator = scanDir(getIter(await window.showDirectoryPicker()), (s: string, logLevel: number) => { }, fileExtractionCreator(false, (s: string, logLevel: number) => {}));
                     let fileArray: FileExtraction[] = [];
                     for await (const file of iterator) {
                         onFileSelected(file);

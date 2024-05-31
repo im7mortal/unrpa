@@ -487,6 +487,7 @@ window.glog = {
 }
 
 export interface FileExtraction {
+    Firefox?: boolean //TODO mustn't be here; just for prototyping
     Id: string
     Fs: FileSystemAccessApiInterface
     FileName: string,
@@ -508,19 +509,33 @@ export function getIter(dirHandle: FileSystemDirectoryHandle): () => AsyncGenera
     }
 }
 
-export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction): AsyncGenerator<FileExtraction, void, undefined> {
+export function fileExtractionCreator(firefox: boolean, logMessage: logLevelFunction): (file: File) => FileExtraction {
+    return (file: File): FileExtraction => {
+
+        let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMessage);
+        if (firefox) {
+            fs = new FileApi(logMessage)
+        }
+        console.log(firefox, "LOL", fs)
+        return {
+            Fs: fs,
+            FileName: file.name,
+            Id: uuidv4(),
+            Firefox: firefox
+        }
+    }
+}
+
+
+export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction): AsyncGenerator<FileExtraction, void, undefined> {
     for await (const file of iterateDirectory()) {
         // TypeScript infers fileHandle as FileSystemFileHandle
         logMessage(file.name, LogLevel.Debug);
         if (file.name.endsWith('.rpa')) { // TODO duplicate
-            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMessage);
-            let metadata: MetadataResponse = await fs.extractMetadata(file);
+            let fs: FileExtraction = factory(file);
+            let metadata: MetadataResponse = await fs.Fs.extractMetadata(file);
             if (metadata.Error === "") {
-                yield {
-                    Fs: fs,
-                    FileName: file.name,
-                    Id: uuidv4(),
-                };
+                yield fs;
             } else {
                 logMessage(metadata.Error, LogLevel.Error);
                 console.log(metadata.Error);

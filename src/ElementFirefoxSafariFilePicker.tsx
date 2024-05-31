@@ -1,23 +1,16 @@
 import React, {FC, MouseEvent, useRef} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import {
-    FClassInterface,
+    FileExtraction,
     FileApi,
     FileSystemAccessApi,
     FileSystemAccessApiInterface, getIter,
-    MetadataResponse, scanDir
+    MetadataResponse, scanDir, fileExtractionCreator
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
-}
-
-
-export interface FileExtraction {
-    Fs: FileSystemAccessApiInterface;
-    FileName: string;
-    Id: string;
 }
 
 export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
@@ -34,7 +27,8 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
             onFileSelected({
                     Fs: new FileApi(recordLog),
                     FileName: e.target.files[0].name,
-                    Id: uuidv4()
+                    Id: uuidv4(),
+                    Firefox: true,
                 }
             )
 
@@ -68,7 +62,7 @@ export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
             const files = Array.from(e.target.files);
             try {
                 const iterator = scanDir(getIter(e.target.files), (s: string, logLevel: number) => {
-                });
+                }, fileExtractionCreator(true, (s: string, logLevel: number) => {}));
                 let fileArray: FileExtraction[] = [];
                 for await (const file of iterator) {
                     onFileSelected(file);
