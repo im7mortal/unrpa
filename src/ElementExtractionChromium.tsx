@@ -11,38 +11,14 @@ import {
     scanDir, FileExtraction
 } from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
-
+import { FilePicker } from './ElementChromeFilePicker';
 function ElementExtractionChromium() {
     // Implement your functions
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
     const { recordLog } = useLogs();
-    const chooseFile = async () => {
 
-        try {
-            let [fileHandle] = await window.showOpenFilePicker();
-            const file = await fileHandle.getFile();
-            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(recordLog)
-            let resp: MetadataResponse = await fs.extractMetadata(file);
-            if (resp.Error === "") {
-                setArchives([{
-                    Fs: fs,
-                    FileName: file.name,
-                    Id: uuidv4()
-                }
-                ])
-
-            } else {
-                console.log(resp.Error);
-            }
-
-        } catch (err) {
-            if (err instanceof DOMException && err.name === 'AbortError') {
-
-            } else {
-                // Handle any other errors
-                console.error(err);
-            }
-        }
+    const handleFileSelection = (archives: FileExtraction[]) => {
+        setArchives(archives);
     };
 
     const scan = async () => {
@@ -76,9 +52,7 @@ function ElementExtractionChromium() {
         return (
             <div>
                 <div className="col">
-                    <button id="filePick" className={`btn btn-primary me-3`}
-                            onClick={chooseFile}>Select archive
-                    </button>
+                    <FilePicker onFileSelected={handleFileSelection} />
                     <span className={`fs-2 font-weight-bold me-3 ms-3`}>OR</span>
                     <button id="selectDirectory" className="btn btn-primary" onClick={scan}>Scan
                         directory
