@@ -1,11 +1,10 @@
-import React, { FC, MouseEvent } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, {FC, MouseEvent} from 'react';
+import {v4 as uuidv4} from 'uuid';
 import {FileSystemAccessApi, FileSystemAccessApiInterface, MetadataResponse, scanDir} from './detectVersion';
 
 interface FilePickerProps {
-    onFileSelected: (fileExtraction: FileExtraction[]) => void;
+    onFileSelected: (fileExtraction: FileExtraction) => void;
 }
-
 
 
 export interface FileExtraction {
@@ -14,22 +13,22 @@ export interface FileExtraction {
     Id: string;
 }
 
-export const FilePicker: FC<FilePickerProps> = ({ onFileSelected}) => {
+export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
 
     const chooseFile = async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         try {
             let [fileHandle] = await window.showOpenFilePicker();
             const file = await fileHandle.getFile();
-            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi((s: string, logLevel: number) => void{})
+            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi((s: string, logLevel: number) => void {})
             let resp: MetadataResponse = await fs.extractMetadata(file);
             if (resp.Error === "") {
-                onFileSelected([{
-                    Fs: fs,
-                    FileName: file.name,
-                    Id: uuidv4()
-                }
-                ])
+                onFileSelected({
+                        Fs: fs,
+                        FileName: file.name,
+                        Id: uuidv4()
+                    }
+                )
 
             } else {
                 console.log(resp.Error);
@@ -46,7 +45,6 @@ export const FilePicker: FC<FilePickerProps> = ({ onFileSelected}) => {
     };
 
 
-
     return (
         <button className="btn btn-primary me-3" onClick={chooseFile}>
             Select archiveLOL
@@ -54,14 +52,18 @@ export const FilePicker: FC<FilePickerProps> = ({ onFileSelected}) => {
     );
 };
 
-export const DirectoryScanner: FC<FilePickerProps> = ({ onFileSelected}) => {
+export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
 
     const scan = async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         try {
             if (window.showDirectoryPicker) {
                 try {
-                    onFileSelected(await scanDir(await window.showDirectoryPicker(), (s: string, logLevel: number)=>{}));
+                    const iterator = scanDir(await window.showDirectoryPicker(), (s: string, logLevel: number) => { });
+                    let fileArray: FileExtraction[] = [];
+                    for await (const file of iterator) {
+                        onFileSelected(file);
+                    }
                 } catch (err) {
                     if (err instanceof DOMException && err.name === 'AbortError') {
                         console.log('Directory picker was cancelled');
@@ -75,8 +77,6 @@ export const DirectoryScanner: FC<FilePickerProps> = ({ onFileSelected}) => {
             }
 
 
-
-
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {
 
@@ -86,7 +86,6 @@ export const DirectoryScanner: FC<FilePickerProps> = ({ onFileSelected}) => {
             }
         }
     };
-
 
 
     return (

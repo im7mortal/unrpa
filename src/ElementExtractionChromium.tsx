@@ -18,8 +18,8 @@ function ElementExtractionChromium() {
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
     const { recordLog } = useLogs();
 
-    const handleFileSelection = (archives: FileExtraction[]) => {
-        setArchives(archives);
+    const handleFileSelection = (newFiles: FileExtraction) => {
+        setArchives(prevArchives => [...prevArchives, newFiles]);
     };
 
 

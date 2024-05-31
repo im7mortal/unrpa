@@ -504,28 +504,25 @@ async function* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGen
     }
 }
 
-export async function scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: logLevelFunction): Promise<FileExtraction[]> {
-    let ff: FileExtraction[] = [];
+export async function* scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: logLevelFunction): AsyncGenerator<FileExtraction, void, undefined> {
     for await (const fileHandle of iterateDirectory(dirHandle)) {
         // TypeScript infers fileHandle as FileSystemFileHandle
         const fileName: string = fileHandle.name;
-        logMessage(fileName, LogLevel.Debug)
+        logMessage(fileName, LogLevel.Debug);
         if (fileName.endsWith('.rpa')) {
             const file: File = await (fileHandle as FileSystemFileHandle).getFile();
-            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMessage)
-            let metadata: MetadataResponse = await fs.extractMetadata(file)
+            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMessage);
+            let metadata: MetadataResponse = await fs.extractMetadata(file);
             if (metadata.Error === "") {
-                ff.push({
-                        Fs: fs,
-                        FileName: fileName,
-                        Id: uuidv4(),
-                    }
-                );
+                yield {
+                    Fs: fs,
+                    FileName: fileName,
+                    Id: uuidv4(),
+                };
             } else {
-                logMessage(metadata.Error, LogLevel.Error)
+                logMessage(metadata.Error, LogLevel.Error);
                 console.log(metadata.Error);
             }
         }
     }
-    return ff;
 }
