@@ -492,22 +492,24 @@ export interface FileExtraction {
     FileName: string,
 }
 
-
-async function* iterateDirectory(dirHandle: FileSystemDirectoryHandle): AsyncGenerator<File, void, undefined> {
-    for await (const entry of dirHandle.values()) {
-        if (entry.kind === 'file') {
-            if (entry.name.endsWith('.rpa')) {
-                const file = await (entry as FileSystemFileHandle).getFile();
-                yield file;
+export function getIter(dirHandle: FileSystemDirectoryHandle): () => AsyncGenerator<File, void, undefined> {
+    return async function* (): AsyncGenerator<File, void, undefined> {
+        for await (const entry of dirHandle.values()) {
+            if (entry.kind === 'file') {
+                if (entry.name.endsWith('.rpa')) {
+                    const file = await (entry as FileSystemFileHandle).getFile();
+                    yield file;
+                }
+            } else if (entry.kind === 'directory') {
+                const dirEntry = entry as FileSystemDirectoryHandle;
+                yield* getIter(dirEntry)();
             }
-        } else if (entry.kind === 'directory') {
-            const dirEntry = entry as FileSystemDirectoryHandle;
-            yield* iterateDirectory(dirEntry);
         }
     }
 }
-export async function* scanDir(dirHandle: FileSystemDirectoryHandle, logMessage: logLevelFunction): AsyncGenerator<FileExtraction, void, undefined> {
-    for await (const file of iterateDirectory(dirHandle)) {
+
+export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction): AsyncGenerator<FileExtraction, void, undefined> {
+    for await (const file of iterateDirectory()) {
         // TypeScript infers fileHandle as FileSystemFileHandle
         logMessage(file.name, LogLevel.Debug);
         if (file.name.endsWith('.rpa')) { // TODO duplicate
