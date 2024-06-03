@@ -48,3 +48,4 @@ self.addEventListener('message', async (e: MessageEvent) => {
     }
 }, false);
 
+export {};

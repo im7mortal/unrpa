@@ -46,3 +46,6 @@ async function finalizeZip() {
     self.postMessage({status: 'finished', content: content, zipIndex: zipIndex});
 
 }
+
+
+export {};
