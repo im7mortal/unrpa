@@ -66,11 +66,13 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
         try {
             if (window.showDirectoryPicker) {
                 try {
+                    console.time("SCAN 1 WORKER")
                     const iterator = scanDir(getIter(await window.showDirectoryPicker()), (s: string, logLevel: number) => { }, fileExtractionCreator(false, (s: string, logLevel: number) => {}));
                     let fileArray: FileExtraction[] = [];
                     for await (const file of iterator) {
                         onFileSelected(file);
                     }
+                    console.timeEnd("SCAN 1 WORKER")
                 } catch (err) {
                     if (err instanceof DOMException && err.name === 'AbortError') {
                         console.log('Directory picker was cancelled');
