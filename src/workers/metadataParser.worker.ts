@@ -1,11 +1,11 @@
-// Import JSZip library (replace the path with your actual path to the library)
+import * as workerpool from 'workerpool';
+
+declare function importScripts(...urls: string[]): void;
+
 importScripts("wasm_exec.js");
 
-
 declare var receiveBytes: (input: Uint8Array, key: number) => string;
-
 let wasmModule: any;
-
 const go: Go = new Go();
 
 async function initWasm(): Promise<void> {
@@ -15,37 +15,24 @@ async function initWasm(): Promise<void> {
             const wasm = await WebAssembly.instantiateStreaming(resp, go.importObject);
             wasmModule = wasm.instance;
             go.run(wasmModule);
-            resolve()
+            resolve();
         } catch (err) {
-            console.log(err)
+            console.log(err);
             reject(err);
         }
-    })
+    });
 }
 
-let wasmInition: Promise<void> = initWasm()
+let wasmInition: Promise<void> = initWasm();
 
-// The worker listens for the 'message' event
-self.addEventListener('message', async (e: MessageEvent) => {
-    try {
-        if (e.data) {
-            const {action, payload} = e.data;
-            switch (action) {
-                case 'addTask':
-                    const {data, keyNumber} = payload;
-                    await wasmInition;
-                    self.postMessage({
-                        status: 'finished',
-                        content: receiveBytes(data, keyNumber)
-                    })
-                    break;
-                default:
-                    console.error('Unknown action received: ', action);
-            }
-        }
-    } catch (err) {
-        console.log(err)
-    }
-}, false);
+async function addTask(data: Uint8Array, keyNumber: number): Promise<any> {
+    await wasmInition;
+    const result = receiveBytes(data, keyNumber);
+    return {status: 'finished', content: result};
+}
 
+// expose the function through workerpool
+workerpool.worker({
+    addTask: addTask
+});
 export {};

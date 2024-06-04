@@ -3,6 +3,39 @@ import {v4 as uuidv4} from 'uuid';
 import {logLevelFunction, LogLevel} from './logInterface';
 import {Simulate} from "react-dom/test-utils";
 
+import { WorkerUrl } from 'worker-url';
+import workerpool from 'workerpool';
+
+
+class WorkerPool {
+    private static instance: WorkerPool;
+    private pool: workerpool.Pool;
+    private maxWorkers: number = 4;
+
+    private constructor() {
+        // webpack understand from this part that we need compile separate worker file from this .ts
+        const WorkerURL = new WorkerUrl(new URL('./workers/metadataParser.worker.ts', import.meta.url))
+        this.pool = workerpool.pool(WorkerURL.toString(), { maxWorkers: this.maxWorkers });
+    }
+
+    public static getInstance(): WorkerPool {
+        if (!WorkerPool.instance) {
+            WorkerPool.instance = new WorkerPool();
+        }
+
+        return WorkerPool.instance;
+    }
+
+    public async addTask(data: Uint8Array, keyNumber: number): Promise<any> {
+        try {
+            return await this.pool.exec('addTask', [data, keyNumber]);
+        } catch (error) {
+            console.error('Error executing task:', error);
+        }
+    }}
+
+
+
 export interface FClassInterface {
     extractMetadata: (file: File) => Promise<MetadataResponse>;
     extract: () => Promise<void>;
@@ -58,8 +91,11 @@ class Extractor {
     v3String: string = "RPA-3.0";
     logMessage: logLevelFunction;
 
+    private workerPool: WorkerPool;
+
     constructor(logMessage: logLevelFunction) {
-        this.logMessage = logMessage
+        this.logMessage = logMessage;
+        this.workerPool = WorkerPool.getInstance();
     }
 
     isV1(fileName: string): boolean {
@@ -134,19 +170,15 @@ class Extractor {
                 const reader = new FileReader();
                 reader.onload = async (e: any): Promise<void> => {
                     try {
-                        const worker: Worker = new Worker('metadataParser.js');
-                        worker.onmessage = (e: any) => {
-                            if (e.data.status === 'finished') {
-                                resolve(e.data.content)
-                            }
-                        }
-                        worker.postMessage({
-                            action: 'addTask',
-                            payload: {
-                                keyNumber: keyNumber,
-                                data: new Uint8Array(e.target.result),
-                            }
-                        })
+                        this.workerPool.addTask(new Uint8Array(e.target.result), keyNumber)
+                            .then(content => {
+                                if (content.status === 'finished') {
+                                    resolve(content.content);
+                                }
+                            })
+                            .catch(err => {
+                                reject(err);
+                            });
                     } catch (err) {
                         reject(err);
                     }
@@ -172,7 +204,6 @@ class Extractor {
         if (rpaHead.Error !== "") {
             return newMetadataResponse([], rpaHead.Error);
         }
-
         const metadataBlob: Blob = file.slice(rpaHead.offsetNumber);
         return this.parseMetadata(metadataBlob, rpaHead.keyNumber);
 
