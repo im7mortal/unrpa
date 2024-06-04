@@ -14,15 +14,13 @@ type Response struct {
 }
 
 func receiveBytes(this js.Value, inputs []js.Value) any {
+	js.Global().Get("console").Call("log", fmt.Sprintf("from wasm; arr len %d\n", len(inputs)))
 
 	// Convert js.Value to Go byte slice
 	uint8Array := js.Global().Get("Uint8Array").New(inputs[0])
 	length := uint8Array.Get("length").Int()
 	goBytes := make([]byte, length)
 	js.CopyBytesToGo(goBytes, uint8Array)
-	if false {
-	    js.Global().Get("glog").Call("error", fmt.Sprintf("from wasm %d\n", length))
-	}
 	v := rpaDecoder.NewWasm(rpaDecoder.V3, goBytes, int64(inputs[1].Int()))
 
 	b, err := v.List(context.TODO())
