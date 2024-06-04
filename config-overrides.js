@@ -1,8 +1,7 @@
-const path = require('path');
+const WorkerUrlPlugin = require('worker-url/plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = function override(config, env) {
-    console.log(config);
-
     config.resolve.alias = {
         ...config.resolve.alias,
         'worker_threads': false,
@@ -14,12 +13,18 @@ module.exports = function override(config, env) {
         'os': require.resolve('os-browserify/browser'),
     };
 
-    // Add a rule for *.worker.ts files
-    config.module.rules.push({
-        test: /\.worker\.ts$/,
-        include: path.resolve(__dirname, 'src/workers'),
-        use: { loader: 'worker-loader' }
-    });
+    // Merge plugins
+    config.plugins = [
+        ...config.plugins,
+        new WorkerUrlPlugin(),
+        // Copy wasm_exec.js from /public to build folder
+        new CopyPlugin({
+            patterns: [
+                { from: 'public/wasm_exec.js', to: 'static/js/' },
+                { from: 'public/unrpa.wasm', to: 'static/js/' }, // I don't know why Webpack expect wasm in js directory
+            ],
+        }),
+    ];
 
     return config;
 };

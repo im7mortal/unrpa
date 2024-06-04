@@ -2,31 +2,40 @@
   "name": "unrpapp",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://im7mortal.github.io/unrpa",
   "dependencies": {
+    "@craco/craco": "^7.1.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/golang-wasm-exec": "^1.15.2",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.96",
+    "@types/react-dnd": "^3.0.2",
     "@types/react-dom": "^18.2.25",
+    "@types/react-dropzone": "^5.1.0",
     "@types/wicg-file-system-access": "^2023.10.5",
+    "@types/workerpool": "^6.4.7",
     "bootstrap": "^5.3.3",
     "bowser": "2.11.0",
+    "os-browserify": "^0.3.0",
     "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-github-btn": "^1.4.0",
     "react-scripts": "5.0.1",
     "react-window": "^1.8.10",
     "typescript": "^4.9.5",
     "uuid": "^9.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "worker-url": "^1.1.0",
+    "workerpool": "^9.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,6 +59,10 @@
   "devDependencies": {
     "@types/react": "^18.3.3",
     "@types/react-window": "^1.8.8",
-    "@types/uuid": "^9.0.8"
+    "@types/uuid": "^9.0.8",
+    "copy-webpack-plugin": "^12.0.2",
+    "customize-cra": "^1.0.0",
+    "react-app-rewired": "^2.2.1",
+    "worker-loader": "^3.0.8"
   }
 }
