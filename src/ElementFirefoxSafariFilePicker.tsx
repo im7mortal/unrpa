@@ -23,14 +23,18 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {
+            const ff = e.target.files[0]
+            const f = new FileApi(recordLog)
+            f.extractMetadata(ff, ()=>{
+                onFileSelected({
+                        Fs: f,
+                        FileName: ff.name,
+                        Id: uuidv4(),
+                        Firefox: true,
+                    }
+                )
+            })
 
-            onFileSelected({
-                    Fs: new FileApi(recordLog),
-                    FileName: e.target.files[0].name,
-                    Id: uuidv4(),
-                    Firefox: true,
-                }
-            )
 
         } else {
             alert('Please select a file.');

@@ -170,7 +170,7 @@ export class FileApi extends Extractor implements FClassInterface {
             this.Metadata = metadata.FileHeaders
         }
 
-        this.ZipGroups = await this.groupBySubdirectory(this.Metadata, this.ZipSize)
+        this.ZipGroups = this.groupBySubdirectory(this.Metadata, this.ZipSize)
         callback()
         this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`, LogLevel.Info)
         return metadata
@@ -288,7 +288,7 @@ export class FileApi extends Extractor implements FClassInterface {
         this.logMessage(`File saved: ${fileName}`, LogLevel.Info);
     }
 
-    async groupBySubdirectory(entries: any, maxSizeInBytes: number = 250 * 1024 * 1024) {
+    groupBySubdirectory(entries: any, maxSizeInBytes: number = 250 * 1024 * 1024) {
         const groups: { [key: string]: any } = {};
 
         entries.forEach((entry: any) => {
