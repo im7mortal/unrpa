@@ -6,7 +6,6 @@ import { useLogs } from './LogProvider';
 
 import {
     FileSystemAccessApi,
-    MetadataResponse,
     FileSystemAccessApiInterface,
     scanDir, FileExtraction
 } from './detectVersion';

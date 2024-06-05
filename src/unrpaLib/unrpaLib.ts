@@ -1,12 +1,6 @@
 import {parseMetadata} from "./unrpaLibMetadataParseWASM"
+import {FileHeader} from "./unrpaLibTypes"
 
-
-interface FileHeader {
-    Name: string
-    Offset: number,
-    Len: number
-    Field: string // I don't know what is it
-}
 
 interface RPAHeader {
     offsetNumber: number,

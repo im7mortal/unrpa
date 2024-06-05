@@ -1,5 +1,7 @@
 import {v4 as uuidv4} from 'uuid';
 
+import {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes"
+
 import {logLevelFunction, LogLevel} from './logInterface';
 import {Simulate} from "react-dom/test-utils";
 
@@ -44,47 +46,6 @@ export interface FClassInterface {
 
 export interface FileSystemAccessApiInterface extends FClassInterface {
     setDirectoryHandle?: (handle: FileSystemDirectoryHandle) => void;
-}
-
-interface FileHeader {
-    Name: string
-    Offset: number,
-    Len: number
-    Field: string // I don't know what is it
-}
-
-interface RPAHeader {
-    offsetNumber: number,
-    keyNumber: number
-    Error: string,
-}
-
-function newRPAHeader(offsetNumber: number, keyNumber: number, err: string): RPAHeader {
-    return {
-        offsetNumber: offsetNumber,
-        keyNumber: keyNumber,
-        Error: err
-    }
-}
-
-function failedRPAHeader(err: string): RPAHeader {
-    return {
-        offsetNumber: 0,
-        keyNumber: 0,
-        Error: err
-    }
-}
-
-export interface MetadataResponse {
-    FileHeaders: FileHeader[]
-    Error: string,
-}
-
-function newMetadataResponse(FileHeaders: FileHeader[], err: string): MetadataResponse {
-    return {
-        FileHeaders: FileHeaders,
-        Error: err
-    }
 }
 
 class Extractor {

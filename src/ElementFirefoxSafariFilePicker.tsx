@@ -5,7 +5,7 @@ import {
     FileApi,
     FileSystemAccessApi,
     FileSystemAccessApiInterface, getIter,
-    MetadataResponse, scanDir, fileExtractionCreator
+    scanDir, fileExtractionCreator
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
 

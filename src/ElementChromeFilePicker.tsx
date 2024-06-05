@@ -3,11 +3,11 @@ import {v4 as uuidv4} from 'uuid';
 import {
     FileSystemAccessApi,
     FileSystemAccessApiInterface,
-    MetadataResponse,
     scanDir,
     getIter,
     fileExtractionCreator
 } from './detectVersion';
+import {MetadataResponse} from "./unrpaLib/unrpaLibTypes"
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
