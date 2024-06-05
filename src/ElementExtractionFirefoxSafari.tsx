@@ -56,7 +56,7 @@ function FirefoxSafari() {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {
-            fClass.current?.extractMetadata(e.target.files[0]);
+            fClass.current?.extractMetadata(e.target.files[0], ()=>{});
             setFilePicked(true)
         } else {
             alert('Please select a file.');

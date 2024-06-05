@@ -28,16 +28,19 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
             let [fileHandle] = await window.showOpenFilePicker();
             const file = await fileHandle.getFile();
             let fs: FileSystemAccessApiInterface = new FileSystemAccessApi((s: string, logLevel: number) => void {})
-            let resp: MetadataResponse = await fs.extractMetadata(file);
-            if (resp.Error === "") {
+
+            const callback = () => {
                 onFileSelected({
                         Fs: fs,
                         FileName: file.name,
                         Id: uuidv4()
                     }
                 )
+            }
 
-            } else {
+
+            let resp: MetadataResponse = await fs.extractMetadata(file, callback);
+            if (resp.Error !== "") {
                 console.log(resp.Error);
             }
 
@@ -67,10 +70,11 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
             if (window.showDirectoryPicker) {
                 try {
                     console.time("SCAN 1 WORKER")
-                    const iterator = scanDir(getIter(await window.showDirectoryPicker()), (s: string, logLevel: number) => { }, fileExtractionCreator(false, (s: string, logLevel: number) => {}));
-                    let fileArray: FileExtraction[] = [];
+                    const iterator = scanDir(getIter(await window.showDirectoryPicker()), (s: string, logLevel: number) => {
+                    }, fileExtractionCreator(false, (s: string, logLevel: number) => {
+                    }), onFileSelected);
                     for await (const file of iterator) {
-                        onFileSelected(file);
+                        // duplicate waiting?
                     }
                     console.timeEnd("SCAN 1 WORKER")
                 } catch (err) {

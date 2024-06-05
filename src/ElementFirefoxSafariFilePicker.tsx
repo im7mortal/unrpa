@@ -62,7 +62,7 @@ export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
             const files = Array.from(e.target.files);
             try {
                 const iterator = scanDir(getIter(e.target.files), (s: string, logLevel: number) => {
-                }, fileExtractionCreator(true, (s: string, logLevel: number) => {}));
+                }, fileExtractionCreator(true, (s: string, logLevel: number) => {}), onFileSelected);
                 let fileArray: FileExtraction[] = [];
                 for await (const file of iterator) {
                     onFileSelected(file);

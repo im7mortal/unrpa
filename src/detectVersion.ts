@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid';
 import {logLevelFunction, LogLevel} from './logInterface';
 import {Simulate} from "react-dom/test-utils";
 
-import { WorkerUrl } from 'worker-url';
+import {WorkerUrl} from 'worker-url';
 import workerpool from 'workerpool';
 
 
@@ -15,7 +15,7 @@ class WorkerPool {
     private constructor() {
         // webpack understand from this part that we need compile separate worker file from this .ts
         const WorkerURL = new WorkerUrl(new URL('./workers/metadataParser.worker.ts', import.meta.url))
-        this.pool = workerpool.pool(WorkerURL.toString(), { maxWorkers: this.maxWorkers });
+        this.pool = workerpool.pool(WorkerURL.toString(), {maxWorkers: this.maxWorkers});
     }
 
     public static getInstance(): WorkerPool {
@@ -32,12 +32,12 @@ class WorkerPool {
         } catch (error) {
             console.error('Error executing task:', error);
         }
-    }}
-
+    }
+}
 
 
 export interface FClassInterface {
-    extractMetadata: (file: File) => Promise<MetadataResponse>;
+    extractMetadata: (file: File, callback: () => void | null) => Promise<MetadataResponse>;
     extract: () => Promise<void>;
     cancel: () => Promise<void>;
 }
@@ -196,7 +196,7 @@ class Extractor {
         }
     }
 
-    async extractMetadata(file: File): Promise<MetadataResponse> {
+    async extractMetadata(file: File, callback: () => void): Promise<MetadataResponse> {
         const chunkSize = 100; // we assume that RPA header must fit in 100 bytes
         const headerBlob: Blob = file.slice(0, chunkSize);
 
@@ -255,12 +255,13 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
         console.log(this.directoryHandle)
     }
 
-    async extractMetadata(file: File): Promise<MetadataResponse> {
+    async extractMetadata(file: File, callback: () => void): Promise<MetadataResponse> {
         this.file = file
-        let metadata: MetadataResponse = await super.extractMetadata(file)
+        let metadata: MetadataResponse = await super.extractMetadata(file, () => {});
         if (metadata.Error === "") {
             this.Metadata = metadata.FileHeaders
             console.log(this.Metadata)
+            callback()
         }
         return metadata
     }
@@ -331,16 +332,17 @@ export class FileApi extends Extractor implements FClassInterface {
         }
     }
 
-    async extractMetadata(file: File): Promise<MetadataResponse> {
+    async extractMetadata(file: File, callback: () => void): Promise<MetadataResponse> {
         this.file = file
 
         this.logMessage(`Analyze "${file.name}"`, LogLevel.Info);
-        let metadata: MetadataResponse = await super.extractMetadata(file)
+        let metadata: MetadataResponse = await super.extractMetadata(file, () => {})
         if (metadata.Error === "") {
             this.Metadata = metadata.FileHeaders
         }
 
         this.ZipGroups = await this.groupBySubdirectory(this.Metadata, this.ZipSize)
+        callback()
         this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`, LogLevel.Info)
         return metadata
     }
@@ -558,19 +560,33 @@ export function fileExtractionCreator(firefox: boolean, logMessage: logLevelFunc
 }
 
 
-export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction): AsyncGenerator<FileExtraction, void, undefined> {
+export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction, onFileSelected: (newFiles: FileExtraction) => void): AsyncGenerator<FileExtraction, void, undefined> {
+    let promises: Promise<MetadataResponse>[] = [];
     for await (const file of iterateDirectory()) {
         // TypeScript infers fileHandle as FileSystemFileHandle
         logMessage(file.name, LogLevel.Debug);
         if (file.name.endsWith('.rpa')) { // TODO duplicate
             let fs: FileExtraction = factory(file);
-            let metadata: MetadataResponse = await fs.Fs.extractMetadata(file);
-            if (metadata.Error === "") {
-                yield fs;
-            } else {
-                logMessage(metadata.Error, LogLevel.Error);
-                console.log(metadata.Error);
-            }
+
+            const callback = () => {
+                onFileSelected(fs)
+
+            };
+
+
+
+            let metadataPromise: Promise<MetadataResponse> = fs.Fs.extractMetadata(file, callback);
+            promises.push(metadataPromise);
+        }
+    }
+
+    const metadataResponses = await Promise.all(promises);
+    for (const metadata of metadataResponses) {
+        if (metadata.Error === "") {
+            // yield fs;
+        } else {
+            logMessage(metadata.Error, LogLevel.Error);
+            console.log(metadata.Error);
         }
     }
 }
