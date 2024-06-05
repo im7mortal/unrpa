@@ -43,7 +43,7 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
 
     return (
         <>
-            <input type="file" style={{display: 'none'}} onChange={handleFileChange} ref={inputRef}/>
+            <input type="file" style={{display: 'none'}} onChange={handleFileChange} ref={inputRef} accept=".rpa"/>
             <button className={`btn btn-primary me-3`} onClick={chooseFile}>
                 Select archive
             </button>

@@ -25,7 +25,14 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
     const chooseFile = async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         try {
-            let [fileHandle] = await window.showOpenFilePicker();
+            const [fileHandle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'RPA files',
+                    accept: {
+                        'text/rpa': ['.rpa']
+                    }
+                }]
+            });
             const file = await fileHandle.getFile();
             let fs: FileSystemAccessApiInterface = new FileSystemAccessApi((s: string, logLevel: number) => void {})
 
