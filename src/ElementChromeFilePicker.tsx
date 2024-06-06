@@ -80,6 +80,8 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
                     const iterator = scanDir(getIter(await window.showDirectoryPicker()), (s: string, logLevel: number) => {
                     }, fileExtractionCreator(false, (s: string, logLevel: number) => {
                     }), onFileSelected);
+                    // TODO
+                    // eslint-disable-next-line
                     for await (const file of iterator) {
                         // duplicate waiting?
                     }

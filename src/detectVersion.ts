@@ -3,7 +3,6 @@ import {v4 as uuidv4} from 'uuid';
 import {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes"
 
 import {logLevelFunction, LogLevel} from './logInterface';
-import {Simulate} from "react-dom/test-utils";
 
 import {WorkerUrl} from 'worker-url';
 import workerpool from 'workerpool';
@@ -331,10 +330,6 @@ export class FileApi extends Extractor implements FClassInterface {
     }
 }
 
-function logError(message: string): void {
-    console.log(message);
-}
-
 declare global {
     interface Window {
         glog: any;
@@ -387,7 +382,8 @@ export function fileExtractionCreator(firefox: boolean, logMessage: logLevelFunc
     }
 }
 
-
+// TODO
+// eslint-disable-next-line
 export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction, onFileSelected: (newFiles: FileExtraction) => void): AsyncGenerator<FileExtraction, void, undefined> {
     let promises: Promise<MetadataResponse>[] = [];
     for await (const file of iterateDirectory()) {

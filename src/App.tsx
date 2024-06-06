@@ -7,7 +7,7 @@ import * as bowser from "bowser";
 import {LogProvider, DefaultExternalLoggerFunc} from './LogProvider';
 import {LogLevel} from './logInterface';
 import Logs from './Logs';
-import MyDropzone from "./MyDropzone";
+// import MyDropzone from "./MyDropzone";
 
 const parser = bowser.getParser(window.navigator.userAgent);
 const browserName: string = parser.getBrowserName();

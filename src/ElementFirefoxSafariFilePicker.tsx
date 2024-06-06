@@ -1,10 +1,8 @@
-import React, {FC, MouseEvent, useRef} from 'react';
+import React, {FC} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import {
     FileExtraction,
     FileApi,
-    FileSystemAccessApi,
-    FileSystemAccessApiInterface, getIter,
     scanDir, fileExtractionCreator
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
@@ -54,7 +52,6 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
 
 
 export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
-    const {recordLog} = useLogs();
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     function chooseFile() {
@@ -63,11 +60,9 @@ export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {
-            const files = Array.from(e.target.files);
             try {
                 const iterator = scanDir(getIter(e.target.files), (s: string, logLevel: number) => {
                 }, fileExtractionCreator(true, (s: string, logLevel: number) => {}), onFileSelected);
-                let fileArray: FileExtraction[] = [];
                 for await (const file of iterator) {
                     onFileSelected(file);
                 }

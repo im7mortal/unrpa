@@ -39,11 +39,6 @@ function newMetadataResponse(FileHeaders: FileHeader[], err: string): MetadataRe
 class Extractor {
     v3String: string = "RPA-3.0";
 
-    constructor() {
-
-
-    }
-
     isV1(fileName: string): boolean {
         return fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase() === 'rpi'
     }
