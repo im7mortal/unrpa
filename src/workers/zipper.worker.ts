@@ -6,6 +6,7 @@ let zip = new JSZip();
 let zipIndex: number = 0;
 
 // The worker listens for the 'message' event
+// eslint-disable-next-line no-restricted-globals
 self.addEventListener('message', (e: MessageEvent) => {
     if (e.data) {
         const {action, payload} = e.data;
@@ -39,10 +40,12 @@ async function finalizeZip() {
                 if (metadata.currentFile) {
                     msg += "\t" + metadata.currentFile;
                 }
+                // eslint-disable-next-line no-restricted-globals
                 self.postMessage({status: 'progress', content: msg});
             }
         }
     );
+    // eslint-disable-next-line no-restricted-globals
     self.postMessage({status: 'finished', content: content, zipIndex: zipIndex});
 
 }
