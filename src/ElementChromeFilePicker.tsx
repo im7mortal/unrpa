@@ -64,7 +64,7 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
 
     return (
         <button className="btn btn-primary me-3" onClick={chooseFile}>
-            Select archiveLOL
+            Select archive
         </button>
     );
 };

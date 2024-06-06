@@ -73,8 +73,8 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                     {isDirectoryPicked ? 'Change the' : 'To'} directory
                 </button>
                 <button
-                    className={`btn ${isDirectoryPicked ? (isExtracted ? 'btn-success' : 'btn-primary') : 'btn-secondary'} me-3`}
-                    onClick={start} disabled={(!isDirectoryPicked || isExtracting) && !fClassE.Firefox}>Extract
+                    className={`btn ${isExtracted ? 'btn-success' : 'btn-primary'} me-3`}
+                    onClick={start} disabled={(!isDirectoryPicked && !fClassE.Firefox) || isExtracting}>Extract
                 </button>
                 <button className={`btn ${isExtracted ? 'btn-success' : 'btn-danger'}`} onClick={cancelOperation}>
                     <span>&#x2715;</span> {isExtracted ? "Close" : "Cancel"}

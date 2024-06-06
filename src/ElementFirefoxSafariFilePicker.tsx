@@ -107,7 +107,7 @@ export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
             <input type="file" style={{display: 'none'}} onChange={handleFileChange}
                    ref={inputRef}   {...({webkitdirectory: "true", directory: "true"} as any)}/>
             <button className={`btn btn-primary me-3`} onClick={chooseFile}>
-                Scan DIRR
+                Scan directory
             </button>
         </>
 

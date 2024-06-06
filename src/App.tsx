@@ -52,7 +52,7 @@ function App() {
                     <div id="system_access_extraction" className="row justify-content-center">
                         <div className="col">
                             {isDesktope ?
-                                (true ? (<ElementExtractionChromium/>) :
+                                (chromium ? (<ElementExtractionChromium/>) :
                                     (<FirefoxComponent/>)) : (
                                     <div>
                                         <h2>🖥️ Desktop View Only! 🖥️</h2>
@@ -66,9 +66,9 @@ function App() {
                     <Logs/>
                 </LogProvider>
 
-                <div style={{maxWidth: '600px', margin: '0 auto'}}>
-                    <MyDropzone/>
-                </div>
+                {/*<div style={{maxWidth: '600px', margin: '0 auto'}}>*/}
+                {/*    <MyDropzone/>*/}
+                {/*</div>*/}
                 {/*<div className="row">
             <div className="col">
               <div id="Firefox" className="container">
