@@ -28,26 +28,16 @@ jobs:
 #            ${{ runner.OS }}-node-
 #            ${{ runner.OS }}-
 
-      - name: Install Dependencies
-        run: |
-          cd unrpapp
-          npm install
-          npm run build
-
       - name: Build
         run: |
           
-          # compile worker.js separately
-          # compile them before project so .js would present in public directory of project before main build
-          tsc --project workers.tsconfig.json
+          # compile wasm
+          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
+          cp wasm/unrpa.wasm public/unrpa.wasm
           
           # build react
           npm install
           npm run build
-          
-          # compile wasm
-          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
-          cp wasm/unrpa.wasm build
           
           # substitute version
           GIT_TAG=$(git describe --tags)
