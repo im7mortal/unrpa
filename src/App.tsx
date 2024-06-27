@@ -43,13 +43,13 @@ function App() {
 
             <h1 className="display-1 text-center">UNRPA - Extract Ren'Py Archives</h1>
 
-            <div id="options" className="container text-center">
+            <div className="container text-center">
 
                 <LogProvider loggers={[
                     {logFunction: DefaultExternalLoggerFunc, logLevel: LogLevel.Error},
                     {logFunction: console.log, logLevel: LogLevel.Debug}
                 ]}>
-                    <div id="system_access_extraction" className="row justify-content-center">
+                    <div className="row justify-content-center">
                         <div className="col">
                             {isDesktope ?
                                 (chromium ? (<ElementExtractionChromium/>) :
