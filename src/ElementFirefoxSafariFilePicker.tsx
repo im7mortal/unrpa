@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useContext} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import {
     FileExtraction,
@@ -6,6 +6,7 @@ import {
     scanDir, fileExtractionCreator
 } from './detectVersion';
 import {useLogs} from "./LogProvider";
+import SpinnerContext from "./spinnerContext";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
@@ -54,18 +55,32 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
 export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
     const inputRef = React.useRef<HTMLInputElement>(null);
 
+
+    const spinnerContext = useContext(SpinnerContext);
+    if (!spinnerContext) {
+        throw new Error('SpinnerContext must be used within a SpinnerProvider');
+    }
+    const {spinner, setSpinnerState} = spinnerContext;
+
+
+
     function chooseFile() {
+        setSpinnerState(true)
         inputRef.current?.click();
     }
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {
+
+
             try {
                 const iterator = scanDir(getIter(e.target.files), (s: string, logLevel: number) => {
                 }, fileExtractionCreator(true, (s: string, logLevel: number) => {}), onFileSelected);
                 for await (const file of iterator) {
                     onFileSelected(file);
                 }
+                setSpinnerState(false)
+
                 // onFileSelected({
                 //         Fs: new FileApi(recordLog),
                 //         FileName: e.target.files[0].name,

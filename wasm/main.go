@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/im7mortal/unrpa/pkg/rpaDecoder"
 	"syscall/js"
+	"sort"
 )
 
 type Response struct {
@@ -14,7 +15,7 @@ type Response struct {
 }
 
 func receiveBytes(this js.Value, inputs []js.Value) any {
-	js.Global().Get("console").Call("log", fmt.Sprintf("from wasm; arr len %d\n", len(inputs)))
+	js.Global().Get("console").Call("log", fmt.Sprintf("NOTSSORTEDfrom wasm; arr len %d\n", len(inputs)))
 
 	// Convert js.Value to Go byte slice
 	uint8Array := js.Global().Get("Uint8Array").New(inputs[0])
@@ -24,6 +25,16 @@ func receiveBytes(this js.Value, inputs []js.Value) any {
 	v := rpaDecoder.NewWasm(rpaDecoder.V3, goBytes, int64(inputs[1].Int()))
 
 	b, err := v.List(context.TODO())
+	if false {
+
+
+
+		sort.Slice(b, func(i, j int) bool {
+			return b[i].Offset < b[j].Offset
+		})
+	}
+
+
 	response := Response{
 		FileHeaders: b,
 	}

@@ -8,6 +8,8 @@ import {LogProvider, DefaultExternalLoggerFunc} from './LogProvider';
 import {LogLevel} from './logInterface';
 import Logs from './Logs';
 // import MyDropzone from "./MyDropzone";
+import {SpinnerProvider} from "./spinnerContext";
+import UnrpaApp from "./UnrpaApp";
 
 const parser = bowser.getParser(window.navigator.userAgent);
 const browserName: string = parser.getBrowserName();
@@ -49,21 +51,11 @@ function App() {
                     {logFunction: DefaultExternalLoggerFunc, logLevel: LogLevel.Error},
                     {logFunction: console.log, logLevel: LogLevel.Debug}
                 ]}>
-                    <div className="row justify-content-center">
-                        <div className="col">
-                            {isDesktope ?
-                                (chromium ? (<ElementExtractionChromium/>) :
-                                    (<FirefoxComponent/>)) : (
-                                    <div>
-                                        <h2>🖥️ Desktop View Only! 🖥️</h2>
-                                        <p>Sorry, but UNRPA extractor is designed for desktop browsers. Please visit this
-                                            site on your desktop computer to access this feature.</p>
-                                    </div>
-                                )
-                            }
-                        </div>
-                    </div>
-                    <Logs/>
+
+                    <SpinnerProvider>
+                        <UnrpaApp/>
+                        <Logs/>
+                    </SpinnerProvider>
                 </LogProvider>
 
                 {/*<div style={{maxWidth: '600px', margin: '0 auto'}}>*/}

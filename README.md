@@ -1,5 +1,7 @@
 # Hassle free RPA extractor. In-Browser, no code, no EXEs. 
 
+# MY CURRENT HOME PROJECT; it's under active development;
+
 # [:point_right: TLDR; Go to the UNRPA WEB PAGE](https://im7mortal.github.io/unrpa/)
 
 
@@ -35,8 +37,8 @@ Firefox and Safari don't want to implement FileSystemAccessApi
 - [x] vanilla js refactoring
 - [x] scan function + drag&drop logic
 - [x] convert to typescript
-- [ ] clean typescript
-- [ ] react
+- [x] clean typescript
+- [x] react
 - [ ] browser optimizations
 - [ ] maybe replace WASM unpickle with ts one
 - [ ] maybe replace JSZIP with something better
@@ -91,3 +93,8 @@ Released via goxc.
 
 extract: 1019018ms - timer ended  ; 7958be5b
 extract: 571323ms - timer ended   ; 94241652
+
+
+EXTRACT1: 9782.45703125 ms
+EXTRACT1: 7865.830810546875 ms
+EXTRACT1: 7681.796875 ms
