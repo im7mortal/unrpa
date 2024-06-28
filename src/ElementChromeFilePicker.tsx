@@ -94,7 +94,6 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
                         // duplicate waiting?
                     }
                     console.timeEnd("SCAN 1 WORKER")
-                    setSpinnerState(false)
 
                 } catch (err) {
                     if (err instanceof DOMException && err.name === 'AbortError') {
@@ -104,6 +103,8 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
                         console.error(err);
                     }
                 }
+                setSpinnerState(false)
+
             } else {
                 console.log('Directory picker is not supported in this browser');
             }

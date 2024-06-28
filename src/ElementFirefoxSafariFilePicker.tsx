@@ -95,6 +95,7 @@ export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
                     console.error(err);
                 }
             }
+            setSpinnerState(false)
         } else {
             alert('Please select a directory.');
         }
