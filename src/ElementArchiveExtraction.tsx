@@ -14,6 +14,7 @@ import PulseLoader from "react-spinners/PulseLoader";
 interface ElementArchiveExtractionProps {
     fClassE: FileExtraction;
     handleRemove: () => void
+    updateItem: (updatedItem: FileExtraction) => void
     logF: logLevelFunction
 }
 

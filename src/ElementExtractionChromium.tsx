@@ -28,11 +28,18 @@ function ElementExtractionChromium() {
         return (
             <div>
                 {Archives.map((item: FileExtraction, index: number) => (
-                    <ElementArchiveExtraction fClassE={item} logF={recordLog} handleRemove={() => {
-                        setArchives(Archives.filter((_, i) => i !== index))  // This will remove current item from Archives
-                    }} key={item.Id}/>
-                ))}
-            </div>);
+                    <ElementArchiveExtraction
+                        fClassE={item}
+                        logF={recordLog}
+                        handleRemove={() => {
+                            setArchives(Archives.filter((_, i) => i !== index)); // This will remove current item from Archives
+                        }}
+                        updateItem={(updatedItem: FileExtraction) => {
+                            setArchives(prevArchives => prevArchives.map((archive, i) => i === index ? updatedItem : archive));
+                        }}
+                        key={item.Id}
+                    />
+                ))}            </div>);
     } else {
         return (
             <div>
