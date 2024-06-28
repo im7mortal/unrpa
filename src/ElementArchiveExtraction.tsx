@@ -8,6 +8,7 @@ import {
     FileSystemAccessApiInterface,
     FileExtraction
 } from './detectVersion';
+import ClipLoader from "react-spinners/ClipLoader";
 
 interface ElementArchiveExtractionProps {
     fClassE: FileExtraction;
@@ -61,10 +62,13 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
 
     return (
         <div className="row">
-            <div className="col-3">
+            <div className="col-2">
             </div>
             <div className="col-1">
                 <span>{fClassE.FileName}</span>
+            </div>
+            <div className="col-1">
+                <ClipLoader color={'#123abc'} loading={isExtracting && !isExtracted} size={20}/>
             </div>
             <div className="col-5">
                 <button
