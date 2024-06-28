@@ -34,7 +34,8 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                     setDirectoryPicked(true);
                 } else {
                     // TODO handle error or fall back to some default behavior
-                };
+                }
+                ;
                 setDirectoryPicked(true);
             } catch (err) {
                 if (err instanceof DOMException && err.name === 'AbortError') {
@@ -72,9 +73,14 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                 <ClipLoader color={'#123abc'} loading={isExtracting && !isExtracted} size={20}/>
             </div>
             {!fClassE.Parsed ? (
-                <div className="col-5">
-                    <PulseLoader color={'#123abc'} loading={true} size={20}/>
-                </div>
+                <>
+                    <div className="col-2">
+                        <span>{fClassE.SizeMsg}</span>
+                    </div>
+                    <div className="col-3">
+                        <PulseLoader color={'#123abc'} loading={true} size={20}/>
+                    </div>
+                </>
 
             ) : (
                 <div className="col-5">
@@ -92,7 +98,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                         <span>&#x2715;</span> {isExtracted ? "Close" : "Cancel"}
                     </button>
                 </div>
-                )}
+            )}
         </div>
     );
 }

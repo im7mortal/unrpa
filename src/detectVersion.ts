@@ -349,6 +349,7 @@ export interface FileExtraction {
     Fs: FileSystemAccessApiInterface
     FileName: string,
     Parsed: boolean,
+    SizeMsg: string,
 }
 
 export function getIter(dirHandle: FileSystemDirectoryHandle): () => AsyncGenerator<File, void, undefined> {
@@ -367,6 +368,17 @@ export function getIter(dirHandle: FileSystemDirectoryHandle): () => AsyncGenera
     }
 }
 
+function formatBytes(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 export function fileExtractionCreator(firefox: boolean, logMessage: logLevelFunction): (file: File) => FileExtraction {
     return (file: File): FileExtraction => {
 
@@ -379,11 +391,11 @@ export function fileExtractionCreator(firefox: boolean, logMessage: logLevelFunc
             FileName: file.name,
             Id: uuidv4(),
             Parsed: true,
+            SizeMsg: "",
             Firefox: firefox
         }
     }
 }
-
 // TODO
 // eslint-disable-next-line
 export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction, onFileSelected: (newFiles: FileExtraction) => void): AsyncGenerator<FileExtraction, void, undefined> {
@@ -394,6 +406,7 @@ export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void
         if (file.name.endsWith('.rpa')) { // TODO duplicate
             let fs: FileExtraction = factory(file);
             fs.Parsed = false
+            fs.SizeMsg = formatBytes(file.size);
             onFileSelected(fs)
             const callback = () => {
                 fs.Parsed = true;

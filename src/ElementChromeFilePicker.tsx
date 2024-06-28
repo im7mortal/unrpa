@@ -20,6 +20,7 @@ export interface FileExtraction {
     FileName: string;
     Id: string;
     Parsed: boolean;
+    SizeMsg: string;
 }
 
 export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
@@ -43,7 +44,8 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
                         Fs: fs,
                         FileName: file.name,
                         Id: uuidv4(),
-                        Parsed: true
+                        Parsed: true,
+                        SizeMsg: ""
                     }
                 )
             }

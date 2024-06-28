@@ -24,12 +24,13 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
         if (e.target.files?.length) {
             const ff = e.target.files[0]
             const f = new FileApi(recordLog)
-            f.extractMetadata(ff, ()=>{
+            f.extractMetadata(ff, () => {
                 onFileSelected({
                         Fs: f,
                         FileName: ff.name,
                         Id: uuidv4(),
                         Firefox: true,
+                        SizeMsg: "",
                         Parsed: true
                     }
                 )
@@ -65,7 +66,6 @@ export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
     const {spinner, setSpinnerState} = spinnerContext;
 
 
-
     function chooseFile() {
         setSpinnerState(true)
         inputRef.current?.click();
@@ -77,7 +77,8 @@ export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
 
             try {
                 const iterator = scanDir(getIter(e.target.files), (s: string, logLevel: number) => {
-                }, fileExtractionCreator(true, (s: string, logLevel: number) => {}), onFileSelected);
+                }, fileExtractionCreator(true, (s: string, logLevel: number) => {
+                }), onFileSelected);
                 for await (const file of iterator) {
                     onFileSelected(file);
                 }
