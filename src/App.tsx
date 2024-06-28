@@ -1,20 +1,12 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import GitHubButton from 'react-github-btn'
-import ElementExtractionChromium from './ElementExtractionChromium';
-import FirefoxComponent from './ElementExtractionFirefoxSafari';
-import * as bowser from "bowser";
 import {LogProvider, DefaultExternalLoggerFunc} from './LogProvider';
 import {LogLevel} from './logInterface';
 import Logs from './Logs';
 // import MyDropzone from "./MyDropzone";
 import {SpinnerProvider} from "./spinnerContext";
 import UnrpaApp from "./UnrpaApp";
-
-const parser = bowser.getParser(window.navigator.userAgent);
-const browserName: string = parser.getBrowserName();
-const chromium: boolean = !(browserName === "Safari" || browserName === "Firefox");
-const isDesktope: boolean = (parser.getPlatform().type === "desktop")
 
 function App() {
     return (

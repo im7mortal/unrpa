@@ -4,8 +4,7 @@ import ElementExtractionChromium from './ElementExtractionChromium';
 import FirefoxComponent from './ElementExtractionFirefoxSafari';
 import * as bowser from "bowser";
 import SyncLoader from 'react-spinners/SyncLoader';
-import React, {CSSProperties, useContext} from 'react';
-import {css} from '@emotion/react';
+import React, {useContext} from 'react';
 import SpinnerContext from "./spinnerContext";
 import "./overlay-spinner.css"
 
@@ -14,14 +13,6 @@ const browserName: string = parser.getBrowserName();
 const chromium: boolean = !(browserName === "Safari" || browserName === "Firefox");
 const isDesktope: boolean = (parser.getPlatform().type === "desktop")
 
-
-const override = css`
-    display: block;
-    margin: 0 auto;
-    border-color: red;
-`;
-
-
 function UnrpaApp() {
 
 
@@ -29,6 +20,7 @@ function UnrpaApp() {
     if (!spinnerContext) {
         throw new Error('SpinnerContext must be used within a SpinnerProvider');
     }
+    // eslint-disable-next-line
     const {spinner, setSpinnerState} = spinnerContext;
 
     return (

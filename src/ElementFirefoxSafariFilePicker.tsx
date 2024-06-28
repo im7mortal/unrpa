@@ -60,6 +60,7 @@ export const DirectoryScannerF: FC<FilePickerProps> = ({onFileSelected}) => {
     if (!spinnerContext) {
         throw new Error('SpinnerContext must be used within a SpinnerProvider');
     }
+    // eslint-disable-next-line
     const {spinner, setSpinnerState} = spinnerContext;
 
 
