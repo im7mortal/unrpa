@@ -348,6 +348,7 @@ export interface FileExtraction {
     Id: string
     Fs: FileSystemAccessApiInterface
     FileName: string,
+    Parsed: boolean,
 }
 
 export function getIter(dirHandle: FileSystemDirectoryHandle): () => AsyncGenerator<File, void, undefined> {
@@ -377,6 +378,7 @@ export function fileExtractionCreator(firefox: boolean, logMessage: logLevelFunc
             Fs: fs,
             FileName: file.name,
             Id: uuidv4(),
+            Parsed: true,
             Firefox: firefox
         }
     }
@@ -391,8 +393,10 @@ export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void
         logMessage(file.name, LogLevel.Debug);
         if (file.name.endsWith('.rpa')) { // TODO duplicate
             let fs: FileExtraction = factory(file);
-
+            fs.Parsed = false
+            onFileSelected(fs)
             const callback = () => {
+                fs.Parsed = true;
                 onFileSelected(fs)
 
             };

@@ -15,9 +15,15 @@ function ElementExtractionChromium() {
     const {recordLog} = useLogs();
 
     const handleFileSelection = (newFiles: FileExtraction) => {
-        setArchives(prevArchives => [...prevArchives, newFiles]);
+        setArchives(prevArchives => {
+            const existingIndex = prevArchives.findIndex(file => file.Id === newFiles.Id);
+            if (existingIndex >= 0) {
+                return prevArchives.map((file, index) => index === existingIndex ? newFiles : file);
+            } else {
+                return [...prevArchives, newFiles];
+            }
+        });
     };
-
 
     if (Archives.length !== 0) {
         return (

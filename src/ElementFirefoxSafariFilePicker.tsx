@@ -30,6 +30,7 @@ export const FilePickerF: FC<FilePickerProps> = ({onFileSelected}) => {
                         FileName: ff.name,
                         Id: uuidv4(),
                         Firefox: true,
+                        Parsed: true
                     }
                 )
             })
