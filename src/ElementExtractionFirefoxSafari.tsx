@@ -1,18 +1,17 @@
-import React, {useState} from 'react';
+import React, { useState, useContext , useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-import {useLogs} from './LogProvider';
-
-import {
-    FileExtraction
-} from './detectVersion';
+import { useLogs } from './LogProvider';
+import {FileApi, FileExtraction, FileSystemAccessApiInterface} from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
-import {DirectoryScannerF, FilePickerF} from './ElementFirefoxSafariFilePicker';
+import { DirectoryScannerF, FilePickerF } from './ElementFirefoxSafariFilePicker';
+import DropdownFilesContext from './DropdownFilesContext';
+import {v4 as uuidv4} from 'uuid';
 
 function ElementExtractionChromium() {
     // Implement your functions
     const [Archives, setArchives] = useState<FileExtraction[]>([]);
     const {recordLog} = useLogs();
+    const files = useContext(DropdownFilesContext);
 
     const handleFileSelection = (newFiles: FileExtraction) => {
         setArchives(prevArchives => {
@@ -24,6 +23,20 @@ function ElementExtractionChromium() {
             }
         });
     };
+
+    useEffect(() => {
+        files.forEach(file => {
+            handleFileSelection({
+                Firefox: true,
+                Id: uuidv4(),
+                Fs: new FileApi(() => {}),
+                FileName: file.name,
+                Parsed: false,
+                SizeMsg: "" + file.size,
+            });
+        });
+    }, [files]);;
+
 
     if (Archives.length !== 0) {
         return (
