@@ -1,4 +1,4 @@
-import React, {FC, MouseEvent} from 'react';
+import React, {FC, MouseEvent, useContext} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import {
     FileSystemAccessApi,
@@ -8,6 +8,7 @@ import {
     fileExtractionCreator
 } from './detectVersion';
 import {MetadataResponse} from "./unrpaLib/unrpaLibTypes"
+import SpinnerContext from "./spinnerContext";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
@@ -71,7 +72,14 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
 
 export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
 
+    const spinnerContext = useContext(SpinnerContext);
+    if (!spinnerContext) {
+        throw new Error('SpinnerContext must be used within a SpinnerProvider');
+    }
+    const {spinner, setSpinnerState} = spinnerContext;
+
     const scan = async (e: MouseEvent<HTMLButtonElement>) => {
+        setSpinnerState(true)
         e.preventDefault();
         try {
             if (window.showDirectoryPicker) {
@@ -86,6 +94,8 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
                         // duplicate waiting?
                     }
                     console.timeEnd("SCAN 1 WORKER")
+                    setSpinnerState(false)
+
                 } catch (err) {
                     if (err instanceof DOMException && err.name === 'AbortError') {
                         console.log('Directory picker was cancelled');
