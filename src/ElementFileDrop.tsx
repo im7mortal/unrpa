@@ -1,16 +1,15 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./overlay-spinner.css"
-import React, {useState, useCallback, useEffect, useContext} from 'react';
+import React, { useCallback, useEffect, useContext} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {FilesContext} from "./ContextDropdownFiles";
-import {FileExtraction, fileExtractionCreator,} from "./detectVersion";
+import { fileExtractionCreator,} from "./detectVersion";
 import ApiInfoContext from "./ContextAPI";
-import {MetadataResponse} from "./unrpaLib/unrpaLibTypes";
 
 function Drop() {
     const {fileSystemApi} = useContext(ApiInfoContext);
-    const {files, dispatch} = useContext(FilesContext);
+    const {dispatch} = useContext(FilesContext);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
 
@@ -26,6 +25,7 @@ function Drop() {
                 alert(file.name + " not supported")
             }
         });
+        // eslint-disable-next-line
     }, []);
     useDropzone({
         onDrop,

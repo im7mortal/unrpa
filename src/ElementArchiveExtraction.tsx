@@ -48,6 +48,8 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         }
 
         fetchAndUpdateMetadata()
+
+        // eslint-disable-next-line
     }, [])
 
 

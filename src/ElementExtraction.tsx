@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useContext} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {useLogs} from './ContextLog';
