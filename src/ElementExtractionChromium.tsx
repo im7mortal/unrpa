@@ -5,7 +5,8 @@ import {useLogs} from './LogProvider';
 
 import {FileExtraction} from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
-import {FilePicker, DirectoryScanner} from './ElementChromeFilePicker';
+import {FilePicker} from './ElementFilePicker';
+import {DirectoryScanner} from './ElementDirectoryPicker';
 
 function ElementExtractionChromium() {
     // Implement your functions
