@@ -8,32 +8,32 @@ import ElementArchiveExtraction from "./ElementArchiveExtraction";
 import {FilePicker} from './ElementFilePicker';
 import {DirectoryScanner} from './ElementDirectoryPicker';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from './redux/store';
+import {addFiles, removeFile} from "./redux/reducers";
+
 function ElementExtractionChromium() {
+
+    const archives = useSelector((state: RootState) => state.files.archives);
+    const dispatch = useDispatch<AppDispatch>();
+
     // Implement your functions
-    const [Archives, setArchives] = useState<FileExtraction[]>([]);
     const {recordLog} = useLogs();
 
     const handleFileSelection = (newFiles: FileExtraction) => {
-        setArchives(prevArchives => {
-            const existingIndex = prevArchives.findIndex(file => file.Id === newFiles.Id);
-            if (existingIndex >= 0) {
-                return prevArchives.map((file, index) => index === existingIndex ? newFiles : file);
-            } else {
-                return [...prevArchives, newFiles];
-            }
-        });
+        dispatch(addFiles([newFiles]));
     };
 
 
-    if (Archives.length !== 0) {
+    if (archives.length !== 0) {
         return (
             <div>
-                {Archives.map((item: FileExtraction, index: number) => (
+                {archives.map((item: FileExtraction, index: number) => (
                     <ElementArchiveExtraction
                         fClassE={item}
                         logF={recordLog}
                         handleRemove={() => {
-                            setArchives(Archives.filter((_, i) => i !== index)); // This will remove current item from Archives
+                            dispatch(removeFile(item.Id))
                         }}
                         key={item.Id}
                     />
