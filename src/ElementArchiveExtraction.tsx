@@ -1,20 +1,20 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useContext, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {logLevelFunction} from './logInterface';
 
 import {
-    FileSystemAccessApi,
     FileSystemAccessApiInterface,
-    FileExtraction
+    FileExtraction,
 } from './detectVersion';
 import ClipLoader from "react-spinners/ClipLoader";
 import PulseLoader from "react-spinners/PulseLoader";
+import ApiInfoContext from "./ContextAPI";
+import {MetadataResponse} from "./unrpaLib/unrpaLibTypes";
 
 interface ElementArchiveExtractionProps {
     fClassE: FileExtraction;
     handleRemove: () => void
-    updateItem: (updatedItem: FileExtraction) => void
     logF: logLevelFunction
 }
 
@@ -23,8 +23,30 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     const [isDirectoryPicked, setDirectoryPicked] = useState(false);
     const [isExtracted, setExtracted] = useState(false);
     const [isExtracting, setExtracting] = useState(false);
+    const [isParsed, setParsed] = useState(true);
+
+
+    const {fileSystemApi} = useContext(ApiInfoContext);
 
     const fClass = useRef<FileSystemAccessApiInterface>(fClassE.Fs);
+
+
+    useEffect(() => {
+        const fetchAndUpdateMetadata = async () => {
+            let resp: MetadataResponse = await fClass.current.extractMetadata();
+            if (resp.Error !== "") {
+                alert("THERE WAS AN ERROR WITH ")
+                console.log(resp.Error);
+                handleRemove()
+            }
+
+            // TODO add promise resolver
+            setParsed(true)
+        }
+
+        fetchAndUpdateMetadata()
+    }, [])
+
 
     const chooseDirectory = async () => {
         if (window.showDirectoryPicker) {
@@ -55,14 +77,6 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         setExtracted(true)
     }
 
-    const cancelOperation = async () => {
-        fClass.current.cancel()
-        fClass.current = new FileSystemAccessApi(logF);
-        setDirectoryPicked(false)
-        setExtracted(false)
-        handleRemove()
-    }
-
     return (
         <div className="row">
             <div className="col-2">
@@ -73,7 +87,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
             <div className="col-1">
                 <ClipLoader color={'#123abc'} loading={isExtracting && !isExtracted} size={20}/>
             </div>
-            {!fClassE.Parsed ? (
+            {isParsed ? (
                 <>
                     <div className="col-2">
                         <span>{fClassE.SizeMsg}</span>
@@ -88,14 +102,16 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                     <button
                         className={`btn ${isDirectoryPicked ? 'btn-success' : 'btn-primary'} me-3`}
                         onClick={chooseDirectory} disabled={isExtracting}
-                        style={{display: fClassE.Firefox ? 'none' : 'inline-block'}}>
+                        style={{display: fileSystemApi ? 'inline-block' : 'none'}}>
                         {isDirectoryPicked ? 'Change the' : 'To'} directory
                     </button>
                     <button
                         className={`btn ${isExtracted ? 'btn-success' : 'btn-primary'} me-3`}
-                        onClick={start} disabled={(!isDirectoryPicked && !fClassE.Firefox) || isExtracting}>Extract
+                        onClick={start} disabled={(!isDirectoryPicked && !fileSystemApi) || isExtracting}>Extract
                     </button>
-                    <button className={`btn ${isExtracted ? 'btn-success' : 'btn-danger'}`} onClick={cancelOperation}>
+                    <button className={`btn ${isExtracted ? 'btn-success' : 'btn-danger'}`}
+                            onClick={handleRemove} // handle remove do not cancel corresponding worker; it's not critical
+                    >
                         <span>&#x2715;</span> {isExtracted ? "Close" : "Cancel"}
                     </button>
                 </div>

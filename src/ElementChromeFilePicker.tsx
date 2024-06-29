@@ -4,11 +4,11 @@ import {
     FileSystemAccessApi,
     FileSystemAccessApiInterface,
     scanDir,
-    getIter,
-    fileExtractionCreator
+    fileExtractionCreator, FileApi
 } from './detectVersion';
-import {MetadataResponse} from "./unrpaLib/unrpaLibTypes"
 import SpinnerContext from "./spinnerContext";
+import ApiInfoContext from "./ContextAPI";
+import {useLogs} from "./LogProvider";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
@@ -25,7 +25,9 @@ export interface FileExtraction {
 
 export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
 
-    const chooseFile = async (e: MouseEvent<HTMLButtonElement>) => {
+    const {fileSystemApi} = useContext(ApiInfoContext);
+
+    const chooseFileSystemAPI = async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         try {
             const [fileHandle] = await window.showOpenFilePicker({
@@ -37,24 +39,8 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
                 }]
             });
             const file = await fileHandle.getFile();
-            let fs: FileSystemAccessApiInterface = new FileSystemAccessApi((s: string, logLevel: number) => void {})
 
-            const callback = () => {
-                onFileSelected({
-                        Fs: fs,
-                        FileName: file.name,
-                        Id: uuidv4(),
-                        Parsed: true,
-                        SizeMsg: ""
-                    }
-                )
-            }
-
-
-            let resp: MetadataResponse = await fs.extractMetadata(file, callback);
-            if (resp.Error !== "") {
-                console.log(resp.Error);
-            }
+            processFile(file)
 
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {
@@ -67,14 +53,70 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
     };
 
 
+    const {recordLog} = useLogs();
+    const inputRef = React.useRef<HTMLInputElement>(null);
+
+    function chooseFileApi() {
+        inputRef.current?.click();
+    }
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.length) {
+            processFile(e.target.files[0])
+        } else {
+            alert('Please select a file.');
+        }
+    };
+
+
+    function processFile(file: File): void {
+
+
+        let f: FileSystemAccessApiInterface;
+        if (fileSystemApi) {
+            f = new FileSystemAccessApi(file, (s: string, logLevel: number) => void {})
+        } else {
+            f = new FileApi(file, recordLog)
+        }
+
+        onFileSelected({
+                Fs: f,
+                FileName: file.name,
+                Id: uuidv4(),
+                SizeMsg: "",
+                Parsed: true
+            }
+        )
+    }
+
+
     return (
-        <button className="btn btn-primary me-3" onClick={chooseFile}>
-            Select archive
-        </button>
+
+        <>
+            {fileSystemApi ? (
+                <button className="btn btn-primary me-3" onClick={chooseFileSystemAPI}>
+                    Select archive
+                </button>
+            ) : (
+                <>
+                    <input type="file" style={{display: 'none'}} onChange={handleFileChange} ref={inputRef}
+                           accept=".rpa"/>
+                    <button className={`btn btn-primary me-3`} onClick={chooseFileApi}>
+                        Select archive
+                    </button>
+                </>
+            )}
+        </>
+
+
     );
 };
 
 export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
+    const inputRef = React.useRef<HTMLInputElement>(null);
+
+    const {fileSystemApi} = useContext(ApiInfoContext);
+
 
     const spinnerContext = useContext(SpinnerContext);
     if (!spinnerContext) {
@@ -83,23 +125,30 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
     // eslint-disable-next-line
     const {spinner, setSpinnerState} = spinnerContext;
 
+    function getIter(dirHandle: FileSystemDirectoryHandle): () => AsyncGenerator<File, void, undefined> {
+        return async function* (): AsyncGenerator<File, void, undefined> {
+            for await (const entry of dirHandle.values()) {
+                if (entry.kind === 'file') {
+                    if (entry.name.endsWith('.rpa')) {
+                        const file = await (entry as FileSystemFileHandle).getFile();
+                        yield file;
+                    }
+                } else if (entry.kind === 'directory') {
+                    const dirEntry = entry as FileSystemDirectoryHandle;
+                    yield* getIter(dirEntry)();
+                }
+            }
+        }
+    }
+
+
     const scan = async (e: MouseEvent<HTMLButtonElement>) => {
         setSpinnerState(true)
         e.preventDefault();
         try {
             if (window.showDirectoryPicker) {
                 try {
-                    console.time("SCAN 1 WORKER")
-                    const iterator = scanDir(getIter(await window.showDirectoryPicker()), (s: string, logLevel: number) => {
-                    }, fileExtractionCreator(false, (s: string, logLevel: number) => {
-                    }), onFileSelected);
-                    // TODO
-                    // eslint-disable-next-line
-                    for await (const file of iterator) {
-                        // duplicate waiting?
-                    }
-                    console.timeEnd("SCAN 1 WORKER")
-
+                    scan1(getIter(await window.showDirectoryPicker()))
                 } catch (err) {
                     if (err instanceof DOMException && err.name === 'AbortError') {
                         console.log('Directory picker was cancelled');
@@ -126,9 +175,72 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
     };
 
 
+    function chooseFile() {
+        setSpinnerState(true)
+        inputRef.current?.click();
+    }
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.length) {
+            scan1(getIter1(e.target.files))
+        } else {
+            alert('Please select a directory.');
+        }
+    };
+
+    async function scan1(iterateDirectory: () => AsyncGenerator<File, void, undefined>) {
+        try {
+            const iterator = scanDir(iterateDirectory, (s: string, logLevel: number) => {
+            }, fileExtractionCreator((s: string, logLevel: number) => {
+            }), onFileSelected);
+            for await (const file of iterator) {
+                onFileSelected(file);
+            }
+            setSpinnerState(false)
+
+        } catch (err) {
+            if (err instanceof DOMException && err.name === 'AbortError') {
+                console.log('Directory picker was cancelled');
+            } else {
+
+                console.error(err);
+            }
+        }
+        setSpinnerState(false)
+
+    }
+
+
+    const getIter1 = function (files: FileList): () => AsyncGenerator<File, void, undefined> {
+        return async function* (): AsyncGenerator<File, void, undefined> {
+            for await (const file of files) {
+                if (file.name.endsWith('.rpa')) {
+                    yield file;
+                }
+            }
+        }
+    }
+
+
     return (
-        <button className="btn btn-primary" onClick={scan}>Scan
-            directory
-        </button>
-    );
+        <>
+            {fileSystemApi ? (
+                <button className="btn btn-primary" onClick={scan}>Scan
+                    directory
+                </button>
+            ) : (
+                <>
+                    <input type="file" style={{display: 'none'}} onChange={handleFileChange}
+                           ref={inputRef}   {...({webkitdirectory: "true", directory: "true"} as any)}/>
+                    <button className={`btn btn-primary me-3`} onClick={chooseFile}>
+                        Scan directory
+                    </button>
+                </>
+            )}
+        </>
+
+
+    )
+
+
 };

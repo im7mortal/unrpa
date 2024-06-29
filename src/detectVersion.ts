@@ -38,7 +38,7 @@ class WorkerPool {
 
 
 export interface FClassInterface {
-    extractMetadata: (file: File, callback: () => void | null) => Promise<MetadataResponse>;
+    extractMetadata: () => Promise<MetadataResponse>;
     extract: () => Promise<void>;
     cancel: () => Promise<void>;
 }
@@ -67,8 +67,9 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
 
     logMessage: logLevelFunction;
 
-    constructor(logMessage: logLevelFunction) {
+    constructor(file: File, logMessage: logLevelFunction) {
         super(logMessage)
+        this.file = file
         this.logMessage = logMessage
     }
 
@@ -82,13 +83,11 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
         console.log(this.directoryHandle)
     }
 
-    async extractMetadata(file: File, callback: () => void): Promise<MetadataResponse> {
-        this.file = file
-        let metadata: MetadataResponse = await super.extractMetadata(file, () => {
+    async extractMetadata(): Promise<MetadataResponse> {
+        let metadata: MetadataResponse = await super.extractMetadata(this.file, () => {
         });
         if (metadata.Error === "") {
             this.Metadata = metadata.FileHeaders
-            callback()
         }
         return metadata
     }
@@ -146,8 +145,9 @@ export class FileApi extends Extractor implements FClassInterface {
     logMessage: logLevelFunction;
 
 
-    constructor(logMessage: logLevelFunction) {
+    constructor(file: File, logMessage: logLevelFunction) {
         super(logMessage)
+        this.file = file
         this.logMessage = logMessage
     }
 
@@ -159,18 +159,16 @@ export class FileApi extends Extractor implements FClassInterface {
         }
     }
 
-    async extractMetadata(file: File, callback: () => void): Promise<MetadataResponse> {
-        this.file = file
+    async extractMetadata(): Promise<MetadataResponse> {
 
-        this.logMessage(`Analyze "${file.name}"`, LogLevel.Info);
-        let metadata: MetadataResponse = await super.extractMetadata(file, () => {
+        this.logMessage(`Analyze "${this.file.name}"`, LogLevel.Info);
+        let metadata: MetadataResponse = await super.extractMetadata(this.file, () => {
         })
         if (metadata.Error === "") {
             this.Metadata = metadata.FileHeaders
         }
 
         this.ZipGroups = this.groupBySubdirectory(this.Metadata, this.ZipSize)
-        callback()
         this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`, LogLevel.Info)
         return metadata
     }
@@ -344,28 +342,11 @@ window.glog = {
 }
 
 export interface FileExtraction {
-    Firefox?: boolean //TODO mustn't be here; just for prototyping
     Id: string
     Fs: FileSystemAccessApiInterface
     FileName: string,
     Parsed: boolean,
     SizeMsg: string,
-}
-
-export function getIter(dirHandle: FileSystemDirectoryHandle): () => AsyncGenerator<File, void, undefined> {
-    return async function* (): AsyncGenerator<File, void, undefined> {
-        for await (const entry of dirHandle.values()) {
-            if (entry.kind === 'file') {
-                if (entry.name.endsWith('.rpa')) {
-                    const file = await (entry as FileSystemFileHandle).getFile();
-                    yield file;
-                }
-            } else if (entry.kind === 'directory') {
-                const dirEntry = entry as FileSystemDirectoryHandle;
-                yield* getIter(dirEntry)();
-            }
-        }
-    }
 }
 
 function formatBytes(bytes: number): string {
@@ -379,23 +360,23 @@ function formatBytes(bytes: number): string {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-export function fileExtractionCreator(firefox: boolean, logMessage: logLevelFunction): (file: File) => FileExtraction {
+export function fileExtractionCreator(logMessage: logLevelFunction): (file: File) => FileExtraction {
     return (file: File): FileExtraction => {
 
-        let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(logMessage);
-        if (firefox) {
-            fs = new FileApi(logMessage)
-        }
+        let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(file, logMessage);
+        // if (firefox) {
+        //     fs = new FileApi(logMessage)
+        // }
         return {
             Fs: fs,
             FileName: file.name,
             Id: uuidv4(),
             Parsed: true,
             SizeMsg: "",
-            Firefox: firefox
         }
     }
 }
+
 // TODO
 // eslint-disable-next-line
 export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction, onFileSelected: (newFiles: FileExtraction) => void): AsyncGenerator<FileExtraction, void, undefined> {
@@ -415,7 +396,7 @@ export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void
             };
 
 
-            let metadataPromise: Promise<MetadataResponse> = fs.Fs.extractMetadata(file, callback);
+            let metadataPromise: Promise<MetadataResponse> = fs.Fs.extractMetadata();
             promises.push(metadataPromise);
         }
     }

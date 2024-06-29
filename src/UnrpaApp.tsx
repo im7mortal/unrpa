@@ -1,7 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ElementExtractionChromium from './ElementExtractionChromium';
-import FirefoxComponent from './ElementExtractionFirefoxSafari';
 import SyncLoader from 'react-spinners/SyncLoader';
 import React, {useContext} from 'react';
 import SpinnerContext from "./spinnerContext";
@@ -16,10 +15,8 @@ function UnrpaApp() {
     if (!spinnerContext) {
         throw new Error('SpinnerContext must be used within a SpinnerProvider');
     }
-    // eslint-disable-next-line
-    const {spinner, setSpinnerState} = spinnerContext;
-    // eslint-disable-next-line
-    const {fileSystemApi, isDesktop} = useContext(ApiInfoContext);
+    const {spinner} = spinnerContext;
+    const {isDesktop} = useContext(ApiInfoContext);
 
 
     return (
@@ -32,11 +29,7 @@ function UnrpaApp() {
                 )}
                 <div className="col">
                     {isDesktop ? (
-                        fileSystemApi ? (
-                            <ElementExtractionChromium/>
-                        ) : (
-                            <FirefoxComponent/>
-                        )
+                        <ElementExtractionChromium/>
                     ) : (
                         <div>
                             <h2>🖥️ Desktop View Only! 🖥️</h2>
