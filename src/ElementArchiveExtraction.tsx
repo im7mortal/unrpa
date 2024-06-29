@@ -48,7 +48,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         }
 
         fetchAndUpdateMetadata()
-    }, [])
+    })
 
 
     const chooseDirectory = async () => {

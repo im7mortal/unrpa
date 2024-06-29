@@ -1,34 +1,31 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./overlay-spinner.css"
-import { DefaultExternalLoggerFunc, LogProvider } from "./LogProvider";
-import { LogLevel } from "./logInterface";
+import {DefaultExternalLoggerFunc, LogProvider} from "./LogProvider";
+import {LogLevel} from "./logInterface";
 import Logs from "./Logs";
 import UnrpaApp from "./UnrpaApp";
-import { SpinnerProvider } from "./spinnerContext";
-import React, { useState, useCallback, useEffect } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { ApiInfoProvider, defaultApiInfo } from "./ContextAPI";
-import { useDispatch } from 'react-redux';
-import { addFiles } from './redux/reducers';
-import { AppDispatch } from './redux/store';
-import { FileApi, FileExtraction } from './detectVersion';
+import {SpinnerProvider} from "./spinnerContext";
+import React, {useState, useCallback, useEffect} from 'react';
+import {useDropzone} from 'react-dropzone';
+import {DropdownFilesProvider} from "./DropdownFilesContext";
+import {ApiInfoProvider, defaultApiInfo} from "./ContextAPI";
 
 function UnrpaApp1() {
-    const dispatch = useDispatch<AppDispatch>();
+    const [files, setFiles] = useState<File[]>([]);
+
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
-        const newFiles: FileExtraction[] = acceptedFiles.map(file => ({
-            Id: file.name, // or any unique identifier
-            Fs: new FileApi(file, (s: string) => {}),
-            FileName: file.name,
-            Parsed: false,
-            SizeMsg: file.size + "",
-        }));
-
-        dispatch(addFiles(newFiles));
-    }, [dispatch]);
-
+        setFiles(prevFiles => {
+            const newFiles = acceptedFiles.filter(acceptedFile => !prevFiles.some(file =>
+                file.name === acceptedFile.name &&
+                file.size === acceptedFile.size &&
+                file.type === acceptedFile.type &&
+                file.lastModified === acceptedFile.lastModified
+            ));
+            return [...prevFiles, ...newFiles];
+        });
+    }, []);
     useDropzone({
         onDrop,
         noClick: true,
@@ -39,8 +36,9 @@ function UnrpaApp1() {
         function handleDrop(event: DragEvent) {
             event.preventDefault();
             if (event.dataTransfer) {
-                const droppedFiles = event.dataTransfer.files;
+                var droppedFiles = event.dataTransfer.files;
                 if (droppedFiles.length) {
+                    // Call our onDrop handler with the dropped files.
                     onDrop(Array.from(droppedFiles));
                 }
             }
@@ -53,27 +51,32 @@ function UnrpaApp1() {
         document.body.addEventListener('drop', handleDrop);
         document.body.addEventListener('dragover', handleDragOver);
 
-        return () => {
+        return (): void => {
             document.body.removeEventListener('drop', handleDrop);
             document.body.removeEventListener('dragover', handleDragOver);
         };
     }, [onDrop]);
 
+
     return (
         <div className={`container text-center `}>
+
             <LogProvider loggers={[
-                { logFunction: DefaultExternalLoggerFunc, logLevel: LogLevel.Error },
-                { logFunction: console.log, logLevel: LogLevel.Debug }
+                {logFunction: DefaultExternalLoggerFunc, logLevel: LogLevel.Error},
+                {logFunction: console.log, logLevel: LogLevel.Debug}
             ]}>
-                <ApiInfoProvider value={defaultApiInfo}>
-                    <SpinnerProvider>
-                        <UnrpaApp />
-                        <Logs />
-                    </SpinnerProvider>
-                </ApiInfoProvider>
+                <DropdownFilesProvider value={files}>
+                    <ApiInfoProvider value={defaultApiInfo}>
+                        <SpinnerProvider>
+                            <UnrpaApp/>
+                            <Logs/>
+                        </SpinnerProvider>
+                    </ApiInfoProvider>
+                </DropdownFilesProvider>
             </LogProvider>
-        </div>
-    );
+
+
+        </div>);
 }
 
 export default UnrpaApp1;
