@@ -31,7 +31,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     const fClass = useRef<FileSystemAccessApiInterface>(fClassE.Fs);
 
 
-    useEffect( ()  => {
+    useEffect(() => {
         const fetchAndUpdateMetadata = async () => {
             let resp: MetadataResponse = await fClass.current.extractMetadata();
             if (resp.Error !== "") {
@@ -48,7 +48,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         }
 
         fetchAndUpdateMetadata()
-    })
+    }, [])
 
 
     const chooseDirectory = async () => {

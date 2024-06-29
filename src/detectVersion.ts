@@ -374,7 +374,7 @@ export function fileExtractionCreator(sys: boolean, logMessage: logLevelFunction
             FileName: file.name,
             Id: uuidv4(),
             Parsed: true,
-            SizeMsg: "",
+            SizeMsg: formatBytes(file.size),
         }
     }
 }

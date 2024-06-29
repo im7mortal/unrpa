@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {useLogs} from './LogProvider';
@@ -7,37 +7,32 @@ import {FileExtraction} from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
 import {FilePicker} from './ElementFilePicker';
 import {DirectoryScanner} from './ElementDirectoryPicker';
+import {FilesContext} from "./DropdownFilesContext";
 
 function ElementExtractionChromium() {
-    // Implement your functions
-    const [Archives, setArchives] = useState<FileExtraction[]>([]);
     const {recordLog} = useLogs();
 
-    const handleFileSelection = (newFiles: FileExtraction) => {
-        setArchives(prevArchives => {
-            const existingIndex = prevArchives.findIndex(file => file.Id === newFiles.Id);
-            if (existingIndex >= 0) {
-                return prevArchives.map((file, index) => index === existingIndex ? newFiles : file);
-            } else {
-                return [...prevArchives, newFiles];
-            }
-        });
+    const {files, dispatch} = useContext(FilesContext);
+
+    const handleFileSelection = (fExtraction: FileExtraction) => {
+        dispatch({type: 'ADD', payload: fExtraction});
     };
 
 
-    if (Archives.length !== 0) {
+    if (files.length !== 0) {
         return (
             <div>
-                {Archives.map((item: FileExtraction, index: number) => (
+                {files.map((item: FileExtraction, index: number) => (
                     <ElementArchiveExtraction
                         fClassE={item}
                         logF={recordLog}
                         handleRemove={() => {
-                            setArchives(Archives.filter((_, i) => i !== index)); // This will remove current item from Archives
+                            dispatch({type: 'REMOVE', payload: item.Id})
                         }}
                         key={item.Id}
                     />
-                ))}            </div>);
+                ))}
+            </div>);
     } else {
         return (
             <div>
