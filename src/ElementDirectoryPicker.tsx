@@ -103,7 +103,7 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
     async function scan1(iterateDirectory: () => AsyncGenerator<File, void, undefined>) {
         try {
             const iterator = scanDir(iterateDirectory, (s: string, logLevel: number) => {
-            }, fileExtractionCreator((s: string, logLevel: number) => {
+            }, fileExtractionCreator(fileSystemApi, (s: string, logLevel: number) => {
             }), onFileSelected);
             for await (const file of iterator) {
                 onFileSelected(file);

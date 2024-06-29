@@ -23,7 +23,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     const [isDirectoryPicked, setDirectoryPicked] = useState(false);
     const [isExtracted, setExtracted] = useState(false);
     const [isExtracting, setExtracting] = useState(false);
-    const [isParsed, setParsed] = useState(true);
+    const [isParsed, setParsed] = useState(false);
 
 
     const {fileSystemApi} = useContext(ApiInfoContext);
@@ -31,7 +31,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     const fClass = useRef<FileSystemAccessApiInterface>(fClassE.Fs);
 
 
-    useEffect(() => {
+    useEffect( ()  => {
         const fetchAndUpdateMetadata = async () => {
             let resp: MetadataResponse = await fClass.current.extractMetadata();
             if (resp.Error !== "") {
@@ -39,9 +39,12 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                 console.log(resp.Error);
                 handleRemove()
             }
-
+            console.log(resp.Error);
             // TODO add promise resolver
             setParsed(true)
+
+            console.log(fClassE.FileName)
+
         }
 
         fetchAndUpdateMetadata()
@@ -58,7 +61,6 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                 } else {
                     // TODO handle error or fall back to some default behavior
                 }
-                ;
                 setDirectoryPicked(true);
             } catch (err) {
                 if (err instanceof DOMException && err.name === 'AbortError') {
@@ -87,7 +89,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
             <div className="col-1">
                 <ClipLoader color={'#123abc'} loading={isExtracting && !isExtracted} size={20}/>
             </div>
-            {isParsed ? (
+            {!isParsed ? (
                 <>
                     <div className="col-2">
                         <span>{fClassE.SizeMsg}</span>
@@ -107,7 +109,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                     </button>
                     <button
                         className={`btn ${isExtracted ? 'btn-success' : 'btn-primary'} me-3`}
-                        onClick={start} disabled={(!isDirectoryPicked && !fileSystemApi) || isExtracting}>Extract
+                        onClick={start} disabled={(!isDirectoryPicked && fileSystemApi) || isExtracting}>Extract
                     </button>
                     <button className={`btn ${isExtracted ? 'btn-success' : 'btn-danger'}`}
                             onClick={handleRemove} // handle remove do not cancel corresponding worker; it's not critical

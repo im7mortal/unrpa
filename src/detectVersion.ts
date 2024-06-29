@@ -360,13 +360,15 @@ function formatBytes(bytes: number): string {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-export function fileExtractionCreator(logMessage: logLevelFunction): (file: File) => FileExtraction {
+export function fileExtractionCreator(sys: boolean, logMessage: logLevelFunction): (file: File) => FileExtraction {
     return (file: File): FileExtraction => {
+        let fs: FileSystemAccessApiInterface
+        if (sys) {
+            fs = new FileSystemAccessApi(file, logMessage);
 
-        let fs: FileSystemAccessApiInterface = new FileSystemAccessApi(file, logMessage);
-        // if (firefox) {
-        //     fs = new FileApi(logMessage)
-        // }
+        } else {
+            fs = new FileApi(file, logMessage)
+        }
         return {
             Fs: fs,
             FileName: file.name,
