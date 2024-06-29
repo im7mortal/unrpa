@@ -1,6 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ElementExtractionChromium from './ElementExtractionChromium';
+import ElementExtraction from './ElementExtraction';
 import SyncLoader from 'react-spinners/SyncLoader';
 import React, {useContext} from 'react';
 import SpinnerContext from "./spinnerContext";
@@ -29,7 +29,7 @@ function UnrpaApp() {
                 )}
                 <div className="col">
                     {isDesktop ? (
-                        <ElementExtractionChromium/>
+                        <ElementExtraction/>
                     ) : (
                         <div>
                             <h2>🖥️ Desktop View Only! 🖥️</h2>

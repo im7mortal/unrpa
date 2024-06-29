@@ -9,7 +9,7 @@ import {FilePicker} from './ElementFilePicker';
 import {DirectoryScanner} from './ElementDirectoryPicker';
 import {FilesContext} from "./DropdownFilesContext";
 
-function ElementExtractionChromium() {
+function ElementExtraction() {
     const {recordLog} = useLogs();
 
     const {files, dispatch} = useContext(FilesContext);
@@ -49,4 +49,4 @@ function ElementExtractionChromium() {
     }
 }
 
-export default ElementExtractionChromium;
+export default ElementExtraction;
