@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./overlay-spinner.css"
 import React, {useState, useCallback, useEffect, useContext} from 'react';
 import {useDropzone} from 'react-dropzone';
-import {FilesContext} from "./DropdownFilesContext";
+import {FilesContext} from "./ContextDropdownFiles";
 import {FileExtraction, fileExtractionCreator,} from "./detectVersion";
 import ApiInfoContext from "./ContextAPI";
 import {MetadataResponse} from "./unrpaLib/unrpaLibTypes";

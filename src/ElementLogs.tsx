@@ -1,5 +1,5 @@
 import { VariableSizeList } from "react-window";
-import { useLogs } from './LogProvider';
+import { useLogs } from './ContextLog';
 const Logs = () => {
     const { logs } = useLogs();
     const getItemSize = (index:number) :number => {

@@ -36,7 +36,7 @@ export const DefaultExternalLoggerFunc: (message: string) => void = function log
   console.log("THIS FUNCTIONS MUST NOT BE CALLED")
 };
 
-export const LogProvider: React.FC<LogProviderProps> = ({ children, loggers }) => {
+export const ContextLog: React.FC<LogProviderProps> = ({ children, loggers }) => {
   const [logs, dispatch] = useReducer(logReducer, []);
 
   const recordLog = (message: string, logLevel: LogLevel): void => {

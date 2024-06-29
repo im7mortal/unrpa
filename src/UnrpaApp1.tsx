@@ -1,19 +1,19 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./overlay-spinner.css"
-import {DefaultExternalLoggerFunc, LogProvider} from "./LogProvider";
+import {DefaultExternalLoggerFunc, ContextLog} from "./ContextLog";
 import {LogLevel} from "./logInterface";
-import Logs from "./Logs";
+import ElementLogs from "./ElementLogs";
 import UnrpaApp from "./UnrpaApp";
-import {SpinnerProvider} from "./spinnerContext";
-import {FilesProvider} from "./DropdownFilesContext";
+import {SpinnerProvider} from "./ContextSpinner";
+import {FilesProvider} from "./ContextDropdownFiles";
 import {ApiInfoProvider, defaultApiInfo} from "./ContextAPI";
 import Drop from "./ElementFileDrop";
 
 function UnrpaApp1() {
     return (
         <div className={`container text-center `}>
-            <LogProvider loggers={[
+            <ContextLog loggers={[
                 {logFunction: DefaultExternalLoggerFunc, logLevel: LogLevel.Error},
                 {logFunction: console.log, logLevel: LogLevel.Debug}
             ]}>
@@ -22,11 +22,11 @@ function UnrpaApp1() {
                         <SpinnerProvider>
                             <Drop/>
                             <UnrpaApp/>
-                            <Logs/>
+                            <ElementLogs/>
                         </SpinnerProvider>
                     </ApiInfoProvider>
                 </FilesProvider>
-            </LogProvider>
+            </ContextLog>
         </div>);
 }
 

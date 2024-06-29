@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ElementExtraction from './ElementExtraction';
 import SyncLoader from 'react-spinners/SyncLoader';
 import React, {useContext} from 'react';
-import SpinnerContext from "./spinnerContext";
+import ContextSpinner from "./ContextSpinner";
 import "./overlay-spinner.css"
 import ApiInfoContext from "./ContextAPI";
 
@@ -11,7 +11,7 @@ import ApiInfoContext from "./ContextAPI";
 function UnrpaApp() {
 
 
-    const spinnerContext = useContext(SpinnerContext);
+    const spinnerContext = useContext(ContextSpinner);
     if (!spinnerContext) {
         throw new Error('SpinnerContext must be used within a SpinnerProvider');
     }

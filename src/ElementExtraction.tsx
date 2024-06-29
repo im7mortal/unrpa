@@ -1,13 +1,13 @@
 import React, {useState, useContext} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import {useLogs} from './LogProvider';
+import {useLogs} from './ContextLog';
 
 import {FileExtraction} from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
 import {FilePicker} from './ElementFilePicker';
 import {DirectoryScanner} from './ElementDirectoryPicker';
-import {FilesContext} from "./DropdownFilesContext";
+import {FilesContext} from "./ContextDropdownFiles";
 
 function ElementExtraction() {
     const {recordLog} = useLogs();

@@ -5,7 +5,7 @@ interface SpinnerContextProps {
     setSpinnerState: (state: boolean) => void;
 }
 
-const SpinnerContext = createContext<SpinnerContextProps | undefined>(undefined);
+const ContextSpinner = createContext<SpinnerContextProps | undefined>(undefined);
 
 export const SpinnerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [spinner, setSpinner] = useState(false);
@@ -15,10 +15,10 @@ export const SpinnerProvider: React.FC<{ children: ReactNode }> = ({ children })
     };
 
     return (
-        <SpinnerContext.Provider value={{ spinner, setSpinnerState }}>
+        <ContextSpinner.Provider value={{ spinner, setSpinnerState }}>
             {children}
-        </SpinnerContext.Provider>
+        </ContextSpinner.Provider>
     );
 };
 
-export default SpinnerContext;
+export default ContextSpinner;

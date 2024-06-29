@@ -4,7 +4,7 @@ import {
     scanDir,
     fileExtractionCreator
 } from './detectVersion';
-import SpinnerContext from "./spinnerContext";
+import ContextSpinner from "./ContextSpinner";
 import ApiInfoContext from "./ContextAPI";
 
 interface FilePickerProps {
@@ -27,7 +27,7 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
     const {fileSystemApi} = useContext(ApiInfoContext);
 
 
-    const spinnerContext = useContext(SpinnerContext);
+    const spinnerContext = useContext(ContextSpinner);
     if (!spinnerContext) {
         throw new Error('SpinnerContext must be used within a SpinnerProvider');
     }

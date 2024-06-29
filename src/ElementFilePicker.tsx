@@ -5,9 +5,9 @@ import {
     FileSystemAccessApiInterface,
     FileApi
 } from './detectVersion';
-import SpinnerContext from "./spinnerContext";
+import ContextSpinner from "./ContextSpinner";
 import ApiInfoContext from "./ContextAPI";
-import {useLogs} from "./LogProvider";
+import {useLogs} from "./ContextLog";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
@@ -24,7 +24,7 @@ export interface FileExtraction {
 
 export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
 
-    const spinnerContext = useContext(SpinnerContext);
+    const spinnerContext = useContext(ContextSpinner);
     if (!spinnerContext) {
         throw new Error('SpinnerContext must be used within a SpinnerProvider');
     }
