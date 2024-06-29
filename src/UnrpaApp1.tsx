@@ -9,6 +9,7 @@ import {SpinnerProvider} from "./spinnerContext";
 import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {DropdownFilesProvider} from "./DropdownFilesContext";
+import {ApiInfoProvider, defaultApiInfo} from "./ContextAPI";
 
 function UnrpaApp1() {
     const [files, setFiles] = useState<File[]>([]);
@@ -65,10 +66,12 @@ function UnrpaApp1() {
                 {logFunction: console.log, logLevel: LogLevel.Debug}
             ]}>
                 <DropdownFilesProvider value={files}>
-                    <SpinnerProvider>
-                        <UnrpaApp/>
-                        <Logs/>
-                    </SpinnerProvider>
+                    <ApiInfoProvider value={defaultApiInfo}>
+                        <SpinnerProvider>
+                            <UnrpaApp/>
+                            <Logs/>
+                        </SpinnerProvider>
+                    </ApiInfoProvider>
                 </DropdownFilesProvider>
             </LogProvider>
 

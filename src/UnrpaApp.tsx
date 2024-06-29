@@ -2,16 +2,12 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ElementExtractionChromium from './ElementExtractionChromium';
 import FirefoxComponent from './ElementExtractionFirefoxSafari';
-import * as bowser from "bowser";
 import SyncLoader from 'react-spinners/SyncLoader';
 import React, {useContext} from 'react';
 import SpinnerContext from "./spinnerContext";
 import "./overlay-spinner.css"
+import ApiInfoContext from "./ContextAPI";
 
-const parser = bowser.getParser(window.navigator.userAgent);
-const browserName: string = parser.getBrowserName();
-const chromium: boolean = !(browserName === "Safari" || browserName === "Firefox");
-const isDesktope: boolean = (parser.getPlatform().type === "desktop")
 
 function UnrpaApp() {
 
@@ -22,6 +18,9 @@ function UnrpaApp() {
     }
     // eslint-disable-next-line
     const {spinner, setSpinnerState} = spinnerContext;
+    // eslint-disable-next-line
+    const {fileSystemApi, isDesktop} = useContext(ApiInfoContext);
+
 
     return (
         <>
@@ -32,8 +31,8 @@ function UnrpaApp() {
                     </div>
                 )}
                 <div className="col">
-                    {isDesktope ? (
-                        chromium ? (
+                    {isDesktop ? (
+                        fileSystemApi ? (
                             <ElementExtractionChromium/>
                         ) : (
                             <FirefoxComponent/>
