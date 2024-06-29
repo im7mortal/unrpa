@@ -391,12 +391,6 @@ export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void
             fs.Parsed = false
             fs.SizeMsg = formatBytes(file.size);
             onFileSelected(fs)
-            const callback = () => {
-                fs.Parsed = true;
-                onFileSelected(fs)
-
-            };
-
 
             let metadataPromise: Promise<MetadataResponse> = fs.Fs.extractMetadata();
             promises.push(metadataPromise);

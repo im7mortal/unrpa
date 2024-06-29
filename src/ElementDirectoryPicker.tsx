@@ -1,14 +1,11 @@
 import React, {FC, MouseEvent, useContext} from 'react';
-import {v4 as uuidv4} from 'uuid';
 import {
-    FileSystemAccessApi,
     FileSystemAccessApiInterface,
     scanDir,
-    fileExtractionCreator, FileApi
+    fileExtractionCreator
 } from './detectVersion';
 import SpinnerContext from "./spinnerContext";
 import ApiInfoContext from "./ContextAPI";
-import {useLogs} from "./LogProvider";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;

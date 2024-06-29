@@ -6,7 +6,7 @@ import {LogLevel} from "./logInterface";
 import Logs from "./Logs";
 import UnrpaApp from "./UnrpaApp";
 import {SpinnerProvider} from "./spinnerContext";
-import React, {useMemo, useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {DropdownFilesProvider} from "./DropdownFilesContext";
 import {ApiInfoProvider, defaultApiInfo} from "./ContextAPI";
@@ -26,7 +26,7 @@ function UnrpaApp1() {
             return [...prevFiles, ...newFiles];
         });
     }, []);
-    const {getRootProps, getInputProps} = useDropzone({
+    useDropzone({
         onDrop,
         noClick: true,
         preventDropOnDocument: true,
