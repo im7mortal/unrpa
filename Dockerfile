@@ -13,6 +13,8 @@ RUN GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
 
 FROM registry.hub.docker.com/library/node:22
 
+ENV DOCKER_ENV="TRUE"
+
 # Install build-essential for native dependencies
 RUN apt-get update && apt-get install -y \
      build-essential

@@ -8,6 +8,7 @@
 !/config-overrides.js
 !/package.json
 !/package-lock.json
+!/onlyForDockerEnv.sh
 
 ## Source
 !/go/**
