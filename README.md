@@ -54,6 +54,7 @@ It requires execution permissions for [onlyForDockerEnv.sh](onlyForDockerEnv.sh)
  sudo chmod +x onlyForDockerEnv.sh 
 ```
 
+Kill the container with **Ctrl+Z**
 
 
 
