@@ -44,7 +44,15 @@ Firefox and Safari don't want to implement FileSystemAccessApi
 - [ ] maybe replace JSZIP with something better
 
 
+## Development
 
+The project will work from the box if you use docker. Just run.sh.
+
+It requires execution permissions for [onlyForDockerEnv.sh](onlyForDockerEnv.sh) set on host.
+
+```shell
+ sudo chmod +x onlyForDockerEnv.sh 
+```
 
 
 
