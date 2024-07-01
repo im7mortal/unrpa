@@ -37,6 +37,7 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
+    "prestart": "cp /unrpa.wasm ./public/unrpa.wasm || true # only for docker dev runs",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"

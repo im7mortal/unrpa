@@ -17,6 +17,8 @@ FROM registry.hub.docker.com/library/node:22
 RUN apt-get update && apt-get install -y \
      build-essential
 
+COPY --from=build /build/wasm/unrpa.wasm /unrpa.wasm
+
 # Set the working directory inside the container
 WORKDIR /app
 
