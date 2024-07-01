@@ -328,19 +328,6 @@ export class FileApi extends Extractor implements FClassInterface {
     }
 }
 
-declare global {
-    interface Window {
-        glog: any;
-        myApp: any;
-    }
-}
-
-window.glog = {
-    error: function (result: any) {
-        console.log(result)
-    }
-}
-
 export interface FileExtraction {
     Id: string
     Fs: FileSystemAccessApiInterface
