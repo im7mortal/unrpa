@@ -32,8 +32,10 @@ jobs:
         run: |
           
           # compile wasm
+          cd go
           GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
-          cp wasm/unrpa.wasm public/unrpa.wasm
+          cd ..
+          cp go/wasm/unrpa.wasm public/unrpa.wasm
           
           # build react
           npm install
