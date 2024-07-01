@@ -268,8 +268,7 @@ export class FileApi extends Extractor implements FClassInterface {
     }
 
     async readBlobFromFileD(file: File, offset: number, length: number) {
-        const blob = file.slice(offset, offset + length);
-        return blob;
+        return file.slice(offset, offset + length);
     }
 
     async saveBlobToFileD(content: Blob, fileName: string) {
