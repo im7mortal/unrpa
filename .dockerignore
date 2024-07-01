@@ -1,0 +1,27 @@
+# Ignore everything
+**
+
+# Allow files and directories
+
+## Dependencies
+!/tsconfig.json
+!/config-overrides.js
+!/package.json
+!/package-lock.json
+
+## Source
+!/go/**
+!/src/**
+!/public/**
+!/descriptor/**
+
+## Assets
+!/assets/**
+!/tests/**
+
+# Ignore unnecessary files inside allowed directories
+# This should go after the allowed directories
+**/*~
+**/*.log
+**/.DS_Store
+**/Thumbs.db
