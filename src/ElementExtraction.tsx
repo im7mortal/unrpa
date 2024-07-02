@@ -42,7 +42,7 @@ function ElementExtraction() {
                     <DirectoryScanner onFileSelected={handleFileSelection}/>
                 </div>
                 <div className="col">
-                    <span className="fs-2 font-weight-bold me-3 ms-3 invisible">DRAG AND DROP FILES</span>
+                    <span className="fs-2 font-weight-bold me-3 ms-3 ">DRAG AND DROP FILES 📂</span>
                 </div>
             </div>
         );
