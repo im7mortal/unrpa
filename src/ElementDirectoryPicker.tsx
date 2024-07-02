@@ -1,8 +1,8 @@
 import React, {FC, MouseEvent, useContext} from 'react';
 import {
-    FileSystemAccessApiInterface,
     scanDir,
-    fileExtractionCreator
+    fileExtractionCreator,
+    FileExtraction
 } from './detectVersion';
 import ContextSpinner from "./ContextSpinner";
 import ApiInfoContext from "./ContextAPI";
@@ -10,16 +10,6 @@ import ApiInfoContext from "./ContextAPI";
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
 }
-
-
-export interface FileExtraction {
-    Fs: FileSystemAccessApiInterface;
-    FileName: string;
-    Id: string;
-    Parsed: boolean;
-    SizeMsg: string;
-}
-
 
 export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
     const inputRef = React.useRef<HTMLInputElement>(null);
