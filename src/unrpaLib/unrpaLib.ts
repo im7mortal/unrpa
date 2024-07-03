@@ -1,7 +1,7 @@
-import {parseMetadata as parseMetadataWasm} from "./unrpaLibMetadataParseWASM"
+// import {parseMetadata} from "./unrpaLibMetadataParseWASM"
 import {parseMetadata} from "./unrpaLibMetadataParseNative"
 import {FileHeader} from "./unrpaLibTypes"
-import ms from 'ms';
+
 
 interface RPAHeader {
     offsetNumber: number,
@@ -112,24 +112,6 @@ class Extractor {
                 const reader = new FileReader();
                 reader.onload = async (e: any): Promise<void> => {
                     try {
-
-                        const startTimeWasm = performance.now();
-                        await parseMetadataWasm(new Uint8Array(e.target.result), keyNumber);
-                        const endTimeWasm = performance.now();
-
-                        const startTimeJS = performance.now();
-                        await parseMetadata(new Uint8Array(e.target.result), keyNumber);
-                        const endTimeJS = performance.now();
-
-                        const wasmExecutionTime = endTimeWasm - startTimeWasm;
-                        const jsExecutionTime = endTimeJS - startTimeJS;
-                        const diff = wasmExecutionTime - jsExecutionTime;
-
-                        console.log('Wasm Execution Time: ', ms(wasmExecutionTime), ' ms (~', ms(wasmExecutionTime, {long: true}), ')');
-                        console.log('JS Execution Time: ', ms(jsExecutionTime), ' ms (~', ms(jsExecutionTime, {long: true}), ')');
-                        console.log('Difference: ', ms(diff), ' ms (~', ms(diff, {long: true}), ')');
-
-
                         resolve(parseMetadata(new Uint8Array(e.target.result), keyNumber))
                     } catch (err) {
                         reject(err);
