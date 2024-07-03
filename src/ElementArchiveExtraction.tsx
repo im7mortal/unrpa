@@ -39,11 +39,8 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                 console.log(resp.Error);
                 handleRemove()
             }
-            console.log(resp.Error);
             // TODO add promise resolver
             setParsed(true)
-
-            console.log(fClassE.FileName)
 
         }
 
