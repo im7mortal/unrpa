@@ -44,6 +44,6 @@ JS Execution Time: 47ms
 Difference: ~1s
 
 Wasm Execution Time:  24s  ms (~ 24 seconds )
-JS Execution Time:  99ms  ms (~ 99 ms )
-Difference:  24s  ms (~ 24 seconds )
+JS Execution Time:  141ms  ms (~ 141 ms )
+Difference:  23s  ms (~ 23 seconds )
 ```
