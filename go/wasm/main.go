@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/im7mortal/unrpa/pkg/rpaDecoder"
 	"syscall/js"
 	"sort"
@@ -15,7 +14,7 @@ type Response struct {
 }
 
 func receiveBytes(this js.Value, inputs []js.Value) any {
-	js.Global().Get("console").Call("log", fmt.Sprintf("NOTSSORTEDfrom wasm; arr len %d\n", len(inputs)))
+// 	js.Global().Get("console").Call("log", fmt.Sprintf("NOTSSORTEDfrom wasm; arr len %d\n", len(inputs)))
 
 	// Convert js.Value to Go byte slice
 	uint8Array := js.Global().Get("Uint8Array").New(inputs[0])
