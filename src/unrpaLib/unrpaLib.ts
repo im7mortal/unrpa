@@ -1,4 +1,4 @@
-// import {parseMetadata} from "./unrpaLibMetadataParseWASM"
+import {parseMetadata as parseMetadataWasm} from "./unrpaLibMetadataParseWASM"
 import {parseMetadata} from "./unrpaLibMetadataParseNative"
 import {FileHeader} from "./unrpaLibTypes"
 
@@ -112,6 +112,33 @@ class Extractor {
                 const reader = new FileReader();
                 reader.onload = async (e: any): Promise<void> => {
                     try {
+
+                        const responseWasmPromise = parseMetadataWasm(new Uint8Array(e.target.result), keyNumber);
+                        const responseJsPromise = parseMetadata(new Uint8Array(e.target.result), keyNumber);
+
+                        Promise.all([responseWasmPromise, responseJsPromise]).then(([responseWasm, responseJs]) => {
+                            // Converting from string to object
+                            const responseWasmObject: MetadataResponse = JSON.parse(responseWasm);
+                            const responseJsObject: MetadataResponse = JSON.parse(responseJs);
+
+                            // Deleting the `Field` property for comparison
+                            for (let fileHeader of responseWasmObject.FileHeaders) {
+                                delete fileHeader['Field'];
+                            }
+
+                            for (let fileHeader of responseJsObject.FileHeaders) {
+                                delete fileHeader['Field'];
+                            }
+                            let a1 = JSON.stringify(responseWasmObject)
+                            let a2 = JSON.stringify(responseJsObject)
+                            console.log(a1 === a2);
+                            if (a1 !== a2) {
+                                console.log(a1)
+                                console.log(a2)
+                            }
+                        });
+
+
                         resolve(parseMetadata(new Uint8Array(e.target.result), keyNumber))
                     } catch (err) {
                         reject(err);
