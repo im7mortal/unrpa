@@ -1,4 +1,5 @@
-import {parseMetadata} from "./unrpaLibMetadataParseWASM"
+// import {parseMetadata} from "./unrpaLibMetadataParseWASM"
+import {parseMetadata} from "./unrpaLibMetadataParseNative"
 import {FileHeader} from "./unrpaLibTypes"
 
 
