@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '^1.22'
+#      - uses: actions/setup-go@v5
+#        with:
+#          go-version: '^1.22'
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -32,10 +32,10 @@ jobs:
         run: |
           
           # compile wasm
-          cd go
-          GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
-          cd ..
-          cp go/wasm/unrpa.wasm public/unrpa.wasm
+          # cd go
+          # GOOS=js GOARCH=wasm go build -o wasm/unrpa.wasm wasm/main.go
+          # cd ..
+          # cp go/wasm/unrpa.wasm public/unrpa.wasm
           
           # build react
           npm install

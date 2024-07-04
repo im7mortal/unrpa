@@ -21,7 +21,7 @@ module.exports = function override(config, env) {
         new CopyPlugin({
             patterns: [
                 { from: 'public/wasm_exec.js', to: 'static/js/' },
-                { from: 'public/unrpa.wasm', to: 'static/js/' }, // I don't know why Webpack expect wasm in js directory
+                //{ from: 'public/unrpa.wasm', to: 'static/js/' }, // I don't know why Webpack expect wasm in js directory
             ],
         }),
     ];
