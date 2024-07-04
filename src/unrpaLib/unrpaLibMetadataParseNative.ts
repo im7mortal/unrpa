@@ -3,11 +3,6 @@ import {inflate} from "pako";
 import {Parser} from "pickleparser";
 import {MetadataResponse} from "./unrpaLib";
 import JSBI from 'jsbi';
-interface RPAHeader {
-    offsetNumber: number,
-    keyNumber: number
-    Error: string,
-}
 
 interface PickleEntrance {
     [key: string]: Array<[number, number, string]>;
@@ -26,7 +21,7 @@ function transformFontData(input: PickleEntrance, keyNumber: number): MetadataRe
         for (const [offset, len, field] of values) {
             let transformedOffset = offset;
             let transformedLen = len;
-            if (keyNumber != 0) {
+            if (keyNumber !== 0) {
                 transformedOffset = xorBigInt(JSBI.BigInt(offset), keyBig);
                 transformedLen = xorBigInt(JSBI.BigInt(len), keyBig);
             }
@@ -50,6 +45,5 @@ export async function parseMetadata(input: Uint8Array, keyNumber: number): Promi
     const decompressedBuffer = inflate(input);
     const parser = new Parser();
     const obj: PickleEntrance = parser.parse(decompressedBuffer);
-    const json = JSON.stringify(obj, null, 4);
     return JSON.stringify(transformFontData(obj, keyNumber)); //TODO just for development
 }
