@@ -102,6 +102,7 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
     }
 
     async extract() {
+        console.time("extract_access");
         for (let i = 0; i < this.Metadata.length; i++) {
             if (this.canceled) {
                 this.logMessage(`EXTRACTION IS CANCELED`, LogLevel.Info);
@@ -116,7 +117,7 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
             const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
             await this.saveBlobToFile(blob, fileName, targetDirectoryHandle);
         }
-
+        console.timeEnd("extract_access")
         this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
     }
 

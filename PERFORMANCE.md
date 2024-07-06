@@ -66,3 +66,10 @@ failed; don't want measure again; but it took longer
 ```text
 extract: 131037ms - timer ended
 ```
+
+### File System Access API try to split write to workers
+
+```text
+no split
+extract_access: 40576.914794921875 ms
+```
