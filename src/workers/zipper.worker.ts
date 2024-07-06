@@ -14,11 +14,9 @@ async function readBlobFromFileD(file: File, offset: number, length: number) {
     return file.slice(offset, offset + length);
 }
 
-async function createZip(file: File, group: GroupZipSort[]): Promise<ZipWorkerOut> {
+async function createZip(file: File, group: GroupZipSort[], zipIndex: number ): Promise<ZipWorkerOut> {
 // Initialize JSZip
     let zip = new JSZip();
-    let zipIndex: number = 0;
-    console.log(group)
     for (let entry of group) {
         // if (self.canceled) {
         //     this.logMessage(`EXTRACTON CANCELED`, LogLevel.Info)
@@ -26,7 +24,6 @@ async function createZip(file: File, group: GroupZipSort[]): Promise<ZipWorkerOu
         // }
         for (let f of entry.entries) {
             let blob: Blob = await readBlobFromFileD(file, f.Offset, f.Len);
-            console.log(f.Name, blob.size)
             zip.file(f.Name, blob);
         }
     }

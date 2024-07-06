@@ -153,9 +153,9 @@ class WorkerPoolZipper {
         return WorkerPoolZipper.instance;
     }
 
-    public async addTask(file: File, group: GroupZipSort[]): Promise<ZipWorkerOut> {
+    public async addTask(file: File, group: GroupZipSort[], zipIndex: number ): Promise<ZipWorkerOut> {
         try {
-            return await this.pool.exec('zip', [file, group]);
+            return await this.pool.exec('zip', [file, group, zipIndex]);
         } catch (error) {
             console.error('Error executing task:', error);
             throw 'Error executing task:' + error // TODO
@@ -208,18 +208,15 @@ export class FileApi extends Extractor implements FClassInterface {
     }
 
     async extract() {
-        let self = this;
         console.time("extract");
-
+        let self = this;
         const tasks: Promise<any>[] = [];
-
+        let n: number = 0;
         for (let group of this.ZipGroups) {
+            n++ // we start from 1; as this software intended not for programmers; index will be used in the filename
 
-            console.log(group)
-
-            const taskPromise = self.workerPoolZ.addTask(self.file, group)
+            const taskPromise = self.workerPoolZ.addTask(self.file, group, n)
                 .then(result => {
-                    console.log('Task result:', result);
                     self.saveBlobToFileD(result.content, `extracted_${result.zipIndex}.zip`)
                     this.logMessage("saved", LogLevel.Info)
                 })
@@ -227,7 +224,6 @@ export class FileApi extends Extractor implements FClassInterface {
                     console.error('Task failed:', error);
                 });
             tasks.push(taskPromise);
-
         }
         await Promise.allSettled(tasks);
 
