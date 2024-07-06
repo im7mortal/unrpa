@@ -1,3 +1,5 @@
+### NATIVE_VS_WASM
+
 ```text
 Wasm Execution Time: 377ms  
 JS Execution Time: 25ms  
@@ -46,4 +48,15 @@ Difference: ~1s
 Wasm Execution Time:  24s  ms (~ 24 seconds )
 JS Execution Time:  141ms  ms (~ 141 ms )
 Difference:  23s  ms (~ 23 seconds )
+```
+
+
+### Send File to worker
+
+```text
+Send
+extract: 655628ms - timer ended (11 mins)
+
+Not send
+failed; don't want measure again; but it took longer
 ```
