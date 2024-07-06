@@ -60,3 +60,9 @@ extract: 655628ms - timer ended (11 mins)
 Not send
 failed; don't want measure again; but it took longer
 ```
+
+### Switched to @zip.js/zip.js
+
+```text
+extract: 131037ms - timer ended
+```
