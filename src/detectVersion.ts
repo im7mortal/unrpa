@@ -166,7 +166,7 @@ class WorkerPoolZipper {
 
 
 export class FileApi extends Extractor implements FClassInterface {
-    ZipGroups: any = null;
+    ZipGroups: GroupZipSort[][] = [];
     ZipSize: number = 250 * 1024 * 1024;
     Metadata: FileHeader[] = [];
     workers: any = [];
