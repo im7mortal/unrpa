@@ -1,37 +1,41 @@
 // Import JSZip library (replace the path with your actual path to the library)
+import {FileHeader} from "../unrpaLib/unrpaLibTypes";
+import * as workerpool from 'workerpool';
+import {LogLevel} from "../logInterface";
+import {GroupZipSort, ZipWorkerOut} from "../detectVersion";
+
 importScripts("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js");
+
+
 declare var JSZip: any;
+
+
+async function readBlobFromFileD(file: File, offset: number, length: number) {
+    return file.slice(offset, offset + length);
+}
+
+async function createZip(file: File, group: GroupZipSort[]): Promise<ZipWorkerOut> {
 // Initialize JSZip
-let zip = new JSZip();
-let zipIndex: number = 0;
-
-// The worker listens for the 'message' event
-// eslint-disable-next-line no-restricted-globals
-self.addEventListener('message', (e: MessageEvent) => {
-    if (e.data) {
-        const {action, payload} = e.data;
-
-        switch (action) {
-            case 'addTask':
-                const {filename, data} = payload;
-                zip.file(filename, data);
-                break;
-            case 'finalize':
-                zipIndex = e.data.zipIndex
-                finalizeZip();
-                break;
-            default:
-                console.error('Unknown action received: ', action);
+    let zip = new JSZip();
+    let zipIndex: number = 0;
+    console.log(group)
+    for (let entry of group) {
+        // if (self.canceled) {
+        //     this.logMessage(`EXTRACTON CANCELED`, LogLevel.Info)
+        //     return
+        // }
+        for (let f of entry.entries) {
+            let blob: Blob = await readBlobFromFileD(file, f.Offset, f.Len);
+            console.log(f.Name, blob.size)
+            zip.file(f.Name, blob);
         }
     }
-}, false);
 
-async function finalizeZip() {
     let lastPercent = 0;
     const content: Blob = await zip.generateAsync({
             type: "blob",
             compression: "STORE"
-        }, function updateCallback(metadata: any) : void {
+        }, function updateCallback(metadata: any): void {
             // Check if the current percentage is different from the last reported
             if (metadata.percent.toFixed() !== lastPercent.toFixed()) {
                 lastPercent = metadata.percent
@@ -41,14 +45,17 @@ async function finalizeZip() {
                     msg += "\t" + metadata.currentFile;
                 }
                 // eslint-disable-next-line no-restricted-globals
-                self.postMessage({status: 'progress', content: msg});
+                // self.postMessage({status: 'progress', content: msg});
             }
         }
     );
-    // eslint-disable-next-line no-restricted-globals
-    self.postMessage({status: 'finished', content: content, zipIndex: zipIndex});
-
+    return {content: content, zipIndex: zipIndex}
 }
+
+workerpool.worker({
+    zip: createZip
+});
+export {};
 
 
 export {};

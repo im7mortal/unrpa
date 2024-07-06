@@ -133,6 +133,37 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
     }
 }
 
+
+class WorkerPoolZipper {
+    private static instance: WorkerPoolZipper;
+    private pool: workerpool.Pool;
+    private maxWorkers: number = 4;
+
+    private constructor() {
+        // webpack understand from this part that we need compile separate worker file from this .ts
+        const WorkerURL = new WorkerUrl(new URL('./workers/zipper.worker.ts', import.meta.url))
+        this.pool = workerpool.pool(WorkerURL.toString(), {maxWorkers: this.maxWorkers});
+    }
+
+    public static getInstance(): WorkerPoolZipper {
+        if (!WorkerPoolZipper.instance) {
+            WorkerPoolZipper.instance = new WorkerPoolZipper();
+        }
+
+        return WorkerPoolZipper.instance;
+    }
+
+    public async addTask(file: File, group: GroupZipSort[]): Promise<ZipWorkerOut> {
+        try {
+            return await this.pool.exec('zip', [file, group]);
+        } catch (error) {
+            console.error('Error executing task:', error);
+            throw 'Error executing task:' + error // TODO
+        }
+    }
+}
+
+
 export class FileApi extends Extractor implements FClassInterface {
     ZipGroups: any = null;
     ZipSize: number = 250 * 1024 * 1024;
@@ -143,12 +174,14 @@ export class FileApi extends Extractor implements FClassInterface {
     cancelExtraction: (() => void) | null = null;
 
     logMessage: logLevelFunction;
+    private workerPoolZ: WorkerPoolZipper;
 
 
     constructor(file: File, logMessage: logLevelFunction) {
         super(logMessage)
         this.file = file
         this.logMessage = logMessage
+        this.workerPoolZ = WorkerPoolZipper.getInstance();
     }
 
 
@@ -178,98 +211,28 @@ export class FileApi extends Extractor implements FClassInterface {
         let self = this;
         console.time("extract");
 
+        const tasks: Promise<any>[] = [];
 
-        const maxWorkers: number = 4;
-        this.logMessage("create workers", LogLevel.Info)
-        const workers = Array.from({length: maxWorkers}, (_, index) => {
-            const worker: Worker = new Worker(new URL('./workers/zipper.worker.ts', import.meta.url));
-            // worker.name = `Worker-${index}`;
-            return worker;
-        });
-        this.logMessage("workers created", LogLevel.Info)
-
-        let busyWorkers = new Array(maxWorkers).fill(false);
-
-        this.cancelExtraction = () => {
-            workers.forEach((worker, index) => {
-                worker.terminate();
-            })
-        }
-
-        workers.forEach((worker, index) => {
-            worker.onmessage = (e: any) => {
-
-                if (e.data.status === 'finished') {
-                    this.logMessage("ITS DNE MESSAG", LogLevel.Info)
-                    // this.logMessage(`${worker.name} is free!`);
-                    busyWorkers[index] = false;
-                    this.saveBlobToFileD(e.data.content, `extracted_${e.data.zipIndex}.zip`)
-                    this.logMessage("saved", LogLevel.Info)
-                }
-
-                if (e.data.status === 'progress') {
-                    this.logMessage(e.data.content, LogLevel.Info)
-                }
-
-            }
-        });
-
-        async function getFreeWorker() {
-            let index = busyWorkers.indexOf(false);
-            while (index === -1) {
-                await new Promise(resolve => setTimeout(resolve, 10));
-                index = busyWorkers.indexOf(false);
-            }
-            busyWorkers[index] = true;
-            return index;
-        }
-
-        let indZip = 0;
         for (let group of this.ZipGroups) {
-            this.logMessage("STARTED NEW GROUP", LogLevel.Info)
-            const workerIndex = await getFreeWorker();
-            for (let subGroup of group) {
-                for (let entry of subGroup.entries) {
-                    if (self.canceled) {
-                        this.logMessage(`EXTRACTON CANCELED`, LogLevel.Info)
-                        return
-                    }
-                    let blob = await this.readBlobFromFileD(this.file, entry.Offset, entry.Len);
-                    workers[workerIndex].postMessage({
-                        action: 'addTask',
-                        payload: {
-                            filename: entry.Name,
-                            data: blob,
-                        }
-                    });
-                }
-            }
-            workers[workerIndex].postMessage({
-                action: 'finalize', zipIndex: indZip
-            });
-            indZip++;
+
+            console.log(group)
+
+            const taskPromise = self.workerPoolZ.addTask(self.file, group)
+                .then(result => {
+                    console.log('Task result:', result);
+                    self.saveBlobToFileD(result.content, `extracted_${result.zipIndex}.zip`)
+                    this.logMessage("saved", LogLevel.Info)
+                })
+                .catch(error => {
+                    console.error('Task failed:', error);
+                });
+            tasks.push(taskPromise);
+
         }
+        await Promise.allSettled(tasks);
 
-
-        async function waitForAllWorkersFree() {
-            while (busyWorkers.some(value => value === true) && !self.canceled) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-            console.log('All workers are free!');
-        }
-
-        await waitForAllWorkersFree()
-
-        if (self.canceled) {
-            this.logMessage(`EXTRACTON CANCELED`, LogLevel.Info)
-            return
-        }
         this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
         console.timeEnd("extract");
-    }
-
-    async readBlobFromFileD(file: File, offset: number, length: number) {
-        return file.slice(offset, offset + length);
     }
 
     async saveBlobToFileD(content: Blob, fileName: string) {
@@ -396,8 +359,13 @@ export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void
 }
 
 
-interface GroupZipSort  {
+export interface GroupZipSort {
     subPath: string
     entries: FileHeader[]
     totalSize: number
+}
+
+export interface ZipWorkerOut {
+    content: Blob
+    zipIndex: number
 }
