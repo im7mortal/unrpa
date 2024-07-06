@@ -6,6 +6,7 @@ import {logLevelFunction, LogLevel} from './logInterface';
 
 import {WorkerUrl} from 'worker-url';
 import workerpool from 'workerpool';
+import {groupBySubdirectory, GroupFilesFunction, GroupZipSort} from "./unrpaLib/unrpaGroupFunction";
 
 
 class WorkerPool {
@@ -154,7 +155,7 @@ class WorkerPoolZipper {
         return WorkerPoolZipper.instance;
     }
 
-    public async addTask(file: File, group: GroupZipSort[], zipIndex: number ): Promise<ZipWorkerOut> {
+    public async addTask(file: File, group: GroupZipSort[], zipIndex: number): Promise<ZipWorkerOut> {
         try {
             return await this.pool.exec('zip', [file, group, zipIndex]);
         } catch (error) {
@@ -175,13 +176,15 @@ export class FileApi extends Extractor implements FClassInterface {
     cancelExtraction: (() => void) | null = null;
 
     logMessage: logLevelFunction;
+    groupFunc: GroupFilesFunction;
     private workerPoolZ: WorkerPoolZipper;
 
 
-    constructor(file: File, logMessage: logLevelFunction) {
+    constructor(file: File, logMessage: logLevelFunction, groupFunc: GroupFilesFunction = groupBySubdirectory) {
         super(logMessage)
         this.file = file
         this.logMessage = logMessage
+        this.groupFunc = groupFunc
         this.workerPoolZ = WorkerPoolZipper.getInstance();
     }
 
@@ -202,7 +205,7 @@ export class FileApi extends Extractor implements FClassInterface {
             this.Metadata = metadata.FileHeaders
         }
 
-        this.ZipGroups = this.groupBySubdirectory(this.Metadata, this.ZipSize)
+        this.ZipGroups = this.groupFunc(this.Metadata, this.ZipSize)
         console.log(this.ZipGroups)
         this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`, LogLevel.Info)
         return metadata
@@ -245,47 +248,6 @@ export class FileApi extends Extractor implements FClassInterface {
         this.logMessage(`File saved: ${fileName}`, LogLevel.Info);
     }
 
-    groupBySubdirectory(entries: FileHeader[], maxSizeInBytes: number = 250 * 1024 * 1024): GroupZipSort[][] {
-        const groups: { [key: string]: GroupZipSort } = {};
-
-        entries.forEach((entry: FileHeader) => {
-            const subPath: string = entry.Name.substring(0, entry.Name.lastIndexOf('/'));
-
-            if (!groups[subPath]) {
-                groups[subPath] = {subPath: subPath, entries: [], totalSize: 0};
-            }
-
-            groups[subPath].entries.push(entry);
-            groups[subPath].totalSize += entry.Len;
-        });
-
-        const groupsArray: any[] = [];
-        for (const key in groups) {
-            if (groups.hasOwnProperty(key)) {
-                groupsArray.push(groups[key]);
-            }
-        }
-
-        groupsArray.sort((a: any, b: any) => a.subPath.localeCompare(b.subPath));
-
-        let chunks: GroupZipSort[][] = [];
-        let currentChunk: GroupZipSort[] = [];
-        let currentChunkSize: number = 0;
-        groupsArray.forEach(group => {
-            if (currentChunkSize + group.totalSize > maxSizeInBytes) {
-                chunks.push(currentChunk);
-                currentChunk = [];
-                currentChunkSize = 0;
-            }
-
-            currentChunk.push(group);
-            currentChunkSize += group.totalSize;
-        });
-        if (currentChunk.length !== 0) {
-            chunks.push(currentChunk);
-        }
-        return chunks;
-    }
 }
 
 export interface FileExtraction {
@@ -353,13 +315,6 @@ export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void
             console.log(metadata.Error);
         }
     }
-}
-
-
-export interface GroupZipSort {
-    subPath: string
-    entries: FileHeader[]
-    totalSize: number
 }
 
 export interface ZipWorkerOut {

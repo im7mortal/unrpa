@@ -1,7 +1,8 @@
 import { BlobReader, ZipWriter } from "@zip.js/zip.js";
 import * as workerpool from 'workerpool';
 import { LogLevel } from "../logInterface";
-import { GroupZipSort, ZipWorkerOut } from "../detectVersion";
+import { ZipWorkerOut } from "../detectVersion";
+import {GroupZipSort} from "../unrpaLib/unrpaGroupFunction";
 
 async function readBlobFromFileD(file: File, offset: number, length: number) {
     return file.slice(offset, offset + length);
