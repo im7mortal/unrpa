@@ -67,6 +67,18 @@ failed; don't want measure again; but it took longer
 extract: 131037ms - timer ended
 ```
 
+### Used size only grouping function
+
+```text
+extract: 99286ms - timer ended
+```
+
+### Used mock grouping function (1 file; requires a lot of memory)
+
+```text
+extract: 225305ms - timer ended
+```
+
 ### File System Access API try to split write to workers
 
 ```text

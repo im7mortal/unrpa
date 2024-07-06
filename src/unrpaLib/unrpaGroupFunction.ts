@@ -7,7 +7,7 @@ export interface GroupZipSort {
     totalSize: number
 }
 
-export type GroupFilesFunction = (entries: FileHeader[], maxSizeInBytes?: number) => GroupZipSort[][];
+export type GroupFilesFunction = (entries: FileHeader[], maxSizeInBytes?: number, numberOfGroups?: number) => GroupZipSort[][];
 
 export function groupSimpleOne(entries: FileHeader[]): GroupZipSort[][] {
     const allFilesGroup: GroupZipSort = {
@@ -79,5 +79,35 @@ export function groupBySubdirectory(entries: FileHeader[], maxSizeInBytes: numbe
     if (currentChunk.length !== 0) {
         chunks.push(currentChunk);
     }
+    return chunks;
+}
+
+export function groupByEqualMemory(entries: FileHeader[], numberOfGroups: number = 4): GroupZipSort[][] {
+    console.log(`GROUP ${numberOfGroups}`)
+    const maxNGroups = 30
+    if (numberOfGroups > maxNGroups) {
+        throw new Error(`Number of groups (${numberOfGroups}) exceeds ${maxNGroups}, which is likely a misconfiguration.`);
+    }
+
+    const totalSize = entries.reduce((total, entry) => total + entry.Len, 0);
+    const targetGroupSize = totalSize / numberOfGroups;
+
+    let chunks: GroupZipSort[][] = [];
+    let currentChunk: GroupZipSort = {subPath: "", entries: [], totalSize: 0};
+
+    entries.forEach((entry: FileHeader) => {
+        if (currentChunk.totalSize + entry.Len > targetGroupSize && chunks.length < numberOfGroups - 1) {
+            chunks.push([currentChunk]);
+            currentChunk = {subPath: "", entries: [], totalSize: 0};
+        }
+
+        currentChunk.entries.push(entry);
+        currentChunk.totalSize += entry.Len;
+    });
+
+    if (currentChunk.entries.length > 0) {
+        chunks.push([currentChunk]);
+    }
+
     return chunks;
 }
