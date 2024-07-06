@@ -284,11 +284,11 @@ export class FileApi extends Extractor implements FClassInterface {
         this.logMessage(`File saved: ${fileName}`, LogLevel.Info);
     }
 
-    groupBySubdirectory(entries: any, maxSizeInBytes: number = 250 * 1024 * 1024) {
-        const groups: { [key: string]: any } = {};
+    groupBySubdirectory(entries: FileHeader[], maxSizeInBytes: number = 250 * 1024 * 1024): FileHeader[][] {
+        const groups: { [key: string]: GroupZipSort } = {};
 
-        entries.forEach((entry: any) => {
-            const subPath = entry.Name.substring(0, entry.Name.lastIndexOf('/'));
+        entries.forEach((entry: FileHeader) => {
+            const subPath: string = entry.Name.substring(0, entry.Name.lastIndexOf('/'));
 
             if (!groups[subPath]) {
                 groups[subPath] = {subPath: subPath, entries: [], totalSize: 0};
@@ -307,9 +307,9 @@ export class FileApi extends Extractor implements FClassInterface {
 
         groupsArray.sort((a: any, b: any) => a.subPath.localeCompare(b.subPath));
 
-        let chunks: any[] = [];
-        let currentChunk: any[] = [];
-        let currentChunkSize = 0;
+        let chunks: FileHeader[][] = [];
+        let currentChunk: FileHeader[] = [];
+        let currentChunkSize: number = 0;
         groupsArray.forEach(group => {
             if (currentChunkSize + group.totalSize > maxSizeInBytes) {
                 chunks.push(currentChunk);
@@ -392,4 +392,11 @@ export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void
             console.log(metadata.Error);
         }
     }
+}
+
+
+interface GroupZipSort  {
+    subPath: string
+    entries: FileHeader[]
+    totalSize: number
 }
