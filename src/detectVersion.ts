@@ -169,6 +169,7 @@ export class FileApi extends Extractor implements FClassInterface {
         }
 
         this.ZipGroups = this.groupBySubdirectory(this.Metadata, this.ZipSize)
+        console.log(this.ZipGroups)
         this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`, LogLevel.Info)
         return metadata
     }
@@ -284,7 +285,7 @@ export class FileApi extends Extractor implements FClassInterface {
         this.logMessage(`File saved: ${fileName}`, LogLevel.Info);
     }
 
-    groupBySubdirectory(entries: FileHeader[], maxSizeInBytes: number = 250 * 1024 * 1024): FileHeader[][] {
+    groupBySubdirectory(entries: FileHeader[], maxSizeInBytes: number = 250 * 1024 * 1024): GroupZipSort[][] {
         const groups: { [key: string]: GroupZipSort } = {};
 
         entries.forEach((entry: FileHeader) => {
@@ -307,8 +308,8 @@ export class FileApi extends Extractor implements FClassInterface {
 
         groupsArray.sort((a: any, b: any) => a.subPath.localeCompare(b.subPath));
 
-        let chunks: FileHeader[][] = [];
-        let currentChunk: FileHeader[] = [];
+        let chunks: GroupZipSort[][] = [];
+        let currentChunk: GroupZipSort[] = [];
         let currentChunkSize: number = 0;
         groupsArray.forEach(group => {
             if (currentChunkSize + group.totalSize > maxSizeInBytes) {
