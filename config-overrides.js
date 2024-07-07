@@ -1,5 +1,5 @@
 const WorkerUrlPlugin = require('worker-url/plugin');
-const CopyPlugin = require("copy-webpack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = function override(config, env) {
     config.resolve.alias = {
@@ -21,7 +21,7 @@ module.exports = function override(config, env) {
         new CopyPlugin({
             patterns: [
                 { from: 'public/wasm_exec.js', to: 'static/js/' },
-                //{ from: 'public/unrpa.wasm', to: 'static/js/' }, // I don't know why Webpack expect wasm in js directory
+                //{ from: 'public/unrpa.wasm', to: 'static/js/' }, // I don't know why Webpack expects wasm in js directory
             ],
         }),
     ];
