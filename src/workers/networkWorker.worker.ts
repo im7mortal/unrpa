@@ -43,7 +43,15 @@ self.addEventListener("fetch", (event: FetchEvent) => {
     console.log("fetch event", event);
     let url = new URL(event.request.url);
 
+    if (url.pathname.startsWith("unrpa/static/js/lol")) {
+        console.log("GATOS");
+        event.respondWith(new Response("lol putso"));
+    }
+
     if (url.pathname.startsWith("/unrpa/zip/")) {
+        console.log("MIU<MIU");
+        return;
+
         const id = url.pathname.split("/unrpa/zip/")[1];
         if (filesAndGroups.has(id)) {
             const {file, group} = filesAndGroups.get(id)!;
@@ -61,4 +69,3 @@ self.addEventListener("fetch", (event: FetchEvent) => {
         }
     }
 });
-

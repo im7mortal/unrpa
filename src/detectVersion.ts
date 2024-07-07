@@ -42,6 +42,7 @@ export interface FClassInterface {
     extractMetadata: () => Promise<MetadataResponse>;
     extract: () => Promise<void>;
     cancel: () => Promise<void>;
+    register: (f: (file: File, group: FileHeader[]) => void) => void;
 }
 
 export interface FileSystemAccessApiInterface extends FClassInterface {
@@ -140,6 +141,12 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
             console.error(`Could not write file: ${fileName}`, err);
         }
     }
+
+
+    register(f: (file: File, group: FileHeader[]) => void) {
+        f(this.file, this.Metadata)
+    }
+
 }
 
 
@@ -254,7 +261,9 @@ export class FileApi extends Extractor implements FClassInterface {
         document.body.removeChild(a);
         this.logMessage(`File saved: ${fileName}`, LogLevel.Info);
     }
-
+    register(f: (file: File, group: FileHeader[]) => void) {
+        f(this.file, this.Metadata)
+    }
 }
 
 export interface FileExtraction {
