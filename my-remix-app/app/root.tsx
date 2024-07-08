@@ -17,6 +17,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+      <noscript>You need to enable JavaScript to run this app.</noscript>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -26,5 +27,5 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+    return <Outlet/>;
 }
