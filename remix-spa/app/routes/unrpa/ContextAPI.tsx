@@ -2,7 +2,11 @@ import React from 'react';
 import bowser from 'bowser';
 
 // 2024 only Chromium decided to implement FileSystemApi
-const parser = bowser.getParser(window.navigator.userAgent);
+let usagent: string = ""
+if (typeof window !== 'undefined') {
+    usagent = window.navigator.userAgent;
+}
+const parser = bowser.getParser(usagent);
 const browserName = parser.getBrowserName();
 const fileSystemApi = !(browserName === "Safari" || browserName === "Firefox");
 const isDesktop = (parser.getPlatform().type === "desktop");
