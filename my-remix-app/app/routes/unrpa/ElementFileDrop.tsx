@@ -2,7 +2,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./overlay-spinner.css"
 import React, {useCallback, useEffect, useContext} from 'react';
-import {useDropzone} from 'react-dropzone';
+import * as reactdropzone from 'react-dropzone';
 import {FilesContext} from "./ContextDropdownFiles";
 import {fileExtractionCreator,} from "./detectVersion";
 import ApiInfoContext from "./ContextAPI";
@@ -93,7 +93,7 @@ function Drop() {
         };
     });
 
-    useDropzone({
+    reactdropzone.useDropzone({
         onDrop,
         noClick: true,
         preventDropOnDocument: true,
