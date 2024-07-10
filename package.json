@@ -40,11 +40,9 @@
     "workerpool": "^9.1.3"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "prestart": "./onlyForDockerEnv.sh",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
   },
   "eslintConfig": {
     "extends": [
@@ -68,9 +66,11 @@
     "@types/react": "^18.3.3",
     "@types/react-window": "^1.8.8",
     "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "copy-webpack-plugin": "^12.0.2",
     "customize-cra": "^1.0.0",
     "react-app-rewired": "^2.2.1",
+    "vite": "^5.3.3",
     "worker-loader": "^3.0.8"
   }
 }
