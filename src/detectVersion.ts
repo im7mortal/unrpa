@@ -52,7 +52,6 @@ class Extractor {
     private workerPool: WorkerPool;
 
     constructor(logMessage: logLevelFunction) {
-        console.log("WHEN")
         this.workerPool = WorkerPool.getInstance();
     }
 
