@@ -4,7 +4,6 @@ import {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes"
 
 import {logLevelFunction, LogLevel} from './logInterface';
 
-import {WorkerUrl} from 'worker-url';
 import workerpool from 'workerpool';
 import {groupBySubdirectory, GroupFilesFunction, GroupZipSort} from "./unrpaLib/unrpaGroupFunction";
 
@@ -16,8 +15,7 @@ class WorkerPool {
 
     private constructor() {
         // webpack understand from this part that we need compile separate worker file from this .ts
-        const WorkerURL = new WorkerUrl(new URL('./workers/metadataParser.worker.ts', import.meta.url))
-        this.pool = workerpool.pool(WorkerURL.toString(), {maxWorkers: this.maxWorkers});
+        this.pool = workerpool.pool("", {maxWorkers: this.maxWorkers});
     }
 
     public static getInstance(): WorkerPool {
@@ -150,8 +148,7 @@ class WorkerPoolZipper {
 
     private constructor() {
         // webpack understand from this part that we need compile separate worker file from this .ts
-        const WorkerURL = new WorkerUrl(new URL('./workers/zipper.worker.ts', import.meta.url))
-        this.pool = workerpool.pool(WorkerURL.toString(), {maxWorkers: this.maxWorkers});
+        this.pool = workerpool.pool("", {maxWorkers: this.maxWorkers});
     }
 
     public static getInstance(): WorkerPoolZipper {
