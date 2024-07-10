@@ -1,10 +1,12 @@
 import {v4 as uuidv4} from 'uuid';
 
+import MetaWorker from './workers/metadataParser.worker?worker&url'
+import ZipWorker from './workers/zipper.worker?worker&url'
+
 import {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes"
 
 import {logLevelFunction, LogLevel} from './logInterface';
 
-import {WorkerUrl} from 'worker-url';
 import workerpool from 'workerpool';
 import {groupBySubdirectory, GroupFilesFunction, GroupZipSort} from "./unrpaLib/unrpaGroupFunction";
 
@@ -15,9 +17,7 @@ class WorkerPool {
     private maxWorkers: number = 4;
 
     private constructor() {
-        // webpack understand from this part that we need compile separate worker file from this .ts
-        const WorkerURL = new WorkerUrl(new URL('./workers/metadataParser.worker.ts', import.meta.url))
-        this.pool = workerpool.pool(WorkerURL.toString(), {maxWorkers: this.maxWorkers});
+        this.pool = workerpool.pool(MetaWorker, { maxWorkers: this.maxWorkers });
     }
 
     public static getInstance(): WorkerPool {
@@ -52,6 +52,7 @@ class Extractor {
     private workerPool: WorkerPool;
 
     constructor(logMessage: logLevelFunction) {
+        console.log("WHEN")
         this.workerPool = WorkerPool.getInstance();
     }
 
@@ -149,9 +150,7 @@ class WorkerPoolZipper {
     private maxWorkers: number = 4;
 
     private constructor() {
-        // webpack understand from this part that we need compile separate worker file from this .ts
-        const WorkerURL = new WorkerUrl(new URL('./workers/zipper.worker.ts', import.meta.url))
-        this.pool = workerpool.pool(WorkerURL.toString(), {maxWorkers: this.maxWorkers});
+        this.pool = workerpool.pool(ZipWorker, {maxWorkers: this.maxWorkers});
     }
 
     public static getInstance(): WorkerPoolZipper {
@@ -208,6 +207,8 @@ export class FileApi extends Extractor implements FClassInterface {
         this.logMessage(`Analyze "${this.file.name}"`, LogLevel.Info);
         let metadata: MetadataResponse = await super.extractMetadata(this.file, () => {
         })
+        console.log(metadata)
+
         if (metadata.Error === "") {
             this.Metadata = metadata.FileHeaders
         }
