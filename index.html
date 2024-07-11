@@ -38,6 +38,31 @@
     <title>Renpy arcives extractor</title>
   </head>
   <body>
+
+  <script>
+      navigator.serviceWorker?.register('/unrpa/service-worker.js')
+      .then(reg => {
+          console.log('registered', reg)
+          console.log(reg.installing)
+          console.log(reg.waiting)
+          console.log(reg.active)
+          const sw = reg.installing || reg.waiting || reg.active
+          sw.postMessage({ milliseconds: Date.now() })
+          fetch("/unrpa/lol.js", { cache: "no-store" })
+              .then(function(response) {
+                  console.log(response)
+
+
+                    console.log(navigator.serviceWorker.controller)
+                    console.log(navigator.serviceWorker)
+
+
+              });
+      })
+      .catch(() => console.error('registration failed'))
+  console.log("REGIS")
+  </script>
+
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
