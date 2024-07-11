@@ -28,69 +28,74 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
             try {
                 console.log('registerServiceWorker');
                 if ('serviceWorker' in navigator) {
-                    try {
-                        // Register the service worker
-                        const registration = await navigator.serviceWorker.register("/unrpa/service-worker.js");
-                        console.log('Service Worker registered with scope:', registration.scope);
+                    // Initialize Workbox
+                    const wb = new Workbox('/unrpa/service-worker.js');
 
-                        // Wait for the service worker to be ready
-                        const readyRegistration = await navigator.serviceWorker.ready;
-                        console.log('Service Worker ready state:', readyRegistration);
-
-                        // Check if the active service worker is available
-                        if (readyRegistration.active === null) {
-                            console.error('Service Worker active is null. Waiting for it to become active...');
-
-                            // Listen for the 'statechange' event to detect when the service worker becomes active
-                            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                                if (navigator.serviceWorker.controller) {
-                                    console.log('Service Worker has become active:', navigator.serviceWorker.controller.state);
-                                    setServiceWorker(navigator.serviceWorker.controller);
-                                    console.log(registration.scope, " SCOPE");
-                                }
-                            });
-
-                            // Exit early since the service worker is not active yet
-                            return;
+                    // Event listener for when a new service worker is installed
+                    wb.addEventListener('installed', (event) => {
+                        if (event.isUpdate) {
+                            console.log('New content is available; please refresh.');
+                            if (confirm("New version available. Do you want to update?")) {
+                                window.location.reload();
+                            }
+                        } else {
+                            console.log('Content is cached for offline use.');
                         }
+                    });
 
-                        // If the service worker is already active, log its state and set it
-                        console.log('Service Worker is active:', readyRegistration.active.state);
-                        setServiceWorker(readyRegistration.active);
-                        console.log(readyRegistration.scope, " SCOPE");
-                    } catch (error) {
-                        console.error('Service Worker registration or activation failed:', error);
+                    // Event listener for when the service worker is activated
+                    wb.addEventListener('activated', (event) => {
+                        console.log('Service Worker activated:', event);
+                        setServiceWorker(navigator.serviceWorker.controller);
+                    });
+
+                    // Event listener for when a new service worker is waiting to activate
+                    wb.addEventListener('waiting', () => {
+                        console.log('A new service worker is waiting to activate.');
+                        if (confirm("New version available. Do you want to update?")) {
+                            wb.messageSkipWaiting();
+                        }
+                    });
+
+                    // Event listener for when the service worker controlling the page changes
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        console.log('Controller changed');
+                        window.location.reload();
+                    });
+
+                    // Register the service worker
+                    await wb.register();
+                    console.log('Service Worker registered with Workbox');
+
+                    // Wait for the service worker to be ready
+                    const readyRegistration = await navigator.serviceWorker.ready;
+                    console.log('Service Worker ready state:', readyRegistration);
+
+                    // Check if the active service worker is available
+                    if (readyRegistration.active === null) {
+                        console.error('Service Worker active is null. Waiting for it to become active...');
+
+                        // Listen for the 'controllerchange' event to detect when the service worker becomes active
+                        navigator.serviceWorker.addEventListener('controllerchange', () => {
+                            if (navigator.serviceWorker.controller) {
+                                console.log('Service Worker has become active:', navigator.serviceWorker.controller.state);
+                                setServiceWorker(navigator.serviceWorker.controller);
+                            }
+                        });
+
+                        // Exit early since the service worker is not active yet
+                        return;
                     }
+
+                    // If the service worker is already active, log its state and set it
+                    console.log('Service Worker is active:', readyRegistration.active.state);
+                    setServiceWorker(readyRegistration.active);
                 } else {
                     console.error('Service Workers are not supported in this browser.');
-                }            } catch (error) {
+                }
+            } catch (error) {
                 console.error('Service Worker registration or activation failed:', error);
             }
-
-
-
-            // try {
-            //     console.log('FG GH');
-            //     if ('serviceWorker' in navigator) {
-            //         console.log('FG GH222222222222');
-            //         const wb:Workbox = new Workbox('/unrpa/service-worker.js');
-            //         console.log('FG GH22222222222211111111111111111');
-            //         console.log(wb);
-            //
-            //         wb.register();
-            //         console.log('FG GH222222222222111111111111111113333');
-            //
-            //
-            //     } else {
-            //         console.error('Service Workers are not supported in this browser.');
-            //     }
-            // } catch (error) {
-            //     console.error('Service Worker registration or activation failed:', error);
-            // }
-
-
-
-
         };
 
         registerServiceWorker();

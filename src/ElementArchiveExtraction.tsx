@@ -1,6 +1,6 @@
 import React, {useState, useRef, useContext, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import {v4 as uuidv4} from 'uuid';
 import {logLevelFunction} from './logInterface';
 
 import {
@@ -10,7 +10,8 @@ import {
 import ClipLoader from "react-spinners/ClipLoader";
 import PulseLoader from "react-spinners/PulseLoader";
 import ApiInfoContext from "./ContextAPI";
-import {MetadataResponse} from "./unrpaLib/unrpaLibTypes";
+import {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes";
+import {useServiceWorker} from "./ContextServiceWorker";
 
 interface ElementArchiveExtractionProps {
     fClassE: FileExtraction;
@@ -25,6 +26,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     const [isExtracting, setExtracting] = useState(false);
     const [isParsed, setParsed] = useState(false);
 
+    const {sendMessage} = useServiceWorker();
 
     const {fileSystemApi} = useContext(ApiInfoContext);
 
@@ -72,9 +74,40 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
             console.log('Directory picker is not supported in this browser');
         }
     };
+
+    const sleep = (ms: number) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    };
+
     const start = async () => {
+
         setExtracting(true)
-        await fClass.current?.extract()
+        // await fClass.current?.extract()
+
+        const idd: string = uuidv4();
+
+        fClass.current?.register((file: File, group: FileHeader[]): void => {
+            const data = {
+                file: file,
+                group: group,
+                id: idd
+            };
+            sendMessage(data);
+        })
+        await sleep(100);
+        const a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style.display = "none";
+        a.href = "/unrpa/zip/" + idd;
+        a.download = idd + ".zip";
+        // Add a listener to log when the download starts
+        a.addEventListener('click', () => {
+            console.log('Download link clicked:', a.href);
+        });
+        a.click();
+        document.body.removeChild(a);
+
+
         setExtracted(true)
     }
 
