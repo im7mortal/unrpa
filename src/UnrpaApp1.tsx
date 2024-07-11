@@ -9,6 +9,7 @@ import {SpinnerProvider} from "./ContextSpinner";
 import {FilesProvider} from "./ContextDropdownFiles";
 import {ApiInfoProvider, defaultApiInfo} from "./ContextAPI";
 import Drop from "./ElementFileDrop";
+import {ServiceWorkerProvider} from "./ContextServiceWorker";
 
 function UnrpaApp1() {
     return (
@@ -20,9 +21,11 @@ function UnrpaApp1() {
                 <FilesProvider>
                     <ApiInfoProvider value={defaultApiInfo}>
                         <SpinnerProvider>
-                            <Drop/>
-                            <UnrpaApp/>
-                            <ElementLogs/>
+                            <ServiceWorkerProvider>
+                                <Drop/>
+                                <UnrpaApp/>
+                                <ElementLogs/>
+                            </ServiceWorkerProvider>
                         </SpinnerProvider>
                     </ApiInfoProvider>
                 </FilesProvider>
