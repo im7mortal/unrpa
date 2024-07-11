@@ -6,7 +6,6 @@ import {
 } from './detectVersion';
 import ContextSpinner from "./ContextSpinner";
 import ApiInfoContext from "./ContextAPI";
-import {useServiceWorker} from "./ContextServiceWorker";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
@@ -16,8 +15,6 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     const {fileSystemApi} = useContext(ApiInfoContext);
-
-    const {sendMessage} = useServiceWorker();
 
 
     const spinnerContext = useContext(ContextSpinner);
@@ -45,31 +42,6 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
 
 
     const scan = async (e: MouseEvent<HTMLButtonElement>) => {
-        const data = {
-            group: "",
-            id: ""
-        };
-        sendMessage(data);
-
-        fetch('unrpa/assets/lol')
-            .then(response => response.text()) // assuming the response is in JSON format
-            .then(data => {
-                console.log("FUCHING HERE")
-                console.log(data)
-                // Assuming the server sends the client ID in the response under the key 'clientId'
-                if (data) {
-                    console.log('Client ID:', data);
-                } else {
-                    console.log('Client ID not found in response');
-                }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-            })
-        e.preventDefault();
-
-        return
-
         setSpinnerState(true)
         e.preventDefault();
         try {
