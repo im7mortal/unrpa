@@ -29,6 +29,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     const {sendMessage} = useServiceWorker();
 
     const {fileSystemApi} = useContext(ApiInfoContext);
+    const {fileApiWithServiceWorker} = useContext(ApiInfoContext);
 
     const fClass = useRef<FileSystemAccessApiInterface>(fClassE.Fs);
 
@@ -75,14 +76,25 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         }
     };
 
+    const start = async () => {
+
+        setExtracting(true)
+
+        if (fileApiWithServiceWorker) {
+            await processWithServiceWorker()
+        } else {
+            await fClass.current?.extract()
+        }
+
+        setExtracted(true)
+    }
+
+
     const sleep = (ms: number) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     };
 
-    const start = async () => {
-
-        setExtracting(true)
-        // await fClass.current?.extract()
+    const processWithServiceWorker = async () => {
 
         const idd: string = uuidv4();
 
@@ -106,8 +118,6 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         });
         a.click();
         document.body.removeChild(a);
-
-
         setExtracted(true)
     }
 

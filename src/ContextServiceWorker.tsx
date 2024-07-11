@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useEffect, useState, ReactNode} from 'react';
 
 import {Workbox} from 'workbox-window';
+import ApiInfoContext from "./ContextAPI";
 
 interface ServiceWorkerContextType {
     sendMessage: (message: object) => void;
@@ -22,6 +23,7 @@ interface ServiceWorkerProviderProps {
 
 export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({children}) => {
     const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(null);
+    const {fileApiWithServiceWorker} = useContext(ApiInfoContext);
 
     useEffect(() => {
         const registerServiceWorker = async () => {
@@ -97,15 +99,13 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
                 console.error('Service Worker registration or activation failed:', error);
             }
         };
-
-        registerServiceWorker();
+        if (fileApiWithServiceWorker) {
+            registerServiceWorker();
+        }
     }, []);
 
     const sendMessage = (message: object) => {
-
-        console.log(serviceWorker)
         if (serviceWorker) {
-            console.log(serviceWorker)
             serviceWorker.postMessage(message);
         } else {
             console.error('Service Worker is not active.');
