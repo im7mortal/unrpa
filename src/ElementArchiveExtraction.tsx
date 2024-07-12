@@ -88,23 +88,13 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
 
         setExtracted(true)
     }
-    const pingInterval = window.setInterval(() => {
-        // sendMessage({ id: "ping" });
-        console.log("ping outer")
-    }, 5000);
+
 
     const sleep = (ms: number) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     };
 
     const processWithServiceWorker = async () => {
-
-        console.log('START PINGER');
-        const pingInterval = window.setInterval(() => {
-            sendMessage({ id: "ping" });
-            console.log("ping")
-        }, 5000);
-
 
         const idd: string = uuidv4();
 
@@ -129,7 +119,6 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         a.click();
         document.body.removeChild(a);
         setExtracted(true)
-        clearInterval(pingInterval);
     }
 
     return (
