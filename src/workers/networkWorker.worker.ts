@@ -41,6 +41,12 @@ function createZipStream(file: File, group: FileHeader[]): ReadableStream<Uint8A
 
 self.addEventListener('message', (event: ExtendableMessageEvent) => {
     const {file, group, id} = event.data as { file: File; group: FileHeader[]; id: string };
+
+    if (id === "ping") {
+        console.log(`pong`);
+        return
+    }
+
     filesAndGroups.set(id, {file, group});
 });
 

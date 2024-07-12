@@ -1,5 +1,4 @@
 import React, {createContext, useContext, useEffect, useState, ReactNode} from 'react';
-
 import {Workbox} from 'workbox-window';
 import ApiInfoContext from "./ContextAPI";
 
@@ -62,7 +61,10 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
                     // Event listener for when the service worker controlling the page changes
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         console.log('Controller changed');
-                        window.location.reload();
+                        if (navigator.serviceWorker.controller) {
+                            setServiceWorker(navigator.serviceWorker.controller);
+                            window.location.reload();
+                        }
                     });
 
                     // Register the service worker
@@ -102,7 +104,20 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
         if (fileApiWithServiceWorker) {
             registerServiceWorker();
         }
-    }, []);
+    }, [fileApiWithServiceWorker]);
+
+    useEffect(() => {
+        if (serviceWorker) {
+            const pingInterval = window.setInterval(() => {
+                sendMessage({id: "ping"});
+            }, 5000);
+
+            // Cleanup interval on unmount
+            return () => {
+                clearInterval(pingInterval);
+            };
+        }
+    }, [serviceWorker]);
 
     const sendMessage = (message: object) => {
         if (serviceWorker) {
