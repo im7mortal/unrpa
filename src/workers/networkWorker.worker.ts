@@ -21,9 +21,9 @@ function readBlobFromFileD(file: File, offset: number, length: number): Blob {
     return file.slice(offset, offset + length);
 }
 
-function createZipStream(file: File, group: FileHeader[]): ReadableStream<Uint8Array> {
+function createZipStream(id: string, file: File, group: FileHeader[]): ReadableStream<Uint8Array> {
     const {readable, writable} = new TransformStream<Uint8Array>();
-    console.log("STARTED", file)
+    console.log("STARTED", file);
     // Initialize ZipWriter
     const zipWriter = new ZipWriter(writable);
 
@@ -34,6 +34,14 @@ function createZipStream(file: File, group: FileHeader[]): ReadableStream<Uint8A
         }
         // Close the ZipWriter
         await zipWriter.close();
+
+        self.clients.matchAll().then(clients => {
+            clients.forEach(client => {
+                client.postMessage({id, status: 'downloaded'});
+            });
+        });
+
+
     })();
 
     return readable;
@@ -44,7 +52,7 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
 
     if (id === "ping") {
         console.log(`pong`);
-        return
+        return;
     }
 
     filesAndGroups.set(id, {file, group});
@@ -65,7 +73,7 @@ self.addEventListener("fetch", (event: FetchEvent) => {
         if (filesAndGroups.has(id)) {
             const {file, group} = filesAndGroups.get(id)!;
             console.log(id, {file, group})
-            const zipStream = createZipStream(file, group);
+            const zipStream = createZipStream(id, file, group);
 
             event.respondWith(new Response(zipStream, {
                 headers: {

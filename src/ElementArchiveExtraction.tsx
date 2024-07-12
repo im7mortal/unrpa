@@ -89,15 +89,31 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         setExtracted(true)
     }
 
-
-    const sleep = (ms: number) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    };
-
     const processWithServiceWorker = async () => {
-
+        console.log("HERE WE GO1")
+        console.log("HERE WE GO3")
         const idd: string = uuidv4();
 
+        console.log("HERE WE GO4")
+        // Function to sleep for a given number of milliseconds
+        const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+        console.log("HERE WE GO2")
+        // Function to wait for the service worker to indicate the file is downloaded
+        const waitForFileDownload = (id: string) => {
+            return new Promise<void>((resolve) => {
+                const onMessage = (event: MessageEvent) => {
+                    if (event.data && event.data.id === id && event.data.status === 'downloaded') {
+                        navigator.serviceWorker.removeEventListener('message', onMessage);
+                        resolve();
+                    }
+                };
+                navigator.serviceWorker.addEventListener('message', onMessage);
+            });
+        };
+
+        console.log("HERE WE GO")
+        // Register the file processing
         fClass.current?.register((file: File, group: FileHeader[]): void => {
             const data = {
                 file: file,
@@ -105,22 +121,32 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                 id: idd
             };
             sendMessage(data);
-        })
+        });
+
+        // Wait for a short time to ensure the message is sent
         await sleep(100);
+
+        // Create the download link
         const a = document.createElement("a");
         document.body.appendChild(a);
         a.style.display = "none";
         a.href = "/unrpa/zip/" + idd;
         a.download = idd + ".zip";
+
         // Add a listener to log when the download starts
         a.addEventListener('click', () => {
             console.log('Download link clicked:', a.href);
         });
-        a.click();
-        document.body.removeChild(a);
-        setExtracted(true)
-    }
 
+        // Trigger the download
+        a.click();
+
+        // Clean up the download link
+        document.body.removeChild(a);
+
+        // Wait for the download to complete
+        await waitForFileDownload(idd);
+    };
     return (
         <div className="row">
             <div className="col-2">
