@@ -31,10 +31,8 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
                     const wb = new Workbox('/unrpa/service-worker.js');
 
                     wb.addEventListener('installed', (event) => {
-                        if (event.isUpdate) {
+                        if (!navigator.serviceWorker.controller) {
                             window.location.reload();
-                        } else {
-                            console.log('Content is cached for offline use.');
                         }
                     });
 
@@ -75,7 +73,11 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
         };
 
         if (fileApiWithServiceWorker) {
-            registerServiceWorker();
+            if (navigator.serviceWorker.controller) {
+                setServiceWorker(navigator.serviceWorker.controller);
+            } else {
+                registerServiceWorker();
+            }
         }
     }, [fileApiWithServiceWorker]);
 
