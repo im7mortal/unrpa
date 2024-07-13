@@ -8,8 +8,8 @@ const isDesktop = platformType === "desktop";
 
 const fileSystemApi = 'showOpenFilePicker' in window;
 const serviceWorkerAvailable = 'serviceWorker' in navigator;
-const fileApiWithServiceWorker = serviceWorkerAvailable
-const fileApiOnly = !fileSystemApi && (!serviceWorkerAvailable)
+const fileApiWithServiceWorker = !fileSystemApi && serviceWorkerAvailable // FileAPI + Service worker hack
+const fileApiOnly = !fileSystemApi && !serviceWorkerAvailable // FileAPI supported everywhere
 
 
 export const defaultApiInfo = {
