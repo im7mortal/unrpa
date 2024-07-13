@@ -90,15 +90,11 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     }
 
     const processWithServiceWorker = async () => {
-        console.log("HERE WE GO1")
-        console.log("HERE WE GO3")
         const idd: string = uuidv4();
 
-        console.log("HERE WE GO4")
         // Function to sleep for a given number of milliseconds
         const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-        console.log("HERE WE GO2")
         // Function to wait for the service worker to indicate the file is downloaded
         const waitForFileDownload = (id: string) => {
             return new Promise<void>((resolve) => {
@@ -112,7 +108,6 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
             });
         };
 
-        console.log("HERE WE GO")
         // Register the file processing
         fClass.current?.register((file: File, group: FileHeader[]): void => {
             const data = {
