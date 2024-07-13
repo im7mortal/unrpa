@@ -103,29 +103,22 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
         return currentHandle;
     }
 
-    async oneEx(fileInfo: FileHeader) {
-        console.log(fileInfo)
-        const blob = await this.file.slice(fileInfo.Offset, fileInfo.Offset + fileInfo.Len);
-        console.log(blob.size)
-        const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
-        const targetDirectoryHandle = await this.ensureDirectoryHandle(this.directoryHandle, subPath);
-        const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
-        await this.saveBlobToFile(blob, fileName, targetDirectoryHandle);
-    }
-
     async extract() {
         console.time("extract_access");
-        const tasks: Promise<any>[] = [];
-        let n: number = 0;
         for (let i = 0; i < this.Metadata.length; i++) {
             if (this.canceled) {
                 this.logMessage(`EXTRACTION IS CANCELED`, LogLevel.Info);
                 return
             }
-            tasks.push(this.oneEx(this.Metadata[i]));
+            let fileInfo = this.Metadata[i]
+            console.log(fileInfo)
+            const blob = await this.file.slice(fileInfo.Offset, fileInfo.Offset + fileInfo.Len);
+            console.log(blob.size)
+            const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
+            const targetDirectoryHandle = await this.ensureDirectoryHandle(this.directoryHandle, subPath);
+            const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
+            await this.saveBlobToFile(blob, fileName, targetDirectoryHandle);
         }
-        await Promise.allSettled(tasks);
-
         console.timeEnd("extract_access")
         this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
     }
