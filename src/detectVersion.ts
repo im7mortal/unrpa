@@ -17,7 +17,7 @@ class WorkerPool {
     private maxWorkers: number = 4;
 
     private constructor() {
-        this.pool = workerpool.pool(MetaWorker, { maxWorkers: this.maxWorkers });
+        this.pool = workerpool.pool(MetaWorker, {maxWorkers: this.maxWorkers});
     }
 
     public static getInstance(): WorkerPool {
@@ -43,6 +43,7 @@ export interface FClassInterface {
     extract: () => Promise<void>;
     cancel: () => Promise<void>;
     register: (f: (file: File, group: FileHeader[]) => void) => void;
+    listenProcessed?: (f: (n: number) => void) => void;
 }
 
 export interface FileSystemAccessApiInterface extends FClassInterface {
@@ -68,6 +69,8 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
     canceled: boolean = false
 
     logMessage: logLevelFunction;
+    processedPrinter: (n: number) => void = (n: number) => {
+    };
 
     constructor(file: File, logMessage: logLevelFunction) {
         super(logMessage)
@@ -83,6 +86,10 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
         this.directoryHandle = handle
         console.log(this.Metadata)
         console.log(this.directoryHandle)
+    }
+
+    listenProcessed(f: (n: number) => void) {
+        this.processedPrinter = f
     }
 
     async extractMetadata(): Promise<MetadataResponse> {
@@ -105,21 +112,35 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
 
     async extract() {
         console.time("extract_access");
-        for (let i = 0; i < this.Metadata.length; i++) {
+        let total = this.Metadata.length;
+        let lastPrintedPercentage = -1; // Initialized with -1 to print 0 at the beginning.
+
+        for (let i = 0; i < total; i++) {
             if (this.canceled) {
                 this.logMessage(`EXTRACTION IS CANCELED`, LogLevel.Info);
-                return
+                return;
             }
-            let fileInfo = this.Metadata[i]
-            console.log(fileInfo)
+            let fileInfo = this.Metadata[i];
+            console.log(fileInfo);
+
+            const percentage = Math.floor((i / total) * 100);
+            if(Number.isInteger(percentage) && percentage !== lastPrintedPercentage) {
+                this.processedPrinter(percentage)
+                lastPrintedPercentage = percentage;
+                console.log(`${percentage}% complete`);
+            }
+
             const blob = await this.file.slice(fileInfo.Offset, fileInfo.Offset + fileInfo.Len);
-            console.log(blob.size)
+            // console.log(blob.size);
+
             const subPath = fileInfo.Name.substring(0, fileInfo.Name.lastIndexOf('/'));
             const targetDirectoryHandle = await this.ensureDirectoryHandle(this.directoryHandle, subPath);
             const fileName = fileInfo.Name.substring(fileInfo.Name.lastIndexOf('/') + 1);
+
             await this.saveBlobToFile(blob, fileName, targetDirectoryHandle);
         }
-        console.timeEnd("extract_access")
+        this.processedPrinter(100)
+        console.timeEnd("extract_access");
         this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
     }
 
@@ -134,6 +155,7 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
             console.error(`Could not write file: ${fileName}`, err);
         }
     }
+
     register(f: (file: File, group: FileHeader[]) => void) {
         f(this.file, this.Metadata)
     }
@@ -251,6 +273,7 @@ export class FileApi extends Extractor implements FClassInterface {
         document.body.removeChild(a);
         this.logMessage(`File saved: ${fileName}`, LogLevel.Info);
     }
+
     register(f: (file: File, group: FileHeader[]) => void) {
         f(this.file, this.Metadata)
     }

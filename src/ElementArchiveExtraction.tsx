@@ -25,6 +25,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     const [isExtracted, setExtracted] = useState(false);
     const [isExtracting, setExtracting] = useState(false);
     const [isParsed, setParsed] = useState(false);
+    const [processedN, setProcessedN] = useState(0);
 
     const {sendMessage} = useServiceWorker();
 
@@ -48,6 +49,9 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
         }
 
         fetchAndUpdateMetadata()
+        if (fClass.current.listenProcessed !== undefined) {
+            fClass.current.listenProcessed(setProcessedN)
+        }
 
         // eslint-disable-next-line
     }, [])
@@ -151,6 +155,7 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
             </div>
             <div className="col-1">
                 <ClipLoader color={'#123abc'} loading={isExtracting && !isExtracted} size={20}/>
+                <span>{processedN}%</span>
             </div>
             {!isParsed ? (
                 <>
