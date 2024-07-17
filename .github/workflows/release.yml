@@ -11,22 +11,22 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
-#      - uses: actions/setup-go@v5
-#        with:
-#          go-version: '^1.22'
+      #      - uses: actions/setup-go@v5
+      #        with:
+      #          go-version: '^1.22'
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-#      - name: Cache Node.js modules
-#        uses: actions/cache@v2
-#        with:
-#          # npm cache files are stored in `~/.npm` on Linux/macOS
-#          path: ~/.npm
-#          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-#          restore-keys: |
-#            ${{ runner.OS }}-node-
-#            ${{ runner.OS }}-
+      #      - name: Cache Node.js modules
+      #        uses: actions/cache@v2
+      #        with:
+      #          # npm cache files are stored in `~/.npm` on Linux/macOS
+      #          path: ~/.npm
+      #          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+      #          restore-keys: |
+      #            ${{ runner.OS }}-node-
+      #            ${{ runner.OS }}-
 
       - name: Build
         run: |
@@ -48,43 +48,31 @@ jobs:
           FIND_PATTERN="ITWILLBEREPLACEDWITHVERSION"
           find ./build -type f -exec sed -i "s/$FIND_PATTERN/$NEW_TAG/g" {} \;
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
 
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
 
-      - shell: bash
-        run: |
-          # The following 2 lines are not really necessary,
-          # because we do not intend to push current branch.
-          # But we choose to use target branch name as a temporary local work branch,
-          # thus avoid a potential error of committing to the trigger branch.
-          git branch -f gh-pages HEAD
-          git checkout gh-pages
-  
-          # The commit and push happen to work without authentication
-          # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
-          git config user.name "Github Pages Overwriter"
-          git config user.email "GithubPagesOverwriter@users.noreply.github.com"
-  
-          # The previous commit message may contain reference to github issues,
-          # we wipe it out, so that it won't show up in the inevitable duplicate commit.
-          git commit --amend -m "This commit will be automatically published"
-  
-          # Generate such a new file to make sure the subsequent commit would succeed
-          # Such a file WITHOUT leading dot (.) is also visible in outcome website.
-          # FYI: filename with leading dot (.) or underscore (_) would be ignored by Jekyll,
-          # which Github Pages depends on. So we use a normal filename here.
-          date > build/publish_date.txt
-          git add --force build
-          git commit -m "Automated publish"
+    # Deploy job
+  deploy:
+    # Add a dependency to the build job
+    needs: build
 
-      - name: Push the build output to github pages
-        shell: bash
-        run: |
-          if [ "build" == "." ]; then
-            git push -f origin HEAD:refs/heads/gh-pages
-          else
-            # Inspired from https://gist.github.com/cobyism/4730490#gistcomment-1374989
-            git push -f origin `git subtree split -P build`:refs/heads/gh-pages
-          fi
-          
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write
+      id-token: write
 
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
