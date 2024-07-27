@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Выбрать папку",
+  "changeDirectory": "Изменить папку",
+  "toDirectory": "Извлеч в",
+  "extract": "Извлечь",
+  "close": "Закрыть",
+  "cancel": "Отмена",
+  "scanDirectory": "Сканировать папку",
+  "selectArchive": "Выбрать архив",
+  "dragAndDrop": "СКИНЬТЕ ФАЙЛЫ",
+  "or": "ИЛИ",
+  "nameHeader": "UNRPA - Извлечь файл Ren'Py"
+}

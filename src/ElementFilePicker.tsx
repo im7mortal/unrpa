@@ -8,6 +8,7 @@ import {
 import ContextSpinner from "./ContextSpinner";
 import ApiInfoContext from "./ContextAPI";
 import {useLogs} from "./ContextLog";
+import {useTranslation} from "react-i18next";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
@@ -23,6 +24,7 @@ export interface FileExtraction {
 }
 
 export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
+    const {t} = useTranslation();
 
     const spinnerContext = useContext(ContextSpinner);
     if (!spinnerContext) {
@@ -101,14 +103,14 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
         <>
             {fileSystemApi ? (
                 <button className="btn btn-primary me-3" onClick={chooseFileSystemAPI}>
-                    Select archive
+                    {t('selectArchive')}
                 </button>
             ) : (
                 <>
                     <input type="file" style={{display: 'none'}} onChange={handleFileChange} ref={inputRef}
                            accept=".rpa"/>
                     <button className={`btn btn-primary me-3`} onClick={chooseFileApi}>
-                        Select archive
+                        {t('selectArchive')}
                     </button>
                 </>
             )}

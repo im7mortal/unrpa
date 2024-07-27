@@ -12,6 +12,7 @@ import PulseLoader from "react-spinners/PulseLoader";
 import ApiInfoContext from "./ContextAPI";
 import {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes";
 import {useServiceWorker} from "./ContextServiceWorker";
+import {useTranslation} from 'react-i18next';
 
 interface ElementArchiveExtractionProps {
     fClassE: FileExtraction;
@@ -21,6 +22,7 @@ interface ElementArchiveExtractionProps {
 
 function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveExtractionProps) {
 
+    const {t} = useTranslation();
     const [isDirectoryPicked, setDirectoryPicked] = useState(false);
     const [isExtracted, setExtracted] = useState(false);
     const [isExtracting, setExtracting] = useState(false);
@@ -166,23 +168,25 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
                         <PulseLoader color={'#123abc'} loading={true} size={20}/>
                     </div>
                 </>
-
             ) : (
                 <div className="col-5">
                     <button
                         className={`btn ${isDirectoryPicked ? 'btn-success' : 'btn-primary'} me-3`}
-                        onClick={chooseDirectory} disabled={isExtracting}
-                        style={{display: fileSystemApi ? 'inline-block' : 'none'}}>
-                        {isDirectoryPicked ? 'Change the' : 'To'} directory
+                        onClick={chooseDirectory}
+                        disabled={isExtracting}
+                        style={{display: fileSystemApi ? 'inline-block' : 'none'}}
+                    >
+                        {isDirectoryPicked ? t('changeDirectory') : t('chooseDirectory')}
                     </button>
                     <button
                         className={`btn ${isExtracted ? 'btn-success' : 'btn-primary'} me-3`}
-                        onClick={start} disabled={(!isDirectoryPicked && fileSystemApi) || isExtracting}>Extract
+                        onClick={start} disabled={(!isDirectoryPicked && fileSystemApi) || isExtracting}>
+                        {t('extract')}
                     </button>
                     <button className={`btn ${isExtracted ? 'btn-success' : 'btn-danger'}`}
                             onClick={handleRemove} // handle remove do not cancel corresponding worker; it's not critical
                     >
-                        <span>&#x2715;</span> {isExtracted ? "Close" : "Cancel"}
+                        <span>&#x2715;</span> {isExtracted ? t('close') : t('cancel')}
                     </button>
                 </div>
             )}

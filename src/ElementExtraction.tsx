@@ -8,8 +8,10 @@ import ElementArchiveExtraction from "./ElementArchiveExtraction";
 import {FilePicker} from './ElementFilePicker';
 import {DirectoryScanner} from './ElementDirectoryPicker';
 import {FilesContext} from "./ContextDropdownFiles";
+import {useTranslation} from "react-i18next";
 
 function ElementExtraction() {
+    const {t} = useTranslation();
     const {recordLog} = useLogs();
 
     const {files, dispatch} = useContext(FilesContext);
@@ -38,11 +40,11 @@ function ElementExtraction() {
             <div>
                 <div className="col">
                     <FilePicker onFileSelected={handleFileSelection}/>
-                    <span className={`fs-2 font-weight-bold me-3 ms-3`}>OR</span>
+                    <span className={`fs-2 font-weight-bold me-3 ms-3`}>{t('or')}</span>
                     <DirectoryScanner onFileSelected={handleFileSelection}/>
                 </div>
                 <div className="col">
-                    <span className="fs-2 font-weight-bold me-3 ms-3 ">DRAG AND DROP FILES 📂</span>
+                    <span className="fs-2 font-weight-bold me-3 ms-3 ">{t('dragAndDrop')} 📂</span>
                 </div>
             </div>
         );

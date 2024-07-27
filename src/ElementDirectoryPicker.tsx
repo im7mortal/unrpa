@@ -6,12 +6,14 @@ import {
 } from './detectVersion';
 import ContextSpinner from "./ContextSpinner";
 import ApiInfoContext from "./ContextAPI";
+import {useTranslation} from "react-i18next";
 
 interface FilePickerProps {
     onFileSelected: (fileExtraction: FileExtraction) => void;
 }
 
 export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
+    const {t} = useTranslation();
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     const {fileSystemApi} = useContext(ApiInfoContext);
@@ -124,15 +126,15 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
     return (
         <>
             {fileSystemApi ? (
-                <button className="btn btn-primary" onClick={scan}>Scan
-                    directory
+                <button className="btn btn-primary" onClick={scan}>
+                    {t('scanDirectory')}
                 </button>
             ) : (
                 <>
                     <input type="file" style={{display: 'none'}} onChange={handleFileChange}
                            ref={inputRef}   {...({webkitdirectory: "true", directory: "true"} as any)}/>
                     <button className={`btn btn-primary me-3`} onClick={chooseFile}>
-                        Scan directory
+                        {t('scanDirectory')}
                     </button>
                 </>
             )}
