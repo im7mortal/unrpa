@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Escolher Diretório",
+  "changeDirectory": "Alterar Diretório",
+  "toDirectory": "Para Diretório",
+  "extract": "Extrair",
+  "close": "Fechar",
+  "cancel": "Cancelar",
+  "scanDirectory": "Verificar Diretório",
+  "selectArchive": "Selecionar Arquivo",
+  "dragAndDrop": "ARRASTE E SOLTE OS ARQUIVOS",
+  "or": "OU",
+  "nameHeader": "UNRPA - Extrair Arquivos Ren'Py"
+}

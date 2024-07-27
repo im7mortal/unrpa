@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "ディレクトリを選択",
+  "changeDirectory": "ディレクトリを変更",
+  "toDirectory": "ディレクトリへ",
+  "extract": "抽出",
+  "close": "閉じる",
+  "cancel": "キャンセル",
+  "scanDirectory": "ディレクトリをスキャン",
+  "selectArchive": "アーカイブを選択",
+  "dragAndDrop": "ファイルをドラッグ＆ドロップ",
+  "or": "または",
+  "nameHeader": "UNRPA - Ren'Pyアーカイブを抽出"
+}

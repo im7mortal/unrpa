@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Pilih Direktori",
+  "changeDirectory": "Tukar Direktori",
+  "toDirectory": "Ke Direktori",
+  "extract": "Ekstrak",
+  "close": "Tutup",
+  "cancel": "Batal",
+  "scanDirectory": "Imbas Direktori",
+  "selectArchive": "Pilih Arkib",
+  "dragAndDrop": "SERET DAN LEPASKAN FAIL",
+  "or": "ATAU",
+  "nameHeader": "UNRPA - Ekstrak Arkib Ren'Py"
+}

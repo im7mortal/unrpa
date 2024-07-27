@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "निर्देशिका चुनें",
+  "changeDirectory": "निर्देशिका बदलें",
+  "toDirectory": "निर्देशिका में",
+  "extract": "निकालें",
+  "close": "बंद करें",
+  "cancel": "रद्द करें",
+  "scanDirectory": "निर्देशिका स्कैन करें",
+  "selectArchive": "अभिलेखागार चुनें",
+  "dragAndDrop": "फाइलों को खींचें और छोड़ें",
+  "or": "या",
+  "nameHeader": "UNRPA - Ren'Py अभिलेखागार निकालें"
+}

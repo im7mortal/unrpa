@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Dizini Seç",
+  "changeDirectory": "Dizini Değiştir",
+  "toDirectory": "Dizine",
+  "extract": "Çıkar",
+  "close": "Kapat",
+  "cancel": "İptal",
+  "scanDirectory": "Dizini Tara",
+  "selectArchive": "Arşiv Seç",
+  "dragAndDrop": "DOSYALARI SÜRÜKLE VE BIRAK",
+  "or": "VEYA",
+  "nameHeader": "UNRPA - Ren'Py Arşivlerini Çıkar"
+}

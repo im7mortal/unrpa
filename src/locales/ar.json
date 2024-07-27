@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "اختر الدليل",
+  "changeDirectory": "غير الدليل",
+  "toDirectory": "إلى الدليل",
+  "extract": "استخراج",
+  "close": "إغلاق",
+  "cancel": "إلغاء",
+  "scanDirectory": "مسح الدليل",
+  "selectArchive": "حدد الأرشيف",
+  "dragAndDrop": "سحب وإفلات الملفات",
+  "or": "أو",
+  "nameHeader": "UNRPA - استخراج أرشيفات Ren'Py"
+}
