@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "निर्देशिका निवडा",
+  "changeDirectory": "निर्देशिका बदला",
+  "toDirectory": "निर्देशिकेत",
+  "extract": "काढा",
+  "close": "बंद करा",
+  "cancel": "रद्द करा",
+  "scanDirectory": "निर्देशिका स्कॅन करा",
+  "selectArchive": "संग्रह निवडा",
+  "dragAndDrop": "फायली ड्रॅग आणि ड्रॉप करा",
+  "or": "किंवा",
+  "nameHeader": "UNRPA - Ren'Py संग्रह काढा"
+}

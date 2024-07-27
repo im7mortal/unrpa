@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "انتخاب پوشه",
+  "changeDirectory": "تغییر پوشه",
+  "toDirectory": "به پوشه",
+  "extract": "استخراج",
+  "close": "بستن",
+  "cancel": "لغو",
+  "scanDirectory": "اسکن پوشه",
+  "selectArchive": "انتخاب آرشیو",
+  "dragAndDrop": "کشیدن و رها کردن فایل‌ها",
+  "or": "یا",
+  "nameHeader": "UNRPA - استخراج آرشیوهای Ren'Py"
+}

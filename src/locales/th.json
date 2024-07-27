@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "เลือกไดเรกทอรี",
+  "changeDirectory": "เปลี่ยนไดเรกทอรี",
+  "toDirectory": "ไปยังไดเรกทอรี",
+  "extract": "แยกออก",
+  "close": "ปิด",
+  "cancel": "ยกเลิก",
+  "scanDirectory": "สแกนไดเรกทอรี",
+  "selectArchive": "เลือกไฟล์เก็บถาวร",
+  "dragAndDrop": "ลากและวางไฟล์",
+  "or": "หรือ",
+  "nameHeader": "UNRPA - แยกไฟล์เก็บ Ren'Py"
+}

@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Chọn Thư mục",
+  "changeDirectory": "Thay đổi Thư mục",
+  "toDirectory": "Đến Thư mục",
+  "extract": "Trích xuất",
+  "close": "Đóng",
+  "cancel": "Hủy bỏ",
+  "scanDirectory": "Quét Thư mục",
+  "selectArchive": "Chọn Lưu trữ",
+  "dragAndDrop": "KÉO VÀ THẢ TỆP",
+  "or": "HOẶC",
+  "nameHeader": "UNRPA - Trích xuất Lưu trữ Ren'Py"
+}

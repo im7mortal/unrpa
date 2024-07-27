@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "ડિરેક્ટરી પસંદ કરો",
+  "changeDirectory": "ડિરેક્ટરી બદલો",
+  "toDirectory": "ડિરેક્ટરીમાં",
+  "extract": "ઉપાડો",
+  "close": "બંધ કરો",
+  "cancel": "રદ કરો",
+  "scanDirectory": "ડિરેક્ટરી સ્કેન કરો",
+  "selectArchive": "આર્કાઇવ પસંદ કરો",
+  "dragAndDrop": "ફાઇલો ખેંચો અને છોડો",
+  "or": "અથવા",
+  "nameHeader": "UNRPA - Ren'Py આર્કાઇવ કાઢો"
+}

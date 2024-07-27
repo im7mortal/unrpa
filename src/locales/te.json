@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "డైరెక్టరీని ఎంచుకోండి",
+  "changeDirectory": "డైరెక్టరీని మార్చండి",
+  "toDirectory": "డైరెక్టరీకి",
+  "extract": "మూలం",
+  "close": "మూసివేయి",
+  "cancel": "రద్దు చేయి",
+  "scanDirectory": "డైరెక్టరీని స్కాన్ చేయి",
+  "selectArchive": "ఆర్కైవ్‌ని ఎంచుకోండి",
+  "dragAndDrop": "ఫైళ్లను డ్రాగ్ చేసి వదలండి",
+  "or": "లేదా",
+  "nameHeader": "UNRPA - Ren'Py ఆర్కైవ్‌లను తీసేయండి"
+}

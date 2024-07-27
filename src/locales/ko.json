@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "디렉토리 선택",
+  "changeDirectory": "디렉토리 변경",
+  "toDirectory": "디렉토리로",
+  "extract": "추출",
+  "close": "닫기",
+  "cancel": "취소",
+  "scanDirectory": "디렉토리 스캔",
+  "selectArchive": "아카이브 선택",
+  "dragAndDrop": "파일을 드래그 앤 드롭",
+  "or": "또는",
+  "nameHeader": "UNRPA - Ren'Py 아카이브 추출"
+}
