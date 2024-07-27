@@ -23,12 +23,13 @@ function App() {
                     <div className="col-2 text-right">
                         <GitHubButton href="https://github.com/im7mortal/unrpa"
                                       data-color-scheme="no-preference: light; light: light; dark: dark;"
-                                      data-icon="octicon-star" data-size="large"
-                                      aria-label="Star buttons/github-buttons on GitHub">Star</GitHubButton>
+                                      data-icon="octicon-star" data-size="large" data-show-count="true"
+                                      aria-label="Star im7mortal/unrpa on GitHub">Star</GitHubButton>
                         <GitHubButton href="https://github.com/im7mortal/unrpa/issues"
                                       data-color-scheme="no-preference: light; light: light; dark: dark;"
-                                      data-icon="octicon-issue-opened" data-size="large"
-                                      aria-label="Issue buttons/github-buttons on GitHub">Issue</GitHubButton>
+                                      data-icon="octicon-issue-opened" data-size="large" data-show-count="true"
+                                      aria-label="Issue im7mortal/unrpa on GitHub">Issue</GitHubButton>
+
                     </div>
                 </div>
                 <I18nextProvider i18n={i18n}>
@@ -44,7 +45,7 @@ function App() {
                     <h1 className="display-1 text-center">{t('nameHeader')}</h1>
 
                     <Routes>
-                    <Route path="/unrpa" element={<UnrpaApp1/>}/>
+                        <Route path="/unrpa" element={<UnrpaApp1/>}/>
                         <Route path="*" element={<Navigate to="/unrpa"/>}/>
                     </Routes>
 
