@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Papkani tanlang",
+  "changeDirectory": "Papkani o'zgartirish",
+  "toDirectory": "Papkaga",
+  "extract": "Chiqarish",
+  "close": "Yopish",
+  "cancel": "Bekor qilish",
+  "scanDirectory": "Papkani skanerlash",
+  "selectArchive": "Arxivni tanlang",
+  "dragAndDrop": "Fayllarni tortib tashlang",
+  "or": "YOKI",
+  "nameHeader": "UNRPA - Ren'Py Arxivlarini chiqarish"
+}

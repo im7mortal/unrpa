@@ -28,6 +28,10 @@ import mr from './locales/mr.json';
 import ur from './locales/ur.json';
 import gu from './locales/gu.json';
 import ha from './locales/ha.json';
+import uz from './locales/uz.json';
+import ua from './locales/ua.json';
+import kz from './locales/kz.json';
+import pl from './locales/pl.json';
 
 i18n
     .use(LanguageDetector) // Detect user language
@@ -59,6 +63,10 @@ i18n
             ur: {translation: ur},
             gu: {translation: gu},
             ha: {translation: ha},
+            uz: {translation: uz},
+            ua: {translation: ua},
+            kz: {translation: kz},
+            pl: {translation: pl},
         },
         fallbackLng: {
             'default': ['en'],

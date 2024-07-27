@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Wybierz katalog",
+  "changeDirectory": "Zmień katalog",
+  "toDirectory": "Do katalogu",
+  "extract": "Wypakuj",
+  "close": "Zamknij",
+  "cancel": "Anuluj",
+  "scanDirectory": "Skanuj katalog",
+  "selectArchive": "Wybierz archiwum",
+  "dragAndDrop": "PRZECIĄGNIJ I UPUSZCZAJ PLIKI",
+  "or": "LUB",
+  "nameHeader": "UNRPA - Wypakuj archiwa Ren'Py"
+}

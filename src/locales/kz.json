@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Қалтаны таңдау",
+  "changeDirectory": "Қалтаны өзгерту",
+  "toDirectory": "Қалтаға",
+  "extract": "Шығару",
+  "close": "Жабу",
+  "cancel": "Бас тарту",
+  "scanDirectory": "Қалтаны сканерлеу",
+  "selectArchive": "Мұрағатты таңдау",
+  "dragAndDrop": "Файлдарды сүйреп апару",
+  "or": "НЕМЕСЕ",
+  "nameHeader": "UNRPA - Ren'Py Мұрағаттарын шығару"
+}

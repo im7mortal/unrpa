@@ -1,0 +1,13 @@
+{
+  "chooseDirectory": "Вибрати каталог",
+  "changeDirectory": "Змінити каталог",
+  "toDirectory": "До каталогу",
+  "extract": "Витягти",
+  "close": "Закрити",
+  "cancel": "Скасувати",
+  "scanDirectory": "Сканувати каталог",
+  "selectArchive": "Вибрати архів",
+  "dragAndDrop": "ПЕРЕТЯГНІТЬ ФАЙЛИ",
+  "or": "АБО",
+  "nameHeader": "UNRPA - Витягти архіви Ren'Py"
+}
