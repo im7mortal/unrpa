@@ -40,8 +40,12 @@ Firefox and Safari don't want to implement FileSystemAccessApi
 - [x] clean typescript
 - [x] react
 - [x] drag&drop
-- [ ] maybe replace WASM unpickle with ts one
-- [ ] maybe replace JSZIP with something better
+- [x] maybe replace WASM unpickle with ts one
+- [x] maybe replace JSZIP with something better
+- [x] service worker download hack for FileAPI browsers
+- [x] migrate from CRA to vite
+- [x] i18n localization
+- [ ] preview of content probably with Chonky
 
 
 ## Development
