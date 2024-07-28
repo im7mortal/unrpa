@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Elegir directorio",
-  "changeDirectory": "Cambiar directorio",
-  "toDirectory": "Al directorio",
-  "extract": "Extraer",
-  "close": "Cerrar",
-  "cancel": "Cancelar",
-  "scanDirectory": "Escanear directorio",
-  "selectArchive": "Seleccionar archivo",
-  "dragAndDrop": "ARRASTRAR Y SOLTAR ARCHIVOS",
-  "or": "O",
-  "nameHeader": "UNRPA - Extraer Archivo Ren'Py"
+    "cancel": "Cancelar",
+    "changeDirectory": "Cambiar directorio",
+    "chooseDirectory": "Elegir directorio",
+    "close": "Cerrar",
+    "dragAndDrop": "ARRASTRAR Y SOLTAR ARCHIVOS",
+    "extract": "Extraer",
+    "nameHeader": "UNRPA - Extraer Archivo Ren'Py",
+    "noscrypt": "Lo siento, pero el extractor UNRPA está diseñado para navegadores de escritorio. Por favor, visite este sitio en su computadora de escritorio para acceder a esta función.",
+    "noscrypt_header": "Solo disponible en dispositivos de escritorio",
+    "or": "O",
+    "scanDirectory": "Escanear directorio",
+    "selectArchive": "Seleccionar archivo",
+    "toDirectory": "Al directorio"
 }

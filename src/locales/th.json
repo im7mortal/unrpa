@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "เลือกไดเรกทอรี",
-  "changeDirectory": "เปลี่ยนไดเรกทอรี",
-  "toDirectory": "ไปยังไดเรกทอรี",
-  "extract": "แยกออก",
-  "close": "ปิด",
-  "cancel": "ยกเลิก",
-  "scanDirectory": "สแกนไดเรกทอรี",
-  "selectArchive": "เลือกไฟล์เก็บถาวร",
-  "dragAndDrop": "ลากและวางไฟล์",
-  "or": "หรือ",
-  "nameHeader": "UNRPA - แยกไฟล์เก็บ Ren'Py"
+    "cancel": "ยกเลิก",
+    "changeDirectory": "เปลี่ยนไดเรกทอรี",
+    "chooseDirectory": "เลือกไดเรกทอรี",
+    "close": "ปิด",
+    "dragAndDrop": "ลากและวางไฟล์",
+    "extract": "แยกออก",
+    "nameHeader": "UNRPA - แยกไฟล์เก็บ Ren'Py",
+    "noscrypt": "ขออภัย, แต่ UNRPA extractor ได้รับการออกแบบสำหรับเบราว์เซอร์บนเดสก์ท็อป โปรดเยี่ยมชมไซต์นี้บนคอมพิวเตอร์เดสก์ท็อปของคุณเพื่อเข้าถึงคุณลักษณะนี้",
+    "noscrypt_header": "ดูได้เฉพาะบนอุปกรณ์เดสก์ท็อปเท่านั้น",
+    "or": "หรือ",
+    "scanDirectory": "สแกนไดเรกทอรี",
+    "selectArchive": "เลือกไฟล์เก็บถาวร",
+    "toDirectory": "ไปยังไดเรกทอรี"
 }

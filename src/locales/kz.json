@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Қалтаны таңдау",
-  "changeDirectory": "Қалтаны өзгерту",
-  "toDirectory": "Қалтаға",
-  "extract": "Шығару",
-  "close": "Жабу",
-  "cancel": "Бас тарту",
-  "scanDirectory": "Қалтаны сканерлеу",
-  "selectArchive": "Мұрағатты таңдау",
-  "dragAndDrop": "Файлдарды сүйреп апару",
-  "or": "НЕМЕСЕ",
-  "nameHeader": "UNRPA - Ren'Py Мұрағаттарын шығару"
+    "cancel": "Бас тарту",
+    "changeDirectory": "Қалтаны өзгерту",
+    "chooseDirectory": "Қалтаны таңдау",
+    "close": "Жабу",
+    "dragAndDrop": "Файлдарды сүйреп апару",
+    "extract": "Шығару",
+    "nameHeader": "UNRPA - Ren'Py Мұрағаттарын шығару",
+    "noscrypt": "Кешіріңіз, бірақ UNRPA экстракторы жұмыс үстелі браузерлеріне арналған. Бұл мүмкіндікті пайдалану үшін осы сайтты жұмыс үстелі компьютері арқылы кіріңіз.",
+    "noscrypt_header": "Тек жұмыс үстелі құрылғыларында қолжетімді",
+    "or": "НЕМЕСЕ",
+    "scanDirectory": "Қалтаны сканерлеу",
+    "selectArchive": "Мұрағатты таңдау",
+    "toDirectory": "Қалтаға"
 }

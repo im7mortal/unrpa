@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Papkani tanlang",
-  "changeDirectory": "Papkani o'zgartirish",
-  "toDirectory": "Papkaga",
-  "extract": "Chiqarish",
-  "close": "Yopish",
-  "cancel": "Bekor qilish",
-  "scanDirectory": "Papkani skanerlash",
-  "selectArchive": "Arxivni tanlang",
-  "dragAndDrop": "Fayllarni tortib tashlang",
-  "or": "YOKI",
-  "nameHeader": "UNRPA - Ren'Py Arxivlarini chiqarish"
+    "cancel": "Bekor qilish",
+    "changeDirectory": "Papkani o'zgartirish",
+    "chooseDirectory": "Papkani tanlang",
+    "close": "Yopish",
+    "dragAndDrop": "Fayllarni tortib tashlang",
+    "extract": "Chiqarish",
+    "nameHeader": "UNRPA - Ren'Py Arxivlarini chiqarish",
+    "noscrypt": "Kechirasiz, lekin UNRPA ekstraktori ish stoli brauzerlari uchun mo'ljallangan. Ushbu funksiyaga kirish uchun ushbu saytdan ish stoli kompyuteringizda foydalaning.",
+    "noscrypt_header": "Faqat ish stoli qurilmalarida ko'rish mumkin",
+    "or": "YOKI",
+    "scanDirectory": "Papkani skanerlash",
+    "selectArchive": "Arxivni tanlang",
+    "toDirectory": "Papkaga"
 }

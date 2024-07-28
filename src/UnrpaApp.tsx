@@ -6,6 +6,7 @@ import React, {useContext} from 'react';
 import ContextSpinner from "./ContextSpinner";
 import "./overlay-spinner.css"
 import ApiInfoContext from "./ContextAPI";
+import {useTranslation} from "react-i18next";
 
 
 function UnrpaApp() {
@@ -17,6 +18,7 @@ function UnrpaApp() {
     }
     const {spinner} = spinnerContext;
     const {isDesktop} = useContext(ApiInfoContext);
+    const {t} = useTranslation();
 
 
     return (
@@ -32,10 +34,8 @@ function UnrpaApp() {
                         <ElementExtraction/>
                     ) : (
                         <div>
-                            <h2>🖥️ Desktop View Only! 🖥️</h2>
-                            <p>Sorry, but UNRPA extractor is designed for desktop browsers. Please visit
-                                this
-                                site on your desktop computer to access this feature.</p>
+                            <h2>🖥️ {t('noscrypt_header')} 🖥️</h2>
+                            <p>{t('noscrypt')}</p>
                         </div>
                     )}
                 </div>

@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Dizini Seç",
-  "changeDirectory": "Dizini Değiştir",
-  "toDirectory": "Dizine",
-  "extract": "Çıkar",
-  "close": "Kapat",
-  "cancel": "İptal",
-  "scanDirectory": "Dizini Tara",
-  "selectArchive": "Arşiv Seç",
-  "dragAndDrop": "DOSYALARI SÜRÜKLE VE BIRAK",
-  "or": "VEYA",
-  "nameHeader": "UNRPA - Ren'Py Arşivlerini Çıkar"
+    "cancel": "İptal",
+    "changeDirectory": "Dizini Değiştir",
+    "chooseDirectory": "Dizini Seç",
+    "close": "Kapat",
+    "dragAndDrop": "DOSYALARI SÜRÜKLE VE BIRAK",
+    "extract": "Çıkar",
+    "nameHeader": "UNRPA - Ren'Py Arşivlerini Çıkar",
+    "noscrypt": "Üzgünüz, ancak UNRPA çıkarıcı masaüstü tarayıcılar için tasarlanmıştır. Bu özelliğe erişmek için lütfen bu siteyi masaüstü bilgisayarınızda ziyaret edin.",
+    "noscrypt_header": "Yalnızca masaüstü cihazlarda görüntülenebilir",
+    "or": "VEYA",
+    "scanDirectory": "Dizini Tara",
+    "selectArchive": "Arşiv Seç",
+    "toDirectory": "Dizine"
 }

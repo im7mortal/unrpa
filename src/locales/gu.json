@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "ડિરેક્ટરી પસંદ કરો",
-  "changeDirectory": "ડિરેક્ટરી બદલો",
-  "toDirectory": "ડિરેક્ટરીમાં",
-  "extract": "ઉપાડો",
-  "close": "બંધ કરો",
-  "cancel": "રદ કરો",
-  "scanDirectory": "ડિરેક્ટરી સ્કેન કરો",
-  "selectArchive": "આર્કાઇવ પસંદ કરો",
-  "dragAndDrop": "ફાઇલો ખેંચો અને છોડો",
-  "or": "અથવા",
-  "nameHeader": "UNRPA - Ren'Py આર્કાઇવ કાઢો"
+    "cancel": "રદ કરો",
+    "changeDirectory": "ડિરેક્ટરી બદલો",
+    "chooseDirectory": "ડિરેક્ટરી પસંદ કરો",
+    "close": "બંધ કરો",
+    "dragAndDrop": "ફાઇલો ખેંચો અને છોડો",
+    "extract": "ઉપાડો",
+    "nameHeader": "UNRPA - Ren'Py આર્કાઇવ કાઢો",
+    "noscrypt": "માફ કરશો, પરંતુ UNRPA એક્સટ્રેક્ટર ડેસ્કટોપ બ્રાઉઝર માટે ડિઝાઇન કરવામાં આવ્યું છે. આ ફીચર સુધી પહોંચવા માટે કૃપા કરીને તમારા ડેસ્કટોપ કમ્પ્યુટર પર આ સાઇટની મુલાકાત લો.",
+    "noscrypt_header": "ફક્ત ડેસ્કટોપ ઉપકરણોમાં જોવાઈ શકે છે",
+    "or": "અથવા",
+    "scanDirectory": "ડિરેક્ટરી સ્કેન કરો",
+    "selectArchive": "આર્કાઇવ પસંદ કરો",
+    "toDirectory": "ડિરેક્ટરીમાં"
 }

@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Вибрати каталог",
-  "changeDirectory": "Змінити каталог",
-  "toDirectory": "До каталогу",
-  "extract": "Витягти",
-  "close": "Закрити",
-  "cancel": "Скасувати",
-  "scanDirectory": "Сканувати каталог",
-  "selectArchive": "Вибрати архів",
-  "dragAndDrop": "ПЕРЕТЯГНІТЬ ФАЙЛИ",
-  "or": "АБО",
-  "nameHeader": "UNRPA - Витягти архіви Ren'Py"
+    "cancel": "Скасувати",
+    "changeDirectory": "Змінити каталог",
+    "chooseDirectory": "Вибрати каталог",
+    "close": "Закрити",
+    "dragAndDrop": "ПЕРЕТЯГНІТЬ ФАЙЛИ",
+    "extract": "Витягти",
+    "nameHeader": "UNRPA - Витягти архіви Ren'Py",
+    "noscrypt": "Вибачте, але екстрактор UNRPA розроблений для настільних браузерів. Будь ласка, відвідайте цей сайт на вашому настільному комп'ютері, щоб отримати доступ до цієї функції.",
+    "noscrypt_header": "Доступно лише на настільних пристроях",
+    "or": "АБО",
+    "scanDirectory": "Сканувати каталог",
+    "selectArchive": "Вибрати архів",
+    "toDirectory": "До каталогу"
 }

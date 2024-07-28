@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Wybierz katalog",
-  "changeDirectory": "Zmień katalog",
-  "toDirectory": "Do katalogu",
-  "extract": "Wypakuj",
-  "close": "Zamknij",
-  "cancel": "Anuluj",
-  "scanDirectory": "Skanuj katalog",
-  "selectArchive": "Wybierz archiwum",
-  "dragAndDrop": "PRZECIĄGNIJ I UPUSZCZAJ PLIKI",
-  "or": "LUB",
-  "nameHeader": "UNRPA - Wypakuj archiwa Ren'Py"
+    "cancel": "Anuluj",
+    "changeDirectory": "Zmień katalog",
+    "chooseDirectory": "Wybierz katalog",
+    "close": "Zamknij",
+    "dragAndDrop": "PRZECIĄGNIJ I UPUSZCZAJ PLIKI",
+    "extract": "Wypakuj",
+    "nameHeader": "UNRPA - Wypakuj archiwa Ren'Py",
+    "noscrypt": "Przepraszamy, ale ekstraktor UNRPA jest zaprojektowany dla przeglądarek stacjonarnych. Odwiedź tę stronę na swoim komputerze stacjonarnym, aby uzyskać dostęp do tej funkcji.",
+    "noscrypt_header": "Dostępne tylko na urządzeniach stacjonarnych",
+    "or": "LUB",
+    "scanDirectory": "Skanuj katalog",
+    "selectArchive": "Wybierz archiwum",
+    "toDirectory": "Do katalogu"
 }

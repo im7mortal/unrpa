@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "اختر الدليل",
-  "changeDirectory": "غير الدليل",
-  "toDirectory": "إلى الدليل",
-  "extract": "استخراج",
-  "close": "إغلاق",
-  "cancel": "إلغاء",
-  "scanDirectory": "مسح الدليل",
-  "selectArchive": "حدد الأرشيف",
-  "dragAndDrop": "سحب وإفلات الملفات",
-  "or": "أو",
-  "nameHeader": "UNRPA - استخراج أرشيفات Ren'Py"
+    "cancel": "إلغاء",
+    "changeDirectory": "غير الدليل",
+    "chooseDirectory": "اختر الدليل",
+    "close": "إغلاق",
+    "dragAndDrop": "سحب وإفلات الملفات",
+    "extract": "استخراج",
+    "nameHeader": "UNRPA - استخراج أرشيفات Ren'Py",
+    "noscrypt": "عذرًا، ولكن مستخرج UNRPA مصمم لمتصفحات سطح المكتب. يرجى زيارة هذا الموقع على جهاز الكمبيوتر الخاص بك للوصول إلى هذه الميزة.",
+    "noscrypt_header": "العرض متاح على أجهزة سطح المكتب فقط",
+    "or": "أو",
+    "scanDirectory": "مسح الدليل",
+    "selectArchive": "حدد الأرشيف",
+    "toDirectory": "إلى الدليل"
 }

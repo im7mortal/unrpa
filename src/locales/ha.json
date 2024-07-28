@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Zaɓi Directory",
-  "changeDirectory": "Canza Directory",
-  "toDirectory": "Zuwo Directory",
-  "extract": "Fitar",
-  "close": "Rufe",
-  "cancel": "Soke",
-  "scanDirectory": "Duba Directory",
-  "selectArchive": "Zaɓi Archive",
-  "dragAndDrop": "Ja da Sauke Fayilolin",
-  "or": "KO",
-  "nameHeader": "UNRPA - Fitar da Ren'Py Archives"
+    "cancel": "Soke",
+    "changeDirectory": "Canza Directory",
+    "chooseDirectory": "Zaɓi Directory",
+    "close": "Rufe",
+    "dragAndDrop": "Ja da Sauke Fayilolin",
+    "extract": "Fitar",
+    "nameHeader": "UNRPA - Fitar da Ren'Py Archives",
+    "noscrypt": "Yi haƙuri, amma UNRPA extractor an tsara shi don masu binciken tebur. Da fatan za a ziyarci wannan rukunin yanar gizon akan kwamfutarka ta tebur don samun wannan fasalin.",
+    "noscrypt_header": "Ana iya gani akan na'urorin tebur kawai",
+    "or": "KO",
+    "scanDirectory": "Duba Directory",
+    "selectArchive": "Zaɓi Archive",
+    "toDirectory": "Zuwo Directory"
 }

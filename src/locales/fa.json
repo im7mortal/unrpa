@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "انتخاب پوشه",
-  "changeDirectory": "تغییر پوشه",
-  "toDirectory": "به پوشه",
-  "extract": "استخراج",
-  "close": "بستن",
-  "cancel": "لغو",
-  "scanDirectory": "اسکن پوشه",
-  "selectArchive": "انتخاب آرشیو",
-  "dragAndDrop": "کشیدن و رها کردن فایل‌ها",
-  "or": "یا",
-  "nameHeader": "UNRPA - استخراج آرشیوهای Ren'Py"
+    "cancel": "لغو",
+    "changeDirectory": "تغییر پوشه",
+    "chooseDirectory": "انتخاب پوشه",
+    "close": "بستن",
+    "dragAndDrop": "کشیدن و رها کردن فایل‌ها",
+    "extract": "استخراج",
+    "nameHeader": "UNRPA - استخراج آرشیوهای Ren'Py",
+    "noscrypt": "متأسفانه، استخراج کننده UNRPA برای مرورگرهای دسکتاپ طراحی شده است. لطفاً برای دسترسی به این ویژگی، این سایت را روی رایانه رومیزی خود ببینید.",
+    "noscrypt_header": "فقط در دستگاه‌های دسکتاپ قابل مشاهده است",
+    "or": "یا",
+    "scanDirectory": "اسکن پوشه",
+    "selectArchive": "انتخاب آرشیو",
+    "toDirectory": "به پوشه"
 }

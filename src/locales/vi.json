@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Chọn Thư mục",
-  "changeDirectory": "Thay đổi Thư mục",
-  "toDirectory": "Đến Thư mục",
-  "extract": "Trích xuất",
-  "close": "Đóng",
-  "cancel": "Hủy bỏ",
-  "scanDirectory": "Quét Thư mục",
-  "selectArchive": "Chọn Lưu trữ",
-  "dragAndDrop": "KÉO VÀ THẢ TỆP",
-  "or": "HOẶC",
-  "nameHeader": "UNRPA - Trích xuất Lưu trữ Ren'Py"
+    "cancel": "Hủy bỏ",
+    "changeDirectory": "Thay đổi Thư mục",
+    "chooseDirectory": "Chọn Thư mục",
+    "close": "Đóng",
+    "dragAndDrop": "KÉO VÀ THẢ TỆP",
+    "extract": "Trích xuất",
+    "nameHeader": "UNRPA - Trích xuất Lưu trữ Ren'Py",
+    "noscrypt": "Xin lỗi, nhưng UNRPA extractor được thiết kế cho trình duyệt máy tính để bàn. Vui lòng truy cập trang web này trên máy tính để bàn của bạn để truy cập tính năng này.",
+    "noscrypt_header": "Chỉ khả dụng trên thiết bị máy tính để bàn",
+    "or": "HOẶC",
+    "scanDirectory": "Quét Thư mục",
+    "selectArchive": "Chọn Lưu trữ",
+    "toDirectory": "Đến Thư mục"
 }

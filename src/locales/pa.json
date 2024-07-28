@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "ਡਾਇਰੈਕਟਰੀ ਚੁਣੋ",
-  "changeDirectory": "ਡਾਇਰੈਕਟਰੀ ਬਦਲੋ",
-  "toDirectory": "ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ",
-  "extract": "ਨਿਕਾਲੋ",
-  "close": "ਬੰਦ ਕਰੋ",
-  "cancel": "ਰੱਦ ਕਰੋ",
-  "scanDirectory": "ਡਾਇਰੈਕਟਰੀ ਸਕੈਨ ਕਰੋ",
-  "selectArchive": "ਆਰਕਾਈਵ ਚੁਣੋ",
-  "dragAndDrop": "ਫਾਈਲਾਂ ਖਿੱਚੋ ਅਤੇ ਛੱਡੋ",
-  "or": "ਜਾਂ",
-  "nameHeader": "UNRPA - Ren'Py ਆਰਕਾਈਵ ਨਿਕਾਲੋ"
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "changeDirectory": "ਡਾਇਰੈਕਟਰੀ ਬਦਲੋ",
+    "chooseDirectory": "ਡਾਇਰੈਕਟਰੀ ਚੁਣੋ",
+    "close": "ਬੰਦ ਕਰੋ",
+    "dragAndDrop": "ਫਾਈਲਾਂ ਖਿੱਚੋ ਅਤੇ ਛੱਡੋ",
+    "extract": "ਨਿਕਾਲੋ",
+    "nameHeader": "UNRPA - Ren'Py ਆਰਕਾਈਵ ਨਿਕਾਲੋ",
+    "noscrypt": "ਮਾਫ ਕਰਨਾ, ਪਰ UNRPA ਕੱਡਣ ਵਾਲਾ ਡੈਸਕਟਾਪ ਬ੍ਰਾਊਜ਼ਰਾਂ ਲਈ ਡਿਜ਼ਾਈਨ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਫੀਚਰ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਪਣੇ ਡੈਸਕਟਾਪ ਕੰਪਿਊਟਰ 'ਤੇ ਇਸ ਸਾਈਟ ਤੇ ਜਾਓ।",
+    "noscrypt_header": "ਕੇਵਲ ਡੈਸਕਟਾਪ ਡਿਵਾਈਸਾਂ 'ਤੇ ਉਪਲਬਧ",
+    "or": "ਜਾਂ",
+    "scanDirectory": "ਡਾਇਰੈਕਟਰੀ ਸਕੈਨ ਕਰੋ",
+    "selectArchive": "ਆਰਕਾਈਵ ਚੁਣੋ",
+    "toDirectory": "ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ"
 }

@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "Выбрать папку",
-  "changeDirectory": "Изменить папку",
-  "toDirectory": "Извлеч в",
-  "extract": "Извлечь",
-  "close": "Закрыть",
-  "cancel": "Отмена",
-  "scanDirectory": "Сканировать папку",
-  "selectArchive": "Выбрать архив",
-  "dragAndDrop": "СКИНЬТЕ ФАЙЛЫ",
-  "or": "ИЛИ",
-  "nameHeader": "UNRPA - Извлечь файл Ren'Py"
+    "cancel": "Отмена",
+    "changeDirectory": "Изменить папку",
+    "chooseDirectory": "Выбрать папку",
+    "close": "Закрыть",
+    "dragAndDrop": "СКИНЬТЕ ФАЙЛЫ",
+    "extract": "Извлечь",
+    "nameHeader": "UNRPA - Извлечь файл Ren'Py",
+    "noscrypt": "Извините, но экстрактор UNRPA предназначен для настольных браузеров. Пожалуйста, посетите этот сайт на своем настольном компьютере, чтобы получить доступ к этой функции.",
+    "noscrypt_header": "Доступно только на настольных устройствах",
+    "or": "ИЛИ",
+    "scanDirectory": "Сканировать папку",
+    "selectArchive": "Выбрать архив",
+    "toDirectory": "Извлеч в"
 }

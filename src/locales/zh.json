@@ -1,13 +1,15 @@
 {
-  "chooseDirectory": "选择目录",
-  "changeDirectory": "更改目录",
-  "toDirectory": "到目录",
-  "extract": "提取",
-  "close": "关闭",
-  "cancel": "取消",
-  "scanDirectory": "扫描目录",
-  "selectArchive": "选择档案",
-  "dragAndDrop": "拖放文件",
-  "or": "或",
-  "nameHeader": "UNRPA - 提取 Ren'Py 档案"
+    "cancel": "取消",
+    "changeDirectory": "更改目录",
+    "chooseDirectory": "选择目录",
+    "close": "关闭",
+    "dragAndDrop": "拖放文件",
+    "extract": "提取",
+    "nameHeader": "UNRPA - 提取 Ren'Py 档案",
+    "noscrypt": "抱歉，但UNRPA提取器是为桌面浏览器设计的。请在桌面计算机上访问此网站以使用此功能。",
+    "noscrypt_header": "仅限在桌面设备上查看",
+    "or": "或",
+    "scanDirectory": "扫描目录",
+    "selectArchive": "选择档案",
+    "toDirectory": "到目录"
 }
