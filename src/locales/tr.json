@@ -5,11 +5,13 @@
     "close": "Kapat",
     "dragAndDrop": "DOSYALARI SÜRÜKLE VE BIRAK",
     "extract": "Çıkar",
+    "issue": "Sorun",
     "nameHeader": "UNRPA - Ren'Py Arşivlerini Çıkar",
     "not_supported": "RPA dosyaları masaüstü bilgisayarlara özeldir, bu yüzden UNRPA çıkarıcısını masaüstü tarayıcıda kullanın. Bu özelliğe erişmek için lütfen bu siteyi masaüstü bilgisayarda ziyaret edin.",
     "not_supported_header": "Yalnızca masaüstü cihazlarda görüntülenebilir",
     "or": "VEYA",
     "scanDirectory": "Dizini Tara",
     "selectArchive": "Arşiv Seç",
+    "star": "Yıldız",
     "toDirectory": "Dizine"
 }

@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import GitHubButton from 'react-github-btn';
 import UnrpaApp1 from "./UnrpaApp1";
 import ElementLanguageSwitcher from "./ElementLanguageSwitcher";
+import GithubButtons from "./ElementGithubButtons";
 import {I18nextProvider, useTranslation} from 'react-i18next';
 import i18n from './i18n';
 
@@ -15,23 +16,16 @@ function App() {
             <>
 
 
-                <div className="row mx-2 mt-2 d-flex justify-content-between">
-                    <div className="col-md-2 col-4 text-left">
-                        ITWILLBEREPLACEDWITHVERSION
-                    </div>
-                    <div className="col-md-2 col-4 text-right">
-                        <GitHubButton href="https://github.com/im7mortal/unrpa"
-                                      data-color-scheme="no-preference: light; light: light; dark: dark;"
-                                      data-icon="octicon-star" data-size="large" data-show-count="true"
-                                      aria-label="Star im7mortal/unrpa on GitHub">Star</GitHubButton>
-                        <GitHubButton href="https://github.com/im7mortal/unrpa/issues"
-                                      data-color-scheme="no-preference: light; light: light; dark: dark;"
-                                      data-icon="octicon-issue-opened" data-size="large" data-show-count="true"
-                                      aria-label="Issue im7mortal/unrpa on GitHub">Issue</GitHubButton>
-                    </div>
-                </div>
-
                 <I18nextProvider i18n={i18n}>
+                    <div className="row mx-2 mt-2 d-flex justify-content-between">
+                        <div className="col-md-2 col-4 text-left">
+                            ITWILLBEREPLACEDWITHVERSION
+                        </div>
+                        <div className="col-md-2 col-4 text-right">
+                            <GithubButtons/>
+                        </div>
+                    </div>
+
                     <div className="row mx-1 mt-2 d-flex justify-content-between">
                         <div className="col-md-2 col-3 text-left">
 

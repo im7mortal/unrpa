@@ -5,11 +5,13 @@
     "close": "Tutup",
     "dragAndDrop": "SERET DAN LEPASKAN FAIL",
     "extract": "Ekstrak",
+    "issue": "Isu",
     "nameHeader": "UNRPA - Ekstrak Arkib Ren'Py",
     "not_supported": "Fail RPA adalah khusus untuk desktop, jadi gunakan pengekstrak UNRPA pada pelayar desktop. Sila lawati laman ini pada komputer desktop untuk mengakses ciri ini.",
     "not_supported_header": "Hanya tersedia pada peranti Desktop",
     "or": "ATAU",
     "scanDirectory": "Imbas Direktori",
     "selectArchive": "Pilih Arkib",
+    "star": "Bintang",
     "toDirectory": "Ke Direktori"
 }

@@ -5,11 +5,13 @@
     "close": "Zamknij",
     "dragAndDrop": "PRZECIĄGNIJ I UPUSZCZAJ PLIKI",
     "extract": "Wypakuj",
+    "issue": "Problem",
     "nameHeader": "UNRPA - Wypakuj archiwa Ren'Py",
     "not_supported": "Pliki RPA są specyficzne dla komputerów stacjonarnych, więc używaj ekstraktora UNRPA w przeglądarce na komputerze stacjonarnym. Aby uzyskać dostęp do tej funkcji, odwiedź tę stronę na komputerze stacjonarnym.",
     "not_supported_header": "Dostępne tylko na urządzeniach stacjonarnych",
     "or": "LUB",
     "scanDirectory": "Skanuj katalog",
     "selectArchive": "Wybierz archiwum",
+    "star": "Gwiazda",
     "toDirectory": "Do katalogu"
 }

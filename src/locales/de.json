@@ -5,11 +5,13 @@
     "close": "Schließen",
     "dragAndDrop": "DATEIEN ZIEHEN UND ABLEGEN",
     "extract": "Extrahieren",
+    "issue": "Problem",
     "nameHeader": "UNRPA - Ren'Py-Archive extrahieren",
     "not_supported": "Die RPA-Dateien sind desktop-spezifisch, daher verwenden Sie den UNRPA-Extraktor in einem Desktop-Browser. Bitte besuchen Sie diese Website auf einem Desktop-Computer, um auf diese Funktion zuzugreifen.",
     "not_supported_header": "Nur auf Desktop-Geräten verfügbar",
     "or": "ODER",
     "scanDirectory": "Verzeichnis scannen",
     "selectArchive": "Archiv auswählen",
+    "star": "Stern",
     "toDirectory": "Zum Verzeichnis"
 }

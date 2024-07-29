@@ -5,11 +5,13 @@
     "close": "Fechar",
     "dragAndDrop": "ARRASTE E SOLTE OS ARQUIVOS",
     "extract": "Extrair",
+    "issue": "Problema",
     "nameHeader": "UNRPA - Extrair Arquivos Ren'Py",
     "not_supported": "Os arquivos RPA são específicos para desktop, então use o extrator UNRPA em um navegador de desktop. Por favor, visite este site em um computador desktop para acessar este recurso.",
     "not_supported_header": "Disponível apenas em dispositivos Desktop",
     "or": "OU",
     "scanDirectory": "Verificar Diretório",
     "selectArchive": "Selecionar Arquivo",
+    "star": "Estrela",
     "toDirectory": "Para Diretório"
 }

@@ -5,11 +5,13 @@
     "close": "Tutup",
     "dragAndDrop": "TARIK DAN LEPAS FILE",
     "extract": "Ekstrak",
+    "issue": "Masalah",
     "nameHeader": "UNRPA - Ekstrak Arsip Ren'Py",
     "not_supported": "File RPA khusus kanggo desktop, dadi gunakake ekstraktor UNRPA ing browser desktop. Mangga bukak situs iki ing komputer desktop kanggo ngakses fitur iki.",
     "not_supported_header": "Mung kasedhiya ing piranti Desktop",
     "or": "ATAU",
     "scanDirectory": "Pindai Direktori",
     "selectArchive": "Pilih Arsip",
+    "star": "Lintang",
     "toDirectory": "Ke Direktori"
 }

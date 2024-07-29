@@ -5,11 +5,13 @@
     "close": "Rufe",
     "dragAndDrop": "Ja da Sauke Fayilolin",
     "extract": "Fitar",
+    "issue": "Matsala",
     "nameHeader": "UNRPA - Fitar da Ren'Py Archives",
     "not_supported": "Fayilolin RPA suna na'ura mai kwakwalwa ne, don haka yi amfani da UNRPA extractor akan burauzan kwamfutar tebur. Don Allah a ziyarci wannan rukunin yanar gizon akan kwamfutar tebur don samun wannan fasalin.",
     "not_supported_header": "Ana iya gani akan na'urorin tebur kawai",
     "or": "KO",
     "scanDirectory": "Duba Directory",
     "selectArchive": "Zaɓi Archive",
+    "star": "Tauraro",
     "toDirectory": "Zuwo Directory"
 }
