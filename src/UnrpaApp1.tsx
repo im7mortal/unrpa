@@ -3,12 +3,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./overlay-spinner.css"
 import {DefaultExternalLoggerFunc, ContextLog} from "./ContextLog";
 import {LogLevel} from "./logInterface";
-import ElementLogs from "./ElementLogs";
 import UnrpaApp from "./UnrpaApp";
 import {SpinnerProvider} from "./ContextSpinner";
 import {FilesProvider} from "./ContextDropdownFiles";
 import {ApiInfoProvider, defaultApiInfo} from "./ContextAPI";
-import Drop from "./ElementFileDrop";
 import {ServiceWorkerProvider} from "./ContextServiceWorker";
 
 function UnrpaApp1() {
@@ -22,9 +20,7 @@ function UnrpaApp1() {
                     <ApiInfoProvider value={defaultApiInfo}>
                         <SpinnerProvider>
                             <ServiceWorkerProvider>
-                                <Drop/>
                                 <UnrpaApp/>
-                                <ElementLogs/>
                             </ServiceWorkerProvider>
                         </SpinnerProvider>
                     </ApiInfoProvider>

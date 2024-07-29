@@ -15,12 +15,11 @@ function App() {
             <>
 
 
-                <div className="row mr-2 mt-2">
-                    <div className="col-10 text-left">
+                <div className="row mx-2 mt-2 d-flex justify-content-between">
+                    <div className="col-md-2 col-4 text-left">
                         ITWILLBEREPLACEDWITHVERSION
                     </div>
-
-                    <div className="col-2 text-right">
+                    <div className="col-md-2 col-4 text-right">
                         <GitHubButton href="https://github.com/im7mortal/unrpa"
                                       data-color-scheme="no-preference: light; light: light; dark: dark;"
                                       data-icon="octicon-star" data-size="large" data-show-count="true"
@@ -29,15 +28,15 @@ function App() {
                                       data-color-scheme="no-preference: light; light: light; dark: dark;"
                                       data-icon="octicon-issue-opened" data-size="large" data-show-count="true"
                                       aria-label="Issue im7mortal/unrpa on GitHub">Issue</GitHubButton>
-
                     </div>
                 </div>
-                <I18nextProvider i18n={i18n}>
-                    <div className="row mr-2 mt-2">
-                        <div className="col-10 text-left">
-                        </div>
 
-                        <div className="col-2 text-right">
+                <I18nextProvider i18n={i18n}>
+                    <div className="row mx-1 mt-2 d-flex justify-content-between">
+                        <div className="col-md-2 col-3 text-left">
+
+                        </div>
+                        <div className="col-md-2 col-5 text-right">
                             <ElementLanguageSwitcher/>
                         </div>
                     </div>

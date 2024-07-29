@@ -7,6 +7,8 @@ import ContextSpinner from "./ContextSpinner";
 import "./overlay-spinner.css"
 import ApiInfoContext from "./ContextAPI";
 import {useTranslation} from "react-i18next";
+import ElementLogs from "./ElementLogs";
+import Drop from "./ElementFileDrop";
 
 
 function UnrpaApp() {
@@ -23,23 +25,29 @@ function UnrpaApp() {
 
     return (
         <>
-            <div className="row justify-content-center relative-overlay-container">
-                {spinner && (
-                    <div className="overlay">
-                        <SyncLoader color={'#123abc'} loading={spinner} size={60} cssOverride={{opacity: 0.5}}/>
-                    </div>
-                )}
-                <div className="col">
-                    {isDesktop ? (
-                        <ElementExtraction/>
-                    ) : (
-                        <div>
-                            <h2>🖥️ {t('noscrypt_header')} 🖥️</h2>
-                            <p>{t('noscrypt')}</p>
+            {isDesktop ? (
+                <>
+                    <Drop/>
+                    <div className="row justify-content-center relative-overlay-container">
+                        {spinner && (
+                            <div className="overlay">
+                                <SyncLoader color={'#123abc'} loading={spinner} size={60} cssOverride={{opacity: 0.5}}/>
+                            </div>
+                        )}
+                        <div className="col">
+                            <ElementExtraction/>
                         </div>
-                    )}
-                </div>
-            </div>
+                    </div>
+
+                    <ElementLogs/>
+                </>
+            ) : (
+                <>
+                    <h2>🖥️ {t('noscrypt_header')} 🖥️</h2>
+                    <p>{t('noscrypt')}</p>
+                </>
+            )}
+
         </>);
 }
 
