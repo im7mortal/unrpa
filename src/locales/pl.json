@@ -6,7 +6,7 @@
     "dragAndDrop": "PRZECIĄGNIJ I UPUSZCZAJ PLIKI",
     "extract": "Wypakuj",
     "nameHeader": "UNRPA - Wypakuj archiwa Ren'Py",
-    "noscrypt": "Przepraszamy, ale ekstraktor UNRPA jest zaprojektowany dla przeglądarek stacjonarnych. Odwiedź tę stronę na swoim komputerze stacjonarnym, aby uzyskać dostęp do tej funkcji.",
+    "noscrypt": "Pliki RPA są specyficzne dla komputerów stacjonarnych, więc używaj ekstraktora UNRPA w przeglądarce na komputerze stacjonarnym. Aby uzyskać dostęp do tej funkcji, odwiedź tę stronę na komputerze stacjonarnym.",
     "noscrypt_header": "Dostępne tylko na urządzeniach stacjonarnych",
     "or": "LUB",
     "scanDirectory": "Skanuj katalog",

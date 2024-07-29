@@ -6,7 +6,7 @@
     "dragAndDrop": "DOSYALARI SÜRÜKLE VE BIRAK",
     "extract": "Çıkar",
     "nameHeader": "UNRPA - Ren'Py Arşivlerini Çıkar",
-    "noscrypt": "Üzgünüz, ancak UNRPA çıkarıcı masaüstü tarayıcılar için tasarlanmıştır. Bu özelliğe erişmek için lütfen bu siteyi masaüstü bilgisayarınızda ziyaret edin.",
+    "noscrypt": "RPA dosyaları masaüstü bilgisayarlara özeldir, bu yüzden UNRPA çıkarıcısını masaüstü tarayıcıda kullanın. Bu özelliğe erişmek için lütfen bu siteyi masaüstü bilgisayarda ziyaret edin.",
     "noscrypt_header": "Yalnızca masaüstü cihazlarda görüntülenebilir",
     "or": "VEYA",
     "scanDirectory": "Dizini Tara",

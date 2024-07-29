@@ -6,7 +6,7 @@
     "dragAndDrop": "Fayllarni tortib tashlang",
     "extract": "Chiqarish",
     "nameHeader": "UNRPA - Ren'Py Arxivlarini chiqarish",
-    "noscrypt": "Kechirasiz, lekin UNRPA ekstraktori ish stoli brauzerlari uchun mo'ljallangan. Ushbu funksiyaga kirish uchun ushbu saytdan ish stoli kompyuteringizda foydalaning.",
+    "noscrypt": "RPA fayllari faqat ish stoli uchun moʻljallangan, shuning uchun UNRPA ekstraktorini ish stoli brauzerida foydalaning. Ushbu funksiyani ochish uchun ushbu saytni ish stolidagi kompyuteringizdan kiriting.",
     "noscrypt_header": "Faqat ish stoli qurilmalarida ko'rish mumkin",
     "or": "YOKI",
     "scanDirectory": "Papkani skanerlash",

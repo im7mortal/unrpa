@@ -6,7 +6,7 @@
     "dragAndDrop": "ARRASTRAR Y SOLTAR ARCHIVOS",
     "extract": "Extraer",
     "nameHeader": "UNRPA - Extraer Archivo Ren'Py",
-    "noscrypt": "Lo siento, pero el extractor UNRPA está diseñado para navegadores de escritorio. Por favor, visite este sitio en su computadora de escritorio para acceder a esta función.",
+    "noscrypt": "Los archivos RPA son específicos para escritorio, por lo que usa el extractor UNRPA en un navegador de escritorio. Por favor, visita este sitio en una computadora de escritorio para acceder a esta función.",
     "noscrypt_header": "Solo disponible en dispositivos de escritorio",
     "or": "O",
     "scanDirectory": "Escanear directorio",
