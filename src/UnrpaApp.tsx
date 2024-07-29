@@ -43,8 +43,8 @@ function UnrpaApp() {
                 </>
             ) : (
                 <>
-                    <h2>🖥️ {t('noscrypt_header')} 🖥️</h2>
-                    <p>{t('noscrypt')}</p>
+                    <h2>🖥️ {t('not_supported_header')} 🖥️</h2>
+                    <p>{t('not_supported')}</p>
                 </>
             )}
 
