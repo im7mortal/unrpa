@@ -4,7 +4,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import GitHubButton from 'react-github-btn';
 import UnrpaApp1 from "./UnrpaApp1";
-import LanguageSwitcher from "./LanguageSwitcher";
+import ElementLanguageSwitcher from "./ElementLanguageSwitcher";
 import {I18nextProvider, useTranslation} from 'react-i18next';
 import i18n from './i18n';
 
@@ -38,7 +38,7 @@ function App() {
                         </div>
 
                         <div className="col-2 text-right">
-                            <LanguageSwitcher/>
+                            <ElementLanguageSwitcher/>
                         </div>
                     </div>
 

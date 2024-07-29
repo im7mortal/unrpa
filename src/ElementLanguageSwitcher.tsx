@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from 'react-bootstrap';
 
-const LanguageSwitcher: React.FC = () => {
+const ElementLanguageSwitcher: React.FC = () => {
     const { i18n } = useTranslation();
 
     const changeLanguage = (lng: string) => {
@@ -52,4 +52,4 @@ const LanguageSwitcher: React.FC = () => {
     );
 };
 
-export default LanguageSwitcher;
+export default ElementLanguageSwitcher;
