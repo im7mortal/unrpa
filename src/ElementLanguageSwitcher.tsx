@@ -17,36 +17,35 @@ const ElementLanguageSwitcher: React.FC = () => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-                <Dropdown.Item onClick={() => changeLanguage('hi')}>🍶 हिंदी</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('bn')}>🥦 বাংলা</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('te')}>🧄 తెలుగు</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('mr')}>🍋 मराठी</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('gu')}>🍬 ગુજરાતી</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('pa')}>🥕 ਪੰਜਾਬੀ</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ta')}>🍛 தமிழ்</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('th')}>🍲 ไทย</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ur')}>🍛 اردو</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('fa')}>🍉 فارسی</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ar')}>🌡 العربية</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('zh')}>🥢 中文</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ja')}>🍣 日本語</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ko')}>🍚 한국어</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ha')}>🧅 Hausa</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('vi')}>🍜 Tiếng Việt</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('jv')}>🌶 Jawa</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ms')}>🥠 Melayu</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('tr')}>🥘 Türkçe</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('en')}>🍔 English</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('es')}>🧉 Español</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('pt')}>💃 Português</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('fr')}>🍾 Français</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('de')}>🍺 Deutsch</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('pl')}>🥨 Polski</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('uz')}>🥗 O‘zbekcha</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('kz')}>🍵 Қазақша</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ua')}>🥞 Українська</Dropdown.Item>
-                <Dropdown.Item onClick={() => changeLanguage('ru')}>🥟 Русский</Dropdown.Item>
-
+                <Dropdown.Item data-testid="lang-hi" onClick={() => changeLanguage('hi')}>🍶 हिंदी</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-bn" onClick={() => changeLanguage('bn')}>🥦 বাংলা</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-te" onClick={() => changeLanguage('te')}>🧄 తెలుగు</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-mr" onClick={() => changeLanguage('mr')}>🍋 मराठी</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-gu" onClick={() => changeLanguage('gu')}>🍬 ગુજરાતી</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-pa" onClick={() => changeLanguage('pa')}>🥕 ਪੰਜਾਬੀ</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ta" onClick={() => changeLanguage('ta')}>🍛 தமிழ்</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-th" onClick={() => changeLanguage('th')}>🍲 ไทย</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ur" onClick={() => changeLanguage('ur')}>🍛 اردو</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-fa" onClick={() => changeLanguage('fa')}>🍉 فارسی</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ar" onClick={() => changeLanguage('ar')}>🌡 العربية</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-zh" onClick={() => changeLanguage('zh')}>🥢 中文</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ja" onClick={() => changeLanguage('ja')}>🍣 日本語</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ko" onClick={() => changeLanguage('ko')}>🍚 한국어</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ha" onClick={() => changeLanguage('ha')}>🧅 Hausa</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-vi" onClick={() => changeLanguage('vi')}>🍜 Tiếng Việt</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-jv" onClick={() => changeLanguage('jv')}>🌶 Jawa</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ms" onClick={() => changeLanguage('ms')}>🥠 Melayu</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-tr" onClick={() => changeLanguage('tr')}>🥘 Türkçe</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-en" onClick={() => changeLanguage('en')}>🍔 English</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-es" onClick={() => changeLanguage('es')}>🧉 Español</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-pt" onClick={() => changeLanguage('pt')}>💃 Português</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-fr" onClick={() => changeLanguage('fr')}>🍾 Français</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-de" onClick={() => changeLanguage('de')}>🍺 Deutsch</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-pl" onClick={() => changeLanguage('pl')}>🥨 Polski</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-uz" onClick={() => changeLanguage('uz')}>🥗 O‘zbekcha</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-kz" onClick={() => changeLanguage('kz')}>🍵 Қазақша</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ua" onClick={() => changeLanguage('ua')}>🥞 Українська</Dropdown.Item>
+                <Dropdown.Item data-testid="lang-ru" onClick={() => changeLanguage('ru')}>🥟 Русский</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     );

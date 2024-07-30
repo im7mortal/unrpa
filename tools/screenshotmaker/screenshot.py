@@ -11,8 +11,16 @@ options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 
+default_width = 1000
+# language drop down is very big; if it's go out of screen it will fail
+language_pick_height = 1200
+screenshot_height = 800
+
 # Initialize WebDriver
 driver = webdriver.Firefox(options=options)
+
+# Set window size to increase height
+driver.set_window_size(default_width, language_pick_height)  # Adjust the width and height as needed
 
 # Open the webpage
 driver.get('http://localhost:5174/unrpa/')  # Replace with your actual URL
@@ -35,12 +43,16 @@ for lang in languages:
     language_option.click()
 
     # Wait for the page to reload
-    time.sleep(3)  # Adjust the sleep time based on the reload time of your webpage
+    time.sleep(0.1)  # Wait for 100 milliseconds
 
-    # Take a screenshot
+    # Reset the window size to default height before taking the screenshot
+    driver.set_window_size(default_width, screenshot_height)  # Default height can be adjusted as needed
     screenshot_name = f'preview_{lang}.png'
     driver.save_screenshot(screenshot_name)
     print(f'Screenshot saved as {screenshot_name}')
+
+    # Restore increased height after taking the screenshot
+    driver.set_window_size(default_width, language_pick_height)  # Adjust the height as needed
 
 # Close the browser
 driver.quit()
