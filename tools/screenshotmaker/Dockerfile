@@ -10,6 +10,10 @@ RUN apt-get update && apt-get install -y \
     firefox-esr \
     xvfb \
     gnupg \
+    fonts-noto \
+    fonts-noto-cjk \
+    fonts-noto-color-emoji \
+    fonts-noto-extra \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
