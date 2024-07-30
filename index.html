@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
 
-    <meta charset="utf-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta charset="utf-8"/>
+    <link rel="icon" href="/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/>
     <meta
-      name="description"
-      content="Hassle free RPA extractor. In-Browser, no code, no exes."
+            name="description"
+            content="Hassle free RPA extractor. In-Browser, no code, no exes."
     />
 
     <!--Facebook "Open" Graph tags-->
@@ -19,15 +19,370 @@
     <meta property="og:url" content="https://im7mortal.github.io/unrpa/">
     <meta property="og:type" content="website">
 
-    <link rel="apple-touch-icon" href="/navbar-logo.png" />
+    <link rel="apple-touch-icon" href="/navbar-logo.png"/>
 
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="/manifest.json"/>
+
+    <script type="application/ld+json">
+        {
+            "@context": {
+                "@language": "en",
+                "@vocab": "https://schema.org/"
+            },
+            "@type": "WebSite",
+            "name": "Unrpa",
+            "url": "https://im7mortal.github.io/unrpa/",
+            "description": "Hassle free RPA extractor. In-Browser, no code, no exes.",
+            "image": "https://im7mortal.github.io/unrpa/preview/preview/preview_en.png",
+            "inLanguage": "en",
+            "keywords": "RPA, extractor, no code, in-browser",
+            "datePublished": "2024-07-30",
+            "hasPart": [
+                {
+                    "@context": {
+                        "@language": "hi"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "बिना परेशानी के RPA एक्सट्रैक्टर। ब्राउज़र में, बिना कोड, बिना exe।",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview/preview_hi.png",
+                    "inLanguage": "hi",
+                    "keywords": "RPA, एक्सट्रैक्टर, बिना कोड, ब्राउज़र में"
+                },
+                {
+                    "@context": {
+                        "@language": "bn"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "সমস্যা মুক্ত RPA এক্সট্র্যাক্টর। ব্রাউজারে, কোন কোড নেই, কোন exe নেই।",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview/preview_bn.png",
+                    "inLanguage": "bn",
+                    "keywords": "RPA, এক্সট্র্যাক্টর, কোন কোড নেই, ব্রাউজারে"
+                },
+                {
+                    "@context": {
+                        "@language": "te"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "ఎటువంటి ఇబ్బంది లేకుండా RPA ఎక్స్‌ట్రాక్టర్. బ్రౌజర్‌లో, కోడ్ లేదు, exe లు లేవు.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_te.png",
+                    "inLanguage": "te",
+                    "keywords": "RPA, ఎక్స్‌ట్రాక్టర్, కోడ్ లేదు, బ్రౌజర్‌లో"
+                },
+                {
+                    "@context": {
+                        "@language": "mr"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "तणावमुक्त RPA एक्सट्रॅक्टर. ब्राउझरमध्ये, कोड नाही, कोणतेही exe नाही.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_mr.png",
+                    "inLanguage": "mr",
+                    "keywords": "RPA, एक्सट्रॅक्टर, कोड नाही, ब्राउझरमध्ये"
+                },
+                {
+                    "@context": {
+                        "@language": "gu"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "સમસ્યા વિનાનું RPA એક્સટ્રેક્ટર. બ્રાઉઝરમાં, કોઈ કોડ નથી, કોઈ exe નથી.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_gu.png",
+                    "inLanguage": "gu",
+                    "keywords": "RPA, એક્સટ્રેક્ટર, કોઈ કોડ નથી, બ્રાઉઝરમાં"
+                },
+                {
+                    "@context": {
+                        "@language": "pa"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "ਬਿਨਾ ਕਿਸੇ ਪਰੇਸ਼ਾਨੀ ਦੇ RPA ਏਕਸਟਰੈਕਟਰ। ਬ੍ਰਾਉਜ਼ਰ ਵਿੱਚ, ਕੋਈ ਕੋਡ ਨਹੀਂ, ਕੋਈ exe ਨਹੀਂ।",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_pa.png",
+                    "inLanguage": "pa",
+                    "keywords": "RPA, ਏਕਸਟਰੈਕਟਰ, ਕੋਈ ਕੋਡ ਨਹੀਂ, ਬ੍ਰਾਉਜ਼ਰ ਵਿੱਚ"
+                },
+                {
+                    "@context": {
+                        "@language": "ta"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "எந்த தொந்தரவும் இல்லாமல் RPA எக்ஸ்ட்ராக்டர். உலாவியில், குறியீடு இல்லை, எக்ஸ்கள் இல்லை.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ta.png",
+                    "inLanguage": "ta",
+                    "keywords": "RPA, எக்ஸ்ட்ராக்டர், குறியீடு இல்லை, உலாவியில்"
+                },
+                {
+                    "@context": {
+                        "@language": "th"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "ตัวแยก RPA แบบไม่ยุ่งยาก ในเบราว์เซอร์ ไม่มีโค้ด ไม่มี exe",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_th.png",
+                    "inLanguage": "th",
+                    "keywords": "RPA, ตัวแยก, ไม่มีโค้ด, ในเบราว์เซอร์"
+                },
+                {
+                    "@context": {
+                        "@language": "ur"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "بغیر کسی پریشانی کے RPA ایکسٹریکٹر۔ براؤزر میں، کوئی کوڈ نہیں، کوئی exe نہیں۔",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ur.png",
+                    "inLanguage": "ur",
+                    "keywords": "RPA, ایکسٹریکٹر, کوئی کوڈ نہیں, براؤزر میں"
+                },
+                {
+                    "@context": {
+                        "@language": "fa"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "استخراج‌کننده RPA بدون دردسر. در مرورگر، بدون کد، بدون exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_fa.png",
+                    "inLanguage": "fa",
+                    "keywords": "RPA, استخراج‌کننده, بدون کد, در مرورگر"
+                },
+                {
+                    "@context": {
+                        "@language": "ar"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "مستخرج RPA خالٍ من المتاعب. في المتصفح، بدون كود، بدون exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ar.png",
+                    "inLanguage": "ar",
+                    "keywords": "RPA, مستخرج, بدون كود, في المتصفح"
+                },
+                {
+                    "@context": {
+                        "@language": "zh"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "无忧RPA提取器。在浏览器中，无需编码，无exe。",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_zh.png",
+                    "inLanguage": "zh",
+                    "keywords": "RPA, 提取器, 无需编码, 在浏览器中"
+                },
+                {
+                    "@context": {
+                        "@language": "ja"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "手間のかからないRPAエクストラクタ。ブラウザ内、コード不要、exe不要。",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ja.png",
+                    "inLanguage": "ja",
+                    "keywords": "RPA, エクストラクタ, コード不要, ブラウザ内"
+                },
+                {
+                    "@context": {
+                        "@language": "ko"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "번거로움 없는 RPA 추출기. 브라우저 내, 코드 없음, exe 없음.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ko.png",
+                    "inLanguage": "ko",
+                    "keywords": "RPA, 추출기, 코드 없음, 브라우저 내"
+                },
+                {
+                    "@context": {
+                        "@language": "ha"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Masu cire RPA ba tare da wata matsala ba. A cikin burauza, babu lamba, babu exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ha.png",
+                    "inLanguage": "ha",
+                    "keywords": "RPA, masu cirewa, babu lamba, a cikin burauza"
+                },
+                {
+                    "@context": {
+                        "@language": "es"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Extractor de RPA sin complicaciones. En el navegador, sin código, sin ejecutables.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_es.png",
+                    "inLanguage": "es",
+                    "keywords": "RPA, extractor, sin código, en el navegador"
+                },
+                {
+                    "@context": {
+                        "@language": "vi"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Trình trích xuất RPA không rắc rối. Trên trình duyệt, không mã, không exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_vi.png",
+                    "inLanguage": "vi",
+                    "keywords": "RPA, trình trích xuất, không mã, trên trình duyệt"
+                },
+                {
+                    "@context": {
+                        "@language": "jv"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Ekstraktor RPA tanpa repot. Ing browser, tanpa kode, tanpa exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_jv.png",
+                    "inLanguage": "jv",
+                    "keywords": "RPA, ekstraktor, tanpa kode, ing browser"
+                },
+                {
+                    "@context": {
+                        "@language": "ms"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Pengekstrak RPA tanpa kerumitan. Dalam penyemak imbas, tanpa kod, tanpa exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ms.png",
+                    "inLanguage": "ms",
+                    "keywords": "RPA, pengekstrak, tanpa kod, dalam penyemak imbas"
+                },
+                {
+                    "@context": {
+                        "@language": "tr"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Sorunsuz RPA çıkarıcı. Tarayıcıda, kodsuz, exesiz.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_tr.png",
+                    "inLanguage": "tr",
+                    "keywords": "RPA, çıkarıcı, kodsuz, tarayıcıda"
+                },
+                {
+                    "@context": {
+                        "@language": "pt"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Extrator RPA sem complicações. No navegador, sem código, sem exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_pt.png",
+                    "inLanguage": "pt",
+                    "keywords": "RPA, extrator, sem código, no navegador"
+                },
+                {
+                    "@context": {
+                        "@language": "fr"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Extracteur RPA sans tracas. Dans le navigateur, sans code, sans exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_fr.png",
+                    "inLanguage": "fr",
+                    "keywords": "RPA, extracteur, sans code, dans le navigateur"
+                },
+                {
+                    "@context": {
+                        "@language": "de"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "RPA-Extraktor ohne Aufwand. Im Browser, ohne Code, ohne exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_de.png",
+                    "inLanguage": "de",
+                    "keywords": "RPA, Extraktor, ohne Code, im Browser"
+                },
+                {
+                    "@context": {
+                        "@language": "pl"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Ekstraktor RPA bez problemów. W przeglądarce, bez kodu, bez exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_pl.png",
+                    "inLanguage": "pl",
+                    "keywords": "RPA, ekstraktor, bez kodu, w przeglądarce"
+                },
+                {
+                    "@context": {
+                        "@language": "uz"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Muammosiz RPA ekstraktori. Brauzerda, kodsiz, exe yo'q.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_uz.png",
+                    "inLanguage": "uz",
+                    "keywords": "RPA, ekstraktor, kodsiz, brauzerda"
+                },
+                {
+                    "@context": {
+                        "@language": "kz"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Мәселесіз RPA экстракторы. Браузерде, кодсыз, exe жоқ.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_kz.png",
+                    "inLanguage": "kz",
+                    "keywords": "RPA, экстрактор, кодсыз, браузерде"
+                },
+                {
+                    "@context": {
+                        "@language": "uk"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Безпроблемний екстрактор RPA. У браузері, без коду, без exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ua.png",
+                    "inLanguage": "uk",
+                    "keywords": "RPA, екстрактор, без коду, у браузері"
+                },
+                {
+                    "@context": {
+                        "@language": "ru"
+                    },
+                    "@type": "WebSite",
+                    "name": "Unrpa",
+                    "url": "https://im7mortal.github.io/unrpa/",
+                    "description": "Экстрактор RPA без проблем. В браузере, без кода, без exe.",
+                    "image": "https://im7mortal.github.io/unrpa/preview/preview_ru.png",
+                    "inLanguage": "ru",
+                    "keywords": "RPA, экстрактор, без кода, в браузере"
+                }
+            ]
+        }
+    </script>
 
     <title>Renpy arcives extractor</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <script type="module" src="/src/index.tsx"></script>
-  </body>
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root"></div>
+<script type="module" src="/src/index.tsx"></script>
+</body>
 </html>
