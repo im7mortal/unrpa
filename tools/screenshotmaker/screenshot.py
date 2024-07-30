@@ -1,15 +1,27 @@
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-# Setup Firefox options
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
+def get_webdriver(browser):
+    if browser == 'firefox':
+        options = FirefoxOptions()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Firefox(options=options)
+    elif browser == 'chrome':
+        options = ChromeOptions()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Chrome(options=options)
+    else:
+        raise ValueError("Unsupported browser! Use 'firefox' or 'chrome'.")
+    return driver
 
 default_width = 1000
 # language drop down is very big; if it's go out of screen it will fail
@@ -17,13 +29,13 @@ language_pick_height = 1200
 screenshot_height = 800
 
 # Initialize WebDriver
-driver = webdriver.Firefox(options=options)
+driver = get_webdriver('firefox')
 
 # Set window size to increase height
 driver.set_window_size(default_width, language_pick_height)  # Adjust the width and height as needed
 
 # Open the webpage
-driver.get('http://localhost:5174/unrpa/')  # Replace with your actual URL
+driver.get('http://localhost:5173/unrpa/')
 
 # List of language test IDs
 languages = ['hi', 'bn', 'te', 'mr', 'gu', 'pa', 'ta', 'th', 'ur', 'fa', 'ar', 'zh', 'ja', 'ko', 'ha', 'vi', 'jv', 'ms',
