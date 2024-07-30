@@ -26,7 +26,7 @@ def get_webdriver(browser):
 default_width = 1000
 # language drop down is very big; if it's go out of screen it will fail
 language_pick_height = 1200
-screenshot_height = 800
+screenshot_height = 900
 
 # Initialize WebDriver
 driver = get_webdriver('firefox')
