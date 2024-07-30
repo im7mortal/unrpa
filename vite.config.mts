@@ -9,6 +9,9 @@ export default defineConfig(() => {
         build: {
             outDir: 'build',
         },
+        server: {
+            port: 5173
+        },
         plugins: [
             react(),
             injectManifest({
