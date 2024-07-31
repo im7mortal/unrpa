@@ -45,7 +45,7 @@ languages = ['hi', 'bn', 'te', 'mr', 'gu', 'pa', 'ta', 'th', 'ur', 'fa', 'ar', '
 # Create a WebDriverWait object
 wait = WebDriverWait(driver, 10)
 
-header_img = "template/header.png"
+header_img = "/app/template/header.png"
 header = Image.open(header_img)
 
 def add_header_to_screenshot(screenshot_path, header_path, output_path):
@@ -79,7 +79,7 @@ for lang in languages:
 
     # Reset the window size to default height before taking the screenshot
     driver.set_window_size(default_width, screenshot_height)  # Default height can be adjusted as needed
-    screenshot_name = f'preview_{lang}.png'
+    screenshot_name = f'/screenshots/preview_{lang}.png'
     driver.save_screenshot(screenshot_name)
 
     # Add header to the screenshot
