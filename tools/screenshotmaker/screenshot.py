@@ -25,6 +25,7 @@ def get_webdriver(browser):
     return driver
 
 default_width = 1000
+default_width = 1640
 # language drop down is very big; if it's go out of screen it will fail
 language_pick_height = 1200
 screenshot_height = 600
@@ -46,6 +47,7 @@ languages = ['hi', 'bn', 'te', 'mr', 'gu', 'pa', 'ta', 'th', 'ur', 'fa', 'ar', '
 wait = WebDriverWait(driver, 10)
 
 header_img = "/app/template/header.png"
+header_img = "/app/template/header_for_video.png"
 header = Image.open(header_img)
 
 def add_header_to_screenshot(screenshot_path, header_path, output_path):
