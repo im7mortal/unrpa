@@ -30,7 +30,7 @@ RUN wget -q -O /usr/local/bin/chromedriver http://chromedriver.storage.googleapi
 RUN wget -q -O - https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux64.tar.gz | tar xzf - -C /usr/local/bin
 
 # Install Python packages
-RUN pip install selenium
+RUN pip install selenium pillow
 
 # Command to run the script
 CMD ["python", "-u", "/app/screenshot.py"]
