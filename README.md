@@ -4,6 +4,7 @@
 
 # [:point_right: TLDR; Go to the UNRPA WEB PAGE](https://im7mortal.github.io/unrpa/)
 
+[INSTRUCTION](https://vimeo.com/993197568)
 
 Hassle-free in browser RPA extractor.
 
