@@ -7,36 +7,36 @@ function ElementExtraction() {
     const [startDate, setStartDate] = useState("2024-09-10");
     const [endDate, setEndDate] = useState("2024-09-20");
 
+    // State to hold the fetched scanIds
+    const [scanIds, setScanIds] = useState([]);
+    const [loading, setLoading] = useState(false); // Track loading state
+
     const handleFetchData = () => {
         if (!dthdId || !startDate || !endDate) {
             console.error("Please provide all inputs before fetching data");
             return;
         }
 
-        // URL to the API
+        setLoading(true); // Start loading
         const apiUrl = `https://digitaltwin.sturfee.com/hd`;
 
-        // Add proxy for CORS issue handling during development (for production, resolve CORS on the server side)
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Only for development testing
-        console.log(apiUrl + `/layout/` + dthdId)
+        // Fetch the layout with full details
         fetch(apiUrl + `/layout/` + dthdId + "?full_details=True", {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
-            // body: JSON.stringify({
-            //     dthdId,
-            //     startDate,
-            //     endDate,
-            // }),
         })
             .then((response) => response.json())
             .then((data) => {
-                // Print the output in the console
-                console.log("API Response:", data);
+                // Extract scan IDs from the fetched data
+                const fetchedScanIds = data.scanMeshes ? data.scanMeshes.map(scan => scan.dtHdScanId) : [];
+                setScanIds(fetchedScanIds); // Set scan IDs in the state
+                setLoading(false); // End loading
             })
             .catch((error) => {
                 console.error("Error fetching API data:", error);
+                setLoading(false); // End loading in case of error
             });
     };
 
@@ -80,12 +80,34 @@ function ElementExtraction() {
 
             {/* Button to trigger API call */}
             <div className="col mt-4">
-                <button
-                    className="btn btn-primary"
-                    onClick={handleFetchData}
-                >
-                    Fetch Data
+                <button className="btn btn-primary" onClick={handleFetchData} disabled={loading}>
+                    {loading ? 'Fetching...' : 'Fetch Data'}
                 </button>
+            </div>
+
+            {/* Display the list of checkboxes with scanIds */}
+            <div className="col mt-4">
+                {scanIds.length > 0 && (
+                    <div>
+                        <h4>Select Scan IDs</h4>
+                        {scanIds.map((scanId) => (
+                            <div key={scanId} className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    value={scanId}
+                                    id={scanId}
+                                />
+                                <label className="form-check-label" htmlFor={scanId}>
+                                    {scanId}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {loading && <p>Loading scan IDs...</p>}
+                {!loading && scanIds.length === 0 && <p>No scan IDs available.</p>}
             </div>
         </div>
     );
