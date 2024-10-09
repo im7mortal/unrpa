@@ -11,6 +11,11 @@ function ElementExtraction() {
     const [scanIds, setScanIds] = useState([]);
     const [loading, setLoading] = useState(false); // Track loading state
 
+    // Function to convert date string to Date object for comparison
+    const parseDate = (dateString) => {
+        return new Date(dateString.split('T')[0]); // Take only the date part (ignore time)
+    };
+
     const handleFetchData = () => {
         if (!dthdId || !startDate || !endDate) {
             console.error("Please provide all inputs before fetching data");
@@ -29,8 +34,30 @@ function ElementExtraction() {
         })
             .then((response) => response.json())
             .then((data) => {
-                // Extract scan IDs from the fetched data
-                const fetchedScanIds = data.scanMeshes ? data.scanMeshes.map(scan => scan.dtHdScanId) : [];
+                // Extract scan IDs and filter based on additional conditions
+                const fetchedScanIds = data.scanMeshes
+                    ? data.scanMeshes.filter(scan => {
+                        // Check the status conditions
+                        if (["INIT", "RAW_READY", "TEXTURED_READY"].includes(scan.status) &&
+                            ["ACTIVE_TEXTURED", "ACTIVE"].includes(scan.dtScanStatus)) {
+
+                            // Check if scanMeshUrl is not null
+                            if (scan.scanMeshUrl !== null) {
+
+                                // Date-based filtering
+                                const createdDate = parseDate(scan.createdDate);
+                                const start = new Date(startDate);
+                                const end = new Date(endDate);
+
+                                if (createdDate >= start && createdDate <= end) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }).map(scan => scan.dtHdScanId)
+                    : [];
+
                 setScanIds(fetchedScanIds); // Set scan IDs in the state
                 setLoading(false); // End loading
             })
@@ -107,7 +134,7 @@ function ElementExtraction() {
                 )}
 
                 {loading && <p>Loading scan IDs...</p>}
-                {!loading && scanIds.length === 0 && <p>No scan IDs available.</p>}
+                {!loading && scanIds.length === 0 && <p>No scan IDs available within the selected date range.</p>}
             </div>
         </div>
     );
