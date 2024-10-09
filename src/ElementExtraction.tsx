@@ -1,92 +1,94 @@
-import React, {useContext, useState} from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import {useLogs} from './ContextLog';
-
-import {FileExtraction} from './detectVersion';
-import ElementArchiveExtraction from "./ElementArchiveExtraction";
-import {FilePicker} from './ElementFilePicker';
-import {DirectoryScanner} from './ElementDirectoryPicker';
-import {FilesContext} from "./ContextDropdownFiles";
-import {useTranslation} from "react-i18next";
-
 function ElementExtraction() {
-    const {t} = useTranslation();
-    const {recordLog} = useLogs();
+    // Set default values for dthdId, startDate, and endDate
+    const [dthdId, setDthdId] = useState("781c2417-2420-4c2c-bd42-142e606a0302");
+    const [startDate, setStartDate] = useState("2024-09-10");
+    const [endDate, setEndDate] = useState("2024-09-20");
 
-    const {files, dispatch} = useContext(FilesContext);
+    const handleFetchData = () => {
+        if (!dthdId || !startDate || !endDate) {
+            console.error("Please provide all inputs before fetching data");
+            return;
+        }
 
-    // State for input text and date pickers
-    const [inputText, setInputText] = useState("");
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+        // URL to the API
+        const apiUrl = `https://digitaltwin.sturfee.com/hd`;
 
-    const handleFileSelection = (fExtraction: FileExtraction) => {
-        dispatch({type: 'ADD', payload: fExtraction});
+        // Add proxy for CORS issue handling during development (for production, resolve CORS on the server side)
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Only for development testing
+        console.log(apiUrl + `/layout/` + dthdId)
+        fetch(apiUrl + `/layout/` + dthdId + "?full_details=True", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // body: JSON.stringify({
+            //     dthdId,
+            //     startDate,
+            //     endDate,
+            // }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                // Print the output in the console
+                console.log("API Response:", data);
+            })
+            .catch((error) => {
+                console.error("Error fetching API data:", error);
+            });
     };
 
-
-    if (files.length !== 0) {
-        return (
-            <div>
-                {files.map((item: FileExtraction, index: number) => (
-                    <ElementArchiveExtraction
-                        fClassE={item}
-                        logF={recordLog}
-                        handleRemove={() => {
-                            dispatch({type: 'REMOVE', payload: item.Id})
-                        }}
-                        key={item.Id}
-                    />
-                ))}
-            </div>);
-    } else {
-        return (
-            <div>
-                <div className="col">
-                    <FilePicker onFileSelected={handleFileSelection}/>
-                    <span className={`fs-2 font-weight-bold me-3 ms-3`}>{t('or')}</span>
-                    <DirectoryScanner onFileSelected={handleFileSelection}/>
-                </div>
-                <div className="col">
-                    <span className="fs-2 font-weight-bold me-3 ms-3 ">{t('dragAndDrop')} 📂</span>
-                </div>
-
-                {/* Added input text and date pickers below */}
-                <div className="col mt-4">
-                    <label htmlFor="inputText" className="form-label">Input Text:</label>
-                    <input
-                        type="text"
-                        id="inputText"
-                        className="form-control"
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        placeholder="Enter some text"
-                    />
-                </div>
-                <div className="col mt-4">
-                    <label htmlFor="startDate" className="form-label">Start Date:</label>
-                    <input
-                        type="date"
-                        id="startDate"
-                        className="form-control"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                    />
-                </div>
-                <div className="col mt-4">
-                    <label htmlFor="endDate" className="form-label">End Date:</label>
-                    <input
-                        type="date"
-                        id="endDate"
-                        className="form-control"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                    />
-                </div>
+    return (
+        <div>
+            {/* Input field for dthdId */}
+            <div className="col mt-4">
+                <label htmlFor="dthdId" className="form-label">Enter DTHD ID:</label>
+                <input
+                    type="text"
+                    id="dthdId"
+                    className="form-control"
+                    value={dthdId}
+                    onChange={(e) => setDthdId(e.target.value)}
+                    placeholder="Enter the DTHD ID"
+                />
             </div>
-        );
-    }
+
+            {/* Date pickers */}
+            <div className="col mt-4">
+                <label htmlFor="startDate" className="form-label">Start Date:</label>
+                <input
+                    type="date"
+                    id="startDate"
+                    className="form-control"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                />
+            </div>
+
+            <div className="col mt-4">
+                <label htmlFor="endDate" className="form-label">End Date:</label>
+                <input
+                    type="date"
+                    id="endDate"
+                    className="form-control"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                />
+            </div>
+
+            {/* Button to trigger API call */}
+            <div className="col mt-4">
+                <button
+                    className="btn btn-primary"
+                    onClick={handleFetchData}
+                >
+                    Fetch Data
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default ElementExtraction;
