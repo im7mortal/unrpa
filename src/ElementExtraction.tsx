@@ -2,14 +2,37 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function ElementExtraction() {
-    // Set default values for dthdId, startDate, and endDate
+    // Set default values for dthdId, startDate, endDate, and scanId
     const [dthdId, setDthdId] = useState("781c2417-2420-4c2c-bd42-142e606a0302");
     const [startDate, setStartDate] = useState("2024-09-10");
     const [endDate, setEndDate] = useState("2024-09-20");
+    const [scanId, setScanId] = useState(""); // New optional scanId field
 
     // State to hold the fetched scanIds
     const [scanIds, setScanIds] = useState([]);
     const [loading, setLoading] = useState(false); // Track loading state
+    const [showOptions, setShowOptions] = useState(false); // Control options display
+
+    // Options for the modal (mocking the trigger_options_modal logic)
+    const options = [
+        { text: "Run TSDF", value: "runTsdf" },
+        { text: "Run TSDF Texture", value: "runTsdfTexture" },
+        { text: "Run Photogrammetry", value: "runPhotogrammetry" },
+        { text: "Run Video", value: "runVideo" },
+        { text: "Run Media", value: "runMedia" }
+    ];
+
+    // State for selected options
+    const [selectedOptions, setSelectedOptions] = useState([]);
+
+    // Function to handle option selection
+    const handleOptionChange = (optionValue) => {
+        setSelectedOptions((prevSelected) =>
+            prevSelected.includes(optionValue)
+                ? prevSelected.filter((item) => item !== optionValue)
+                : [...prevSelected, optionValue]
+        );
+    };
 
     // Function to convert date string to Date object for comparison
     const parseDate = (dateString) => {
@@ -60,6 +83,7 @@ function ElementExtraction() {
 
                 setScanIds(fetchedScanIds); // Set scan IDs in the state
                 setLoading(false); // End loading
+                setShowOptions(true); // Show options after scans are fetched
             })
             .catch((error) => {
                 console.error("Error fetching API data:", error);
@@ -136,6 +160,34 @@ function ElementExtraction() {
                 {loading && <p>Loading scan IDs...</p>}
                 {!loading && scanIds.length === 0 && <p>No scan IDs available within the selected date range.</p>}
             </div>
+
+            {/* Display options checkboxes after scans are shown */}
+            {showOptions && (
+                <div className="col mt-4">
+                    <h4>Select Processes to Run</h4>
+                    {options.map((option) => (
+                        <div key={option.value} className="form-check">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                value={option.value}
+                                id={option.value}
+                                checked={selectedOptions.includes(option.value)}
+                                onChange={() => handleOptionChange(option.value)}
+                            />
+                            <label className="form-check-label" htmlFor={option.value}>
+                                {option.text}
+                            </label>
+                        </div>
+                    ))}
+                    <button
+                        className="btn btn-success mt-3"
+                        onClick={() => console.log("Selected options:", selectedOptions)}
+                    >
+                        Submit Options
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
