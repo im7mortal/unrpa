@@ -5,6 +5,8 @@
   "homepage": "https://im7mortal.github.io/unrpa",
   "type": "module",
   "dependencies": {
+    "@react-three/drei": "^9.114.3",
+    "@react-three/fiber": "^8.17.10",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^29.5.12",
@@ -33,6 +35,7 @@
     "react-router-dom": "^6.24.1",
     "react-spinners": "^0.14.1",
     "react-window": "^1.8.10",
+    "three": "^0.169.0",
     "uuid": "^10.0.0",
     "web-vitals": "^4.2.1",
     "workbox-window": "^7.1.0",
