@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, startTransition } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ModelViewer from './ModelViewer';
-import ErrorBoundary from "./ErrorBoundary"; // Importing the ModelViewer component
+import Model from './Model';
+import ErrorBoundary from "./ErrorBoundary";
 
 function ElementExtraction() {
     const [dthdId, setDthdId] = useState("781c2417-2420-4c2c-bd42-142e606a0302");
@@ -22,7 +22,7 @@ function ElementExtraction() {
 
         fetch(apiUrl + `/layout/` + dthdId + "?full_details=True", {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
         })
             .then((response) => response.json())
             .then((data) => {
@@ -108,7 +108,12 @@ function ElementExtraction() {
                         <h4>Select Scan ID</h4>
                         {scanIds.map(scan => (
                             <div key={scan.id} className="form-check">
-                                <a href="#" onClick={() => setSelectedModelUrl(scan.scanMeshUrl)}>
+                                <a href="#" onClick={() => {
+                                    // Wrap the state update inside startTransition
+                                    startTransition(() => {
+                                        setSelectedModelUrl(scan.scanMeshUrl);
+                                    });
+                                }}>
                                     {scan.id}
                                 </a>
                             </div>
@@ -125,7 +130,9 @@ function ElementExtraction() {
                 <div className="col mt-4">
                     <h4>3D Model Viewer</h4>
                     <ErrorBoundary>
-                        <ModelViewer modelUrl={selectedModelUrl} />
+                        <Suspense fallback={<div>Loading Model...</div>}>
+                            <Model modelUrl={selectedModelUrl} />
+                        </Suspense>
                     </ErrorBoundary>
                 </div>
             )}
