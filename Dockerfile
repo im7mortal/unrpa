@@ -24,4 +24,5 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory inside the container
 WORKDIR /app
 
+#CMD ["npm", "install", "chonky"]
 CMD ["npm", "start"]

@@ -17,6 +17,8 @@
     "@zip.js/zip.js": "^2.7.45",
     "bootstrap": "^5.3.3",
     "bowser": "^2.11.0",
+    "chonky": "^2.3.2",
+    "chonky-icon-fontawesome": "^2.3.2",
     "express": "^4.19.2",
     "i18next": "^23.12.2",
     "i18next-browser-languagedetector": "^8.0.0",
