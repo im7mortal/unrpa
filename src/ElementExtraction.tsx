@@ -1,4 +1,4 @@
-import React, { useState, Suspense, startTransition } from 'react';
+import React, {useState, Suspense, startTransition} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Model from './Model';
 import ErrorBoundary from "./ErrorBoundary";
@@ -59,39 +59,41 @@ function ElementExtraction() {
     return (
         <div>
             {/* Input field for dthdId */}
-            <div className="col mt-4">
-                <label htmlFor="dthdId" className="form-label">Enter DTHD ID:</label>
-                <input
-                    type="text"
-                    id="dthdId"
-                    className="form-control"
-                    value={dthdId}
-                    onChange={(e) => setDthdId(e.target.value)}
-                    placeholder="Enter the DTHD ID"
-                />
-            </div>
+            <div className="row">
+                <div className="col mt-4">
+                    <label htmlFor="dthdId" className="form-label">Enter DTHD ID:</label>
+                    <input
+                        type="text"
+                        id="dthdId"
+                        className="form-control"
+                        value={dthdId}
+                        onChange={(e) => setDthdId(e.target.value)}
+                        placeholder="Enter the DTHD ID"
+                    />
+                </div>
 
-            {/* Date pickers */}
-            <div className="col mt-4">
-                <label htmlFor="startDate" className="form-label">Start Date:</label>
-                <input
-                    type="date"
-                    id="startDate"
-                    className="form-control"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                />
-            </div>
+                {/* Date pickers */}
+                <div className="col mt-4">
+                    <label htmlFor="startDate" className="form-label">Start Date:</label>
+                    <input
+                        type="date"
+                        id="startDate"
+                        className="form-control"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                    />
+                </div>
 
-            <div className="col mt-4">
-                <label htmlFor="endDate" className="form-label">End Date:</label>
-                <input
-                    type="date"
-                    id="endDate"
-                    className="form-control"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                />
+                <div className="col mt-4">
+                    <label htmlFor="endDate" className="form-label">End Date:</label>
+                    <input
+                        type="date"
+                        id="endDate"
+                        className="form-control"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                    />
+                </div>
             </div>
 
             {/* Button to trigger API call */}
@@ -101,41 +103,43 @@ function ElementExtraction() {
                 </button>
             </div>
 
-            {/* Display the list of scan IDs */}
-            <div className="col mt-4">
-                {scanIds.length > 0 && (
-                    <div>
-                        <h4>Select Scan ID</h4>
-                        {scanIds.map(scan => (
-                            <div key={scan.id} className="form-check">
-                                <a href="#" onClick={() => {
-                                    // Wrap the state update inside startTransition
-                                    startTransition(() => {
-                                        setSelectedModelUrl(scan.scanMeshUrl);
-                                    });
-                                }}>
-                                    {scan.id}
-                                </a>
-                            </div>
-                        ))}
+            <div className="row">
+                {/* Display the list of scan IDs */}
+                <div className="col mt-4">
+                    {scanIds.length > 0 && (
+                        <div>
+                            <h4>Select Scan ID</h4>
+                            {scanIds.map(scan => (
+                                <div key={scan.id} className="form-check">
+                                    <a href="#" onClick={() => {
+                                        // Wrap the state update inside startTransition
+                                        startTransition(() => {
+                                            setSelectedModelUrl(scan.scanMeshUrl);
+                                        });
+                                    }}>
+                                        {scan.id}
+                                    </a>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {loading && <p>Loading scan IDs...</p>}
+                    {!loading && scanIds.length === 0 && <p>No scan IDs available within the selected date range.</p>}
+                </div>
+
+                {/* Model Viewer - show the selected model */}
+                {selectedModelUrl && (
+                    <div className="col mt-4">
+                        <h4>3D Model Viewer</h4>
+                        <ErrorBoundary>
+                            <Suspense fallback={<div>Loading Model...</div>}>
+                                <Model modelUrl={selectedModelUrl} height="700px" />
+                            </Suspense>
+                        </ErrorBoundary>
                     </div>
                 )}
-
-                {loading && <p>Loading scan IDs...</p>}
-                {!loading && scanIds.length === 0 && <p>No scan IDs available within the selected date range.</p>}
             </div>
-
-            {/* Model Viewer - show the selected model */}
-            {selectedModelUrl && (
-                <div className="col mt-4">
-                    <h4>3D Model Viewer</h4>
-                    <ErrorBoundary>
-                        <Suspense fallback={<div>Loading Model...</div>}>
-                            <Model modelUrl={selectedModelUrl} />
-                        </Suspense>
-                    </ErrorBoundary>
-                </div>
-            )}
         </div>
     );
 }

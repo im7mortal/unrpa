@@ -11,6 +11,7 @@ interface ModelProps {
     environment?: string;
     preset?: string;
     intensity?: number;
+    height?: string;  // Allow custom height to be passed as a prop
 }
 
 export function Model({
@@ -21,8 +22,9 @@ export function Model({
                           environment = 'city',
                           preset = 'rembrandt',
                           intensity = 1,
+                          height = '500px',  // Default height set to 500px
                       }: ModelProps) {
-    const gltf = useGLTF("/unrpa/34bfd578-523a-4bd5-a172-04dce6d87a0b_raw.glb") as any; // Load the entire GLTF object
+    const gltf = useGLTF(modelUrl) as any; // Dynamically load the model from props
     const ref = useRef<Group>(null);
 
     useEffect(() => {
@@ -33,7 +35,7 @@ export function Model({
             gltf.scene.traverse((obj: any) => {
                 if (obj.isMesh) {
                     obj.castShadow = obj.receiveShadow = shadows;
-                    if (obj.material) {
+                    if (obj.material && obj.material.isMeshStandardMaterial) {
                         obj.material.envMapIntensity = 0.8;
                     }
                 }
@@ -42,23 +44,25 @@ export function Model({
     }, [gltf, shadows]);
 
     return (
-        <Canvas gl={{ preserveDrawingBuffer: true }} shadows dpr={[1, 1.5]} camera={{ position: [0, 0, 150], fov: 50 }}>
-            <ambientLight intensity={0.25} />
-            <Suspense fallback={null}>
-                <Stage
-                    controls={ref}
-                    preset={preset}
-                    intensity={intensity}
-                    contactShadow={contactShadow}
-                    shadows
-                    adjustCamera
-                    environment={environment}
-                >
-                    <primitive object={gltf.scene} castShadow receiveShadow position={[0, 0.189, -0.043]} />
-                </Stage>
-            </Suspense>
-            <OrbitControls ref={ref} autoRotate={autoRotate} />
-        </Canvas>
+        <div style={{ height, width: '100%' }}> {/* Wrapping div with dynamic height */}
+            <Canvas gl={{ preserveDrawingBuffer: true }} shadows dpr={[1, 1.5]} camera={{ position: [0, 0, 150], fov: 50 }}>
+                <ambientLight intensity={0.25} />
+                <Suspense fallback={null}>
+                    <Stage
+                        controls={ref}
+                        preset={preset}
+                        intensity={intensity}
+                        contactShadow={contactShadow}
+                        shadows
+                        adjustCamera
+                        environment={environment}
+                    >
+                        <primitive object={gltf.scene} castShadow receiveShadow position={[0, 0.189, -0.043]} />
+                    </Stage>
+                </Suspense>
+                <OrbitControls ref={ref} autoRotate={autoRotate} />
+            </Canvas>
+        </div>
     );
 }
 
