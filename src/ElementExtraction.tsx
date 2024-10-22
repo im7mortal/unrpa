@@ -1,9 +1,12 @@
-import React, { useState, Suspense, startTransition } from 'react';
+import React, { useState, Suspense, useContext, startTransition } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Model from './Model';
 import ErrorBoundary from "./ErrorBoundary";
+import { DigitalTwinContext } from './ContextDigitalTween'; // Import the context
+import { DigitalTwin } from './DigitalTwin';
 
 function ElementExtraction() {
+    const { dispatch } = useContext(DigitalTwinContext); // Use the context to dispatch actions
     const [dthdId, setDthdId] = useState("781c2417-2420-4c2c-bd42-142e606a0302");
     const [startDate, setStartDate] = useState("2024-09-10");
     const [endDate, setEndDate] = useState("2024-09-20");
@@ -22,15 +25,17 @@ function ElementExtraction() {
 
         fetch(apiUrl + `/layout/` + dthdId + "?full_details=True", {
             method: 'GET',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
         })
             .then((response) => response.json())
             .then((data) => {
+                const digitalTwin = data as DigitalTwin; // Cast response to DigitalTwin
 
-                console.log(data)
+                // Store the fetched digitalTwin in context
+                dispatch({ type: 'ADD', payload: digitalTwin });
 
-                const fetchedScanIds = data.scanMeshes
-                    ? data.scanMeshes.filter(scan => {
+                const fetchedScanIds = digitalTwin.scanMeshes
+                    ? digitalTwin.scanMeshes.filter(scan => {
                         if (["INIT", "RAW_READY", "TEXTURED_READY"].includes(scan.status) &&
                             ["ACTIVE_TEXTURED", "ACTIVE"].includes(scan.dtScanStatus)) {
 
@@ -102,28 +107,7 @@ function ElementExtraction() {
             </div>
 
             {/* Display the list of scan IDs */}
-            <div className="col mt-4">
-                {scanIds.length > 0 && (
-                    <div>
-                        <h4>Select Scan ID</h4>
-                        {scanIds.map(scan => (
-                            <div key={scan.id} className="form-check">
-                                <a href="#" onClick={() => {
-                                    // Wrap the state update inside startTransition
-                                    startTransition(() => {
-                                        setSelectedModelUrl(scan.scanMeshUrl);
-                                    });
-                                }}>
-                                    {scan.id}
-                                </a>
-                            </div>
-                        ))}
-                    </div>
-                )}
 
-                {loading && <p>Loading scan IDs...</p>}
-                {!loading && scanIds.length === 0 && <p>No scan IDs available within the selected date range.</p>}
-            </div>
 
             {/* Model Viewer - show the selected model */}
             {selectedModelUrl && (
