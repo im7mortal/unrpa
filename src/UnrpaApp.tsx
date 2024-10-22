@@ -1,6 +1,7 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ElementExtraction from './ElementExtraction';
+import ElementViewForm from './ElementViewForm';
 import SyncLoader from 'react-spinners/SyncLoader';
 import React, {useContext} from 'react';
 import ContextSpinner from "./ContextSpinner";
@@ -9,6 +10,7 @@ import ApiInfoContext from "./ContextAPI";
 import {useTranslation} from "react-i18next";
 import ElementLogs from "./ElementLogs";
 import Drop from "./ElementFileDrop";
+import ElementParameters from "./ElementParameters";
 
 
 function UnrpaApp() {
@@ -27,6 +29,11 @@ function UnrpaApp() {
         <>
 
             <ElementExtraction/>
+
+            <ElementParameters onSubmit={(p)=>{
+
+                console.log(p)
+            }}/>
         </>);
 }
 

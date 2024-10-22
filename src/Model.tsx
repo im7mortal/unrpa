@@ -45,8 +45,15 @@ export function Model({
 
     return (
         <div style={{ height, width: '100%' }}> {/* Wrapping div with dynamic height */}
-            <Canvas gl={{ preserveDrawingBuffer: true }} shadows dpr={[1, 1.5]} camera={{ position: [0, 0, 150], fov: 50 }}>
-                <ambientLight intensity={0.25} />
+            <Canvas
+                gl={{ preserveDrawingBuffer: true }}
+                shadows
+                dpr={[1, 1.5]}
+                camera={{ position: [0, 0, 150], fov: 50 }}
+                style={{ border: '2px solid blue' }}  // Border added directly to the Canvas
+            >
+
+            <ambientLight intensity={0.25} />
                 <Suspense fallback={null}>
                     <Stage
                         controls={ref}
