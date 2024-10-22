@@ -21,9 +21,21 @@ function App() {
                         <div className="col-md-2 col-4 text-left">
                             ITWILLBEREPLACEDWITHVERSION
                         </div>
+                        <div className="col-md-2 col-4 text-right">
+                            <GithubButtons/>
+                        </div>
                     </div>
 
-                    <h1 className="display-1 text-center">Generation</h1>
+                    <div className="row mx-1 mt-2 d-flex justify-content-between">
+                        <div className="col-md-2 col-3 text-left">
+
+                        </div>
+                        <div className="col-md-2 col-5 text-right">
+                            <ElementLanguageSwitcher/>
+                        </div>
+                    </div>
+
+                    <h1 className="display-1 text-center">{t('nameHeader')}</h1>
 
                     <Routes>
                         <Route path="/unrpa" element={<UnrpaApp1/>}/>

@@ -5,7 +5,7 @@
   "homepage": "https://im7mortal.github.io/unrpa",
   "type": "module",
   "dependencies": {
-    "@react-three/drei": "^9.114.6",
+    "@react-three/drei": "^9.114.3",
     "@react-three/fiber": "^8.17.10",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^16.0.0",
