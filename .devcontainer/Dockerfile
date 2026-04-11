@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm
+FROM mcr.microsoft.com/devcontainers/javascript-node:24
 
 # Install build-essential for native dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
