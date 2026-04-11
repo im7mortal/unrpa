@@ -1,0 +1,17 @@
+{
+	"name": "unrpa Dev Container",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"customizations": {
+		"jetbrains": {
+			"plugins": [
+				"com.intellij.plugins.webstorm"
+			]
+		}
+	},
+	"forwardPorts": [5173],
+	"postCreateCommand": "npm install",
+	"remoteUser": "node",
+	"updateRemoteUserUID": false
+}
