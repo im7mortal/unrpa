@@ -4,7 +4,11 @@ import {FileHeader} from "../unrpaLib/unrpaLibTypes";
 export {};
 
 // Use the correct global scope for Service Workers
-declare const self: ServiceWorkerGlobalScope;
+declare const self: ServiceWorkerGlobalScope & {
+    __WB_MANIFEST: Array<{url: string; revision: string | null}>;
+};
+// Injection point for workbox manifest during build.
+self.__WB_MANIFEST;
 self.addEventListener('install', function (event) {
     self.skipWaiting();
 });

@@ -42,7 +42,8 @@
   "scripts": {
     "start": "vite --host",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "serve:prod": "node server.js"
   },
   "eslintConfig": {
     "extends": [
@@ -66,9 +67,9 @@
     "@types/react": "^18.3.3",
     "@types/react-window": "^1.8.8",
     "@types/uuid": "^10.0.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^6.0.1",
     "copy-webpack-plugin": "^12.0.2",
     "rollup-plugin-workbox": "^8.1.0",
-    "vite": "^5.3.3"
+    "vite": "^8.0.8"
   }
 }
