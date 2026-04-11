@@ -1,0 +1,30 @@
+{
+	"name": "unrpa Dev Container",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "22"
+		}
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to WebStorm/JetBrains IDEs.
+		"jetbrains": {
+			"plugins": [
+				"com.intellij.plugins.webstorm"
+			]
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [5173],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "npm install",
+
+	// Set `remoteUser` to `node` to use a non-root user.
+	"remoteUser": "node"
+}
