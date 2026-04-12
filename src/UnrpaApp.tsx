@@ -1,7 +1,7 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ElementExtraction from './ElementExtraction';
-import SyncLoader from 'react-spinners/SyncLoader';
+import {SyncLoader} from 'react-spinners';
 import React, {useContext} from 'react';
 import ContextSpinner from "./ContextSpinner";
 import "./overlay-spinner.css"

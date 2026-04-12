@@ -7,8 +7,7 @@ import {
     type FileSystemAccessApiInterface,
     type FileExtraction,
 } from './detectVersion';
-import ClipLoader from "react-spinners/ClipLoader";
-import PulseLoader from "react-spinners/PulseLoader";
+import {ClipLoader, PulseLoader} from "react-spinners";
 import ApiInfoContext from "./ContextAPI";
 import type {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes";
 import {useServiceWorker} from "./ContextServiceWorker";
