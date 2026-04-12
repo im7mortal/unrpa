@@ -1,4 +1,5 @@
-import React, {createContext, useReducer, Dispatch} from 'react';
+import React, {createContext, useReducer} from 'react';
+import type {Dispatch} from 'react';
 import type {FileExtraction} from './detectVersion';
 
 type Action =

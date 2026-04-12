@@ -1,4 +1,5 @@
-import React, {FC, MouseEvent, useContext} from 'react';
+import React, {useContext} from 'react';
+import type {FC, MouseEvent} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import {
     FileSystemAccessApi,
