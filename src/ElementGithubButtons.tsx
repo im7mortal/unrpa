@@ -1,4 +1,4 @@
-import React, {FC, MouseEvent, useContext} from 'react';
+import React from 'react';
 
 import {useTranslation} from "react-i18next";
 import GitHubButton from "react-github-btn";
