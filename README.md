@@ -50,13 +50,18 @@ Firefox and Safari don't want to implement FileSystemAccessApi
 
 ## Development
 
-The project will work from the box if you use docker. Just run.sh.
+Use the Dev Container configuration in `.devcontainer/`.
 
-It requires execution permissions for [onlyForDockerEnv.sh](onlyForDockerEnv.sh) set on host.
+After container is ready:
 
 ```shell
- sudo chmod +x onlyForDockerEnv.sh 
+npm install
+npm run start
 ```
 
-Kill the container with **Ctrl+Z**
+Production preview:
 
+```shell
+npm run build
+npm run serve
+```
