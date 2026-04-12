@@ -32,5 +32,8 @@ RUN wget -q -O - https://github.com/mozilla/geckodriver/releases/download/v0.34.
 # Install Python packages
 RUN pip install selenium pillow
 
+COPY screenshot.py .
+COPY template template
+
 # Command to run the script
 CMD ["python", "-u", "/app/screenshot.py"]
