@@ -1,16 +1,16 @@
 import React, {useState, useRef, useContext, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {v4 as uuidv4} from 'uuid';
-import {logLevelFunction} from './logInterface';
+import type {logLevelFunction} from './logInterface';
 
 import {
-    FileSystemAccessApiInterface,
-    FileExtraction,
+    type FileSystemAccessApiInterface,
+    type FileExtraction,
 } from './detectVersion';
 import ClipLoader from "react-spinners/ClipLoader";
 import PulseLoader from "react-spinners/PulseLoader";
 import ApiInfoContext from "./ContextAPI";
-import {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes";
+import type {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes";
 import {useServiceWorker} from "./ContextServiceWorker";
 import {useTranslation} from 'react-i18next';
 

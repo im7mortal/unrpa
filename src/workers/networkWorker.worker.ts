@@ -1,5 +1,5 @@
 import {ZipWriter} from "@zip.js/zip.js";
-import {FileHeader} from "../unrpaLib/unrpaLibTypes";
+import type {FileHeader} from "../unrpaLib/unrpaLibTypes";
 
 export {};
 

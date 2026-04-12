@@ -8,6 +8,7 @@ export default defineConfig(() => {
         base: '/unrpa/',
         build: {
             outDir: 'build',
+            target: 'baseline-widely-available',
         },
         server: {
             port: 5173

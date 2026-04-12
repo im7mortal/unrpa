@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {useLogs} from './ContextLog';
 
-import {FileExtraction} from './detectVersion';
+import type {FileExtraction} from './detectVersion';
 import ElementArchiveExtraction from "./ElementArchiveExtraction";
 import {FilePicker} from './ElementFilePicker';
 import {DirectoryScanner} from './ElementDirectoryPicker';
