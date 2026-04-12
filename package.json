@@ -74,5 +74,9 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.58.1",
     "vite": "^8.0.8"
+  },
+  "overrides": {
+    "@rollup/plugin-terser": "^1.0.0",
+    "serialize-javascript": "^7.0.5"
   }
 }
