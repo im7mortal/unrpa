@@ -28,7 +28,8 @@ jobs:
         run: |
           GIT_TAG=$(git describe --tags)
           GIT_SHORT_HASH=$(git rev-parse --short HEAD)
-          NEW_TAG="${GIT_TAG}-${GIT_SHORT_HASH}"
+          BUILD_DATE=$(date -u +"%-d-%B-%Y")
+          NEW_TAG="${GIT_TAG}-${GIT_SHORT_HASH}-${BUILD_DATE}"
           FIND_PATTERN="ITWILLBEREPLACEDWITHVERSION"
           find ./build -type f -exec sed -i "s/$FIND_PATTERN/$NEW_TAG/g" {} \;
 
