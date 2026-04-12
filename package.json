@@ -77,6 +77,9 @@
   },
   "overrides": {
     "@rollup/plugin-terser": "^1.0.0",
-    "serialize-javascript": "^7.0.5"
+    "serialize-javascript": "^7.0.5",
+    "magic-string": "^0.30.17",
+    "glob": "^13.0.6",
+    "workbox-build": "^7.4.0"
   }
 }
