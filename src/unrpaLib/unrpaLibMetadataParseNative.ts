@@ -1,7 +1,6 @@
-import {FileHeader} from "./unrpaLibTypes";
+import type {FileHeader, MetadataResponse} from "./unrpaLibTypes";
 import {inflate} from "pako";
 import {Parser} from "pickleparser";
-import {MetadataResponse} from "./unrpaLib";
 import JSBI from 'jsbi';
 
 interface PickleEntrance {

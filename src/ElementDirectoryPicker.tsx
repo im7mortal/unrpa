@@ -2,7 +2,7 @@ import React, {FC, MouseEvent, useContext} from 'react';
 import {
     scanDir,
     fileExtractionCreator,
-    FileExtraction
+    type FileExtraction
 } from './detectVersion';
 import ContextSpinner from "./ContextSpinner";
 import ApiInfoContext from "./ContextAPI";

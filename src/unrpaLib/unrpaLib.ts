@@ -1,6 +1,6 @@
 // import {parseMetadata} from "./unrpaLibMetadataParseWASM"
 import {parseMetadata} from "./unrpaLibMetadataParseNative"
-import {FileHeader} from "./unrpaLibTypes"
+import type {FileHeader} from "./unrpaLibTypes"
 
 
 interface RPAHeader {

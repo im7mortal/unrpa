@@ -1,4 +1,4 @@
-import {FileHeader} from "./unrpaLibTypes";
+import type {FileHeader} from "./unrpaLibTypes";
 
 
 export interface GroupZipSort {

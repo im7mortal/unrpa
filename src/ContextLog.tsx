@@ -1,5 +1,6 @@
 import React, { useReducer, createContext } from 'react';
-import { logLevelFunction, Logger, LogLevel } from './logInterface';
+import type { logLevelFunction, Logger } from './logInterface';
+import { LogLevel } from './logInterface';
 
 type LogAction = {
   type: 'ADD_LOG';

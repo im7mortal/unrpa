@@ -3,12 +3,14 @@ import {v4 as uuidv4} from 'uuid';
 import MetaWorker from './workers/metadataParser.worker?worker&url'
 import ZipWorker from './workers/zipper.worker?worker&url'
 
-import {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes"
+import type {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes"
 
-import {logLevelFunction, LogLevel} from './logInterface';
+import type {logLevelFunction} from './logInterface';
+import {LogLevel} from './logInterface';
 
 import workerpool from 'workerpool';
-import {groupBySubdirectory, GroupFilesFunction, GroupZipSort} from "./unrpaLib/unrpaGroupFunction";
+import {groupBySubdirectory} from "./unrpaLib/unrpaGroupFunction";
+import type {GroupFilesFunction, GroupZipSort} from "./unrpaLib/unrpaGroupFunction";
 
 
 class WorkerPool {

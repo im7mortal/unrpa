@@ -2,7 +2,7 @@ import React, {FC, MouseEvent, useContext} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import {
     FileSystemAccessApi,
-    FileSystemAccessApiInterface,
+    type FileSystemAccessApiInterface,
     FileApi
 } from './detectVersion';
 import ContextSpinner from "./ContextSpinner";
@@ -119,4 +119,3 @@ export const FilePicker: FC<FilePickerProps> = ({onFileSelected}) => {
 
     );
 };
-

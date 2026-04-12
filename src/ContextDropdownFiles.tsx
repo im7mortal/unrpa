@@ -1,5 +1,5 @@
 import React, {createContext, useReducer, Dispatch} from 'react';
-import {FileExtraction} from './detectVersion';
+import type {FileExtraction} from './detectVersion';
 
 type Action =
     | { type: 'ADD', payload: FileExtraction }
