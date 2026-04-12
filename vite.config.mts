@@ -6,6 +6,16 @@ import {injectManifest} from 'rollup-plugin-workbox'
 export default defineConfig(() => {
     return {
         base: '/unrpa/',
+        resolve: {
+            alias: {
+                os: '/src/shims/node-os.ts',
+                'node:os': '/src/shims/node-os.ts',
+                child_process: '/src/shims/node-empty.ts',
+                'node:child_process': '/src/shims/node-empty.ts',
+                worker_threads: '/src/shims/node-empty.ts',
+                'node:worker_threads': '/src/shims/node-empty.ts',
+            },
+        },
         build: {
             outDir: 'build',
             target: 'baseline-widely-available',
