@@ -29,23 +29,31 @@ function createZipStream(id: string, file: File, group: FileHeader[]): ReadableS
     const {readable, writable} = new TransformStream<Uint8Array>();
     console.log("STARTED", file);
     // Initialize ZipWriter
-    const zipWriter = new ZipWriter(writable);
+    let zipWriter: ZipWriter | null = new ZipWriter(writable);
 
     (async () => {
-        for (let f of group) {
-            let blob: Blob = readBlobFromFileD(file, f.Offset, f.Len);
-            await zipWriter.add(f.Name, blob.stream());
-        }
-        // Close the ZipWriter
-        await zipWriter.close();
+        try {
+            for (let f of group) {
+                let blob: Blob = readBlobFromFileD(file, f.Offset, f.Len);
+                await zipWriter!.add(f.Name, blob.stream());
+            }
+        } catch (error: any) {
+            console.error("Streaming error:", error);
+            const clients = await self.clients.matchAll();
+            clients.forEach(client => {
+                client.postMessage({id, status: 'error', message: error.message || String(error)});
+            });
+        } finally {
+            if (zipWriter) {
+                await zipWriter.close();
+                zipWriter = null;
+            }
 
-        self.clients.matchAll().then(clients => {
+            const clients = await self.clients.matchAll();
             clients.forEach(client => {
                 client.postMessage({id, status: 'downloaded'});
             });
-        });
-
-
+        }
     })();
 
     return readable;
@@ -63,26 +71,30 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
 });
 
 self.addEventListener("fetch", (event: FetchEvent) => {
-    console.log("fetch event", event);
-    let url = new URL(event.request.url);
+    const url = new URL(event.request.url);
 
-    if (url.pathname.includes("ping")) {
+    if (url.pathname.endsWith("/ping")) {
         console.log("pong");
         event.respondWith(new Response("pong"));
+        return;
     }
 
-    if (url.pathname.includes("zip")) {
+    if (url.pathname.includes("/unrpa/zip/")) {
         const id = url.pathname.split("/unrpa/zip/")[1];
         console.log(`got zip request with id ${id} which ${filesAndGroups.has(id) ? 'exist' : 'does not exist'} in the storage`);
         if (filesAndGroups.has(id)) {
             const {file, group} = filesAndGroups.get(id)!;
             console.log(id, {file, group})
             const zipStream = createZipStream(id, file, group);
+            filesAndGroups.delete(id); // Clear memory after starting the stream
 
             event.respondWith(new Response(zipStream, {
                 headers: {
-                    'Content-Type': 'application/zip',
-                    'Content-Disposition': `attachment; filename="${id}.zip"`
+                    'Content-Type': 'application/octet-stream',
+                    'Content-Disposition': `attachment; filename="${id}.zip"`,
+                    'Content-Security-Policy': "default-src 'none'",
+                    'X-Content-Type-Options': 'nosniff',
+                    'Cache-Control': 'no-store'
                 }
             }));
         } else {

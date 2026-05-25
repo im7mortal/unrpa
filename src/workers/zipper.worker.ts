@@ -13,18 +13,23 @@ async function createZip(file: File, group: GroupZipSort[], zipIndex: number): P
     const zipFileBlobPromise = new Response(zipFileStream.readable).blob();
 
     // Initialize ZipWriter
-    const zipWriter = new ZipWriter(zipFileStream.writable);
+    let zipWriter: ZipWriter | null = new ZipWriter(zipFileStream.writable);
 
-    for (let entry of group) {
-        for (let f of entry.entries) {
-            let blob: Blob = await readBlobFromFileD(file, f.Offset, f.Len);
-            // Add each file entry to the ZIP
-            await zipWriter.add(f.Name, blob.stream());
+    try {
+        for (let entry of group) {
+            for (let f of entry.entries) {
+                let blob: Blob = await readBlobFromFileD(file, f.Offset, f.Len);
+                // Add each file entry to the ZIP
+                await zipWriter.add(f.Name, blob.stream());
+            }
+        }
+    } finally {
+        // Close the ZipWriter
+        if (zipWriter) {
+            await zipWriter.close();
+            zipWriter = null;
         }
     }
-
-    // Close the ZipWriter
-    await zipWriter.close();
 
     // Get the final ZIP Blob
     const content: Blob = await zipFileBlobPromise;

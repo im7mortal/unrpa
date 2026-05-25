@@ -1,19 +1,22 @@
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import {injectManifest} from 'rollup-plugin-workbox'
+import {fileURLToPath, URL} from 'node:url';
 
+const shimNodeOsPath = fileURLToPath(new URL('./src/shims/node-os.ts', import.meta.url));
+const shimNodeEmptyPath = fileURLToPath(new URL('./src/shims/node-empty.ts', import.meta.url));
 
 export default defineConfig(() => {
     return {
         base: '/unrpa/',
         resolve: {
             alias: {
-                os: '/src/shims/node-os.ts',
-                'node:os': '/src/shims/node-os.ts',
-                child_process: '/src/shims/node-empty.ts',
-                'node:child_process': '/src/shims/node-empty.ts',
-                worker_threads: '/src/shims/node-empty.ts',
-                'node:worker_threads': '/src/shims/node-empty.ts',
+                os: shimNodeOsPath,
+                'node:os': shimNodeOsPath,
+                child_process: shimNodeEmptyPath,
+                'node:child_process': shimNodeEmptyPath,
+                worker_threads: shimNodeEmptyPath,
+                'node:worker_threads': shimNodeEmptyPath,
             },
         },
         build: {

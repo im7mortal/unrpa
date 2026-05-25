@@ -7,9 +7,10 @@ import type {FileHeader, MetadataResponse} from "./unrpaLib/unrpaLibTypes"
 
 import type {logLevelFunction} from './logInterface';
 import {LogLevel} from './logInterface';
+import {extractMetadata as extractMetadataDirect} from "./unrpaLib/unrpaLib";
 
 import workerpool from 'workerpool';
-import {groupBySubdirectory} from "./unrpaLib/unrpaGroupFunction";
+import {groupSimpleOne} from "./unrpaLib/unrpaGroupFunction";
 import type {GroupFilesFunction, GroupZipSort} from "./unrpaLib/unrpaGroupFunction";
 
 
@@ -30,11 +31,16 @@ class WorkerPool {
         return WorkerPool.instance;
     }
 
-    public async addTask(file: File): Promise<any> {
+    public async addTask(file: File): Promise<MetadataResponse> {
         try {
-            return await this.pool.exec('extractMetadata', [file]);
+            const result = await this.pool.exec('extractMetadata', [file]) as MetadataResponse | undefined;
+            if (!result || typeof result.Error !== 'string' || !Array.isArray(result.FileHeaders)) {
+                return await extractMetadataDirect(file);
+            }
+            return result;
         } catch (error) {
             console.error('Error executing task:', error);
+            return await extractMetadataDirect(file);
         }
     }
 }
@@ -194,7 +200,6 @@ class WorkerPoolZipper {
 
 export class FileApi extends Extractor implements FClassInterface {
     ZipGroups: GroupZipSort[][] = [];
-    ZipSize: number = 250 * 1024 * 1024;
     Metadata: FileHeader[] = [];
     workers: any = [];
     file!: File;
@@ -206,7 +211,7 @@ export class FileApi extends Extractor implements FClassInterface {
     private workerPoolZ: WorkerPoolZipper;
 
 
-    constructor(file: File, logMessage: logLevelFunction, groupFunc: GroupFilesFunction = groupBySubdirectory) {
+    constructor(file: File, logMessage: logLevelFunction, groupFunc: GroupFilesFunction = groupSimpleOne) {
         super(logMessage)
         this.file = file
         this.logMessage = logMessage
@@ -233,34 +238,30 @@ export class FileApi extends Extractor implements FClassInterface {
             this.Metadata = metadata.FileHeaders
         }
 
-        this.ZipGroups = this.groupFunc(this.Metadata, this.ZipSize)
+        this.ZipGroups = this.groupFunc(this.Metadata)
         console.log(this.ZipGroups)
-        this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip files`, LogLevel.Info)
+        this.logMessage(`The content will be extracted to ${this.ZipGroups.length} zip file(s)`, LogLevel.Info)
         return metadata
     }
 
     async extract() {
         console.time("extract");
-        let self = this;
-        const tasks: Promise<any>[] = [];
-        let n: number = 0;
-        for (let group of this.ZipGroups) {
-            n++ // we start from 1; as this software intended not for programmers; index will be used in the filename
-
-            const taskPromise = self.workerPoolZ.addTask(self.file, group, n)
-                .then(result => {
-                    self.saveBlobToFileD(result.content, `extracted_${result.zipIndex}.zip`)
-                    this.logMessage("saved", LogLevel.Info)
-                })
-                .catch(error => {
-                    console.error('Task failed:', error);
-                });
-            tasks.push(taskPromise);
+        if (this.ZipGroups.length === 0) {
+            throw new Error('No ZIP groups prepared');
         }
-        await Promise.allSettled(tasks);
 
-        this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
-        console.timeEnd("extract");
+        try {
+            const group = this.ZipGroups[0];
+            const result = await this.workerPoolZ.addTask(this.file, group, 1);
+            await this.saveBlobToFileD(result.content, `extracted.zip`);
+            this.logMessage("saved", LogLevel.Info)
+            this.logMessage(`EXTRACTION IS DONE`, LogLevel.Info);
+        } catch (error) {
+            console.error('Extraction error:', error);
+            throw error;
+        } finally {
+            console.timeEnd("extract");
+        }
     }
 
     async saveBlobToFileD(content: Blob, fileName: string) {
@@ -271,7 +272,7 @@ export class FileApi extends Extractor implements FClassInterface {
         a.href = url;
         a.download = fileName;
         a.click();
-        URL.revokeObjectURL(url);
+        window.setTimeout(() => URL.revokeObjectURL(url), 60000);
         document.body.removeChild(a);
         this.logMessage(`File saved: ${fileName}`, LogLevel.Info);
     }

@@ -82,16 +82,21 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
     };
 
     const start = async () => {
-
-        setExtracting(true)
-
-        if (fileApiWithServiceWorker) {
-            await processWithServiceWorker()
-        } else {
-            await fClass.current?.extract()
+        setExtracting(true);
+        try {
+            if (fileApiWithServiceWorker) {
+                await processWithServiceWorker();
+            } else {
+                await fClass.current?.extract();
+            }
+            setExtracted(true);
+        } catch (error: any) {
+            console.error("Extraction failed:", error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            alert(t('extractionFailed') + ": " + errorMessage);
+        } finally {
+            setExtracting(false);
         }
-
-        setExtracted(true)
     }
 
     const processWithServiceWorker = async () => {
@@ -102,11 +107,23 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
 
         // Function to wait for the service worker to indicate the file is downloaded
         const waitForFileDownload = (id: string) => {
-            return new Promise<void>((resolve) => {
+            return new Promise<void>((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    navigator.serviceWorker.removeEventListener('message', onMessage);
+                    reject(new Error("Download timed out"));
+                }, 300000); // 5 minute timeout
+
                 const onMessage = (event: MessageEvent) => {
-                    if (event.data && event.data.id === id && event.data.status === 'downloaded') {
-                        navigator.serviceWorker.removeEventListener('message', onMessage);
-                        resolve();
+                    if (event.data && event.data.id === id) {
+                        if (event.data.status === 'downloaded') {
+                            clearTimeout(timeout);
+                            navigator.serviceWorker.removeEventListener('message', onMessage);
+                            resolve();
+                        } else if (event.data.status === 'error') {
+                            clearTimeout(timeout);
+                            navigator.serviceWorker.removeEventListener('message', onMessage);
+                            reject(new Error(event.data.message));
+                        }
                     }
                 };
                 navigator.serviceWorker.addEventListener('message', onMessage);
@@ -128,24 +145,27 @@ function ElementArchiveExtraction({fClassE, handleRemove, logF}: ElementArchiveE
 
         // Create the download link
         const a = document.createElement("a");
-        document.body.appendChild(a);
         a.style.display = "none";
         a.href = "/unrpa/zip/" + idd;
         a.download = idd + ".zip";
+        // Important for Firefox: the link must be in the DOM to be intercepted sometimes.
+        document.body.appendChild(a);
 
-        // Add a listener to log when the download starts
-        a.addEventListener('click', () => {
-            console.log('Download link clicked:', a.href);
-        });
+        // Subscribe before triggering download to avoid missing completion event.
+        const downloadDone = waitForFileDownload(idd);
 
         // Trigger the download
         a.click();
 
-        // Clean up the download link
-        document.body.removeChild(a);
+        // Clean up the download link after a delay to ensure Firefox initiates the request
+        setTimeout(() => {
+            if (a.parentNode) {
+                document.body.removeChild(a);
+            }
+        }, 10000);
 
         // Wait for the download to complete
-        await waitForFileDownload(idd);
+        await downloadDone;
     };
     return (
         <div className="row">

@@ -98,7 +98,9 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
         if (serviceWorker) {
             serviceWorker.postMessage(message);
         } else {
-            console.error('Service Worker is not active.');
+            const errorMsg = 'Service Worker is not active.';
+            console.error(errorMsg);
+            throw new Error(errorMsg);
         }
     };
 
