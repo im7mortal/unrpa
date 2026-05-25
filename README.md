@@ -1,9 +1,6 @@
 # Hassle free RPA extractor. In-Browser, no code, no EXEs. 
 
-# MY CURRENT HOME PROJECT; it's under active development;
-
 # [:point_right: TLDR; Go to the UNRPA WEB PAGE](https://im7mortal.github.io/unrpa/)
-
 
 Hassle-free in browser RPA extractor.
 
