@@ -13,5 +13,6 @@
     "scanDirectory": "Scan directory",
     "selectArchive": "Select archive",
     "star": "Star",
-    "toDirectory": "To Directory"
+    "toDirectory": "To Directory",
+    "extractionFailed": "Extraction failed"
 }
