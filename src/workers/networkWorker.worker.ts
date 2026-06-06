@@ -29,7 +29,7 @@ function createZipStream(id: string, file: File, group: FileHeader[]): ReadableS
     const {readable, writable} = new TransformStream<Uint8Array>();
     console.log("STARTED", file);
     // Initialize ZipWriter
-    let zipWriter: ZipWriter | null = new ZipWriter(writable);
+    let zipWriter: ZipWriter<Uint8Array> | null = new ZipWriter(writable);
 
     (async () => {
         try {

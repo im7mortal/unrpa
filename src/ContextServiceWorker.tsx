@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useState} from 'react';
+import React, {createContext, useCallback, useContext, useEffect, useState} from 'react';
 import type {ReactNode} from 'react';
 import {Workbox} from 'workbox-window';
 import ApiInfoContext from "./ContextAPI";
@@ -92,9 +92,9 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
                 clearInterval(pingInterval);
             };
         }
-    }, [serviceWorker]);
+    }, [serviceWorker, sendMessage]);
 
-    const sendMessage = (message: object) => {
+    const sendMessage = useCallback((message: object) => {
         if (serviceWorker) {
             serviceWorker.postMessage(message);
         } else {
@@ -102,7 +102,7 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
             console.error(errorMsg);
             throw new Error(errorMsg);
         }
-    };
+    }, [serviceWorker]);
 
     return (
         <ServiceWorkerContext.Provider value={{sendMessage}}>

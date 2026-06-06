@@ -13,7 +13,7 @@ async function createZip(file: File, group: GroupZipSort[], zipIndex: number): P
     const zipFileBlobPromise = new Response(zipFileStream.readable).blob();
 
     // Initialize ZipWriter
-    let zipWriter: ZipWriter | null = new ZipWriter(zipFileStream.writable);
+    let zipWriter: ZipWriter<Uint8Array> | null = new ZipWriter(zipFileStream.writable);
 
     try {
         for (let entry of group) {
