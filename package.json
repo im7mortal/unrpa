@@ -19,7 +19,7 @@
     "react-dropzone": "^14.4.1",
     "react-github-btn": "^1.4.0",
     "react-i18next": "^15.7.4",
-    "react-router-dom": "^6.30.3",
+    "react-router-dom": "^6.30.4",
     "react-spinners": "^0.17.0",
     "react-window": "^1.8.11",
     "uuid": "^14.0.0",
