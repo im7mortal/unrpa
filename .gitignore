@@ -1,5 +1,6 @@
 /.idea/
 /.junie/
+/.claude/
 /node_modules/
 .goxc.local.json
 
