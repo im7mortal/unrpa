@@ -82,6 +82,16 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
         }
     }, [fileApiWithServiceWorker]);
 
+    const sendMessage = useCallback((message: object) => {
+        if (serviceWorker) {
+            serviceWorker.postMessage(message);
+        } else {
+            const errorMsg = 'Service Worker is not active.';
+            console.error(errorMsg);
+            throw new Error(errorMsg);
+        }
+    }, [serviceWorker]);
+
     useEffect(() => {
         if (serviceWorker) {
             const pingInterval = window.setInterval(() => {
@@ -93,16 +103,6 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
             };
         }
     }, [serviceWorker, sendMessage]);
-
-    const sendMessage = useCallback((message: object) => {
-        if (serviceWorker) {
-            serviceWorker.postMessage(message);
-        } else {
-            const errorMsg = 'Service Worker is not active.';
-            console.error(errorMsg);
-            throw new Error(errorMsg);
-        }
-    }, [serviceWorker]);
 
     return (
         <ServiceWorkerContext.Provider value={{sendMessage}}>
