@@ -45,34 +45,23 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
 
 
     const scan = async (e: MouseEvent<HTMLButtonElement>) => {
-        setSpinnerState(true)
         e.preventDefault();
+        if (!window.showDirectoryPicker) {
+            console.log('Directory picker is not supported in this browser');
+            return;
+        }
+        setSpinnerState(true);
         try {
-            if (window.showDirectoryPicker) {
-                try {
-                    scan1(getIter(await window.showDirectoryPicker()))
-                } catch (err) {
-                    if (err instanceof DOMException && err.name === 'AbortError') {
-                        console.log('Directory picker was cancelled');
-                    } else {
-                        // Handle any other errors
-                        console.error(err);
-                    }
-                }
-                setSpinnerState(false)
-
-            } else {
-                console.log('Directory picker is not supported in this browser');
-            }
-
-
+            const handle = await window.showDirectoryPicker();
+            await scan1(getIter(handle));
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {
-
+                console.log('Directory picker was cancelled');
             } else {
-                // Handle any other errors
                 console.error(err);
             }
+        } finally {
+            setSpinnerState(false);
         }
     };
 
@@ -83,39 +72,36 @@ export const DirectoryScanner: FC<FilePickerProps> = ({onFileSelected}) => {
     }
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files?.length) {
-            scan1(getIter1(e.target.files))
-        } else {
+        if (!e.target.files?.length) {
+            setSpinnerState(false);
             alert('Please select a directory.');
+            return;
+        }
+        try {
+            await scan1(getIter1(e.target.files));
+        } finally {
+            setSpinnerState(false);
         }
     };
 
     async function scan1(iterateDirectory: () => AsyncGenerator<File, void, undefined>) {
         try {
-            const iterator = scanDir(iterateDirectory, (s: string, logLevel: number) => {
+            await scanDir(iterateDirectory, (s: string, logLevel: number) => {
             }, fileExtractionCreator(fileSystemApi, (s: string, logLevel: number) => {
             }), onFileSelected);
-            for await (const file of iterator) {
-                onFileSelected(file);
-            }
-            setSpinnerState(false)
-
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {
                 console.log('Directory picker was cancelled');
             } else {
-
                 console.error(err);
             }
         }
-        setSpinnerState(false)
-
     }
 
 
     const getIter1 = function (files: FileList): () => AsyncGenerator<File, void, undefined> {
         return async function* (): AsyncGenerator<File, void, undefined> {
-            for await (const file of files) {
+            for (const file of files) {
                 if (file.name.endsWith('.rpa')) {
                     yield file;
                 }

@@ -320,29 +320,23 @@ export function fileExtractionCreator(sys: boolean, logMessage: logLevelFunction
     }
 }
 
-// TODO
-// eslint-disable-next-line
-export async function* scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction, onFileSelected: (newFiles: FileExtraction) => void): AsyncGenerator<FileExtraction, void, undefined> {
-    let promises: Promise<MetadataResponse>[] = [];
+export async function scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction, onFileSelected: (newFiles: FileExtraction) => void): Promise<void> {
+    const promises: Promise<MetadataResponse>[] = [];
     for await (const file of iterateDirectory()) {
-        // TypeScript infers fileHandle as FileSystemFileHandle
         logMessage(file.name, LogLevel.Debug);
         if (file.name.endsWith('.rpa')) { // TODO duplicate
-            let fs: FileExtraction = factory(file);
-            fs.Parsed = false
+            const fs: FileExtraction = factory(file);
+            fs.Parsed = false;
             fs.SizeMsg = formatBytes(file.size);
-            onFileSelected(fs)
+            onFileSelected(fs);
 
-            let metadataPromise: Promise<MetadataResponse> = fs.Fs.extractMetadata();
-            promises.push(metadataPromise);
+            promises.push(fs.Fs.extractMetadata());
         }
     }
 
     const metadataResponses = await Promise.all(promises);
     for (const metadata of metadataResponses) {
-        if (metadata.Error === "") {
-            // yield fs;
-        } else {
+        if (metadata.Error !== "") {
             logMessage(metadata.Error, LogLevel.Error);
             console.log(metadata.Error);
         }
