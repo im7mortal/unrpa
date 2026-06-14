@@ -22,8 +22,10 @@ interface ServiceWorkerProviderProps {
 }
 
 export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({children}) => {
-    const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(null);
     const {fileApiWithServiceWorker} = useContext(ApiInfoContext);
+    const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(
+        () => fileApiWithServiceWorker ? navigator.serviceWorker.controller : null
+    );
 
     useEffect(() => {
         const registerServiceWorker = async () => {
@@ -73,12 +75,8 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({chi
             }
         };
 
-        if (fileApiWithServiceWorker) {
-            if (navigator.serviceWorker.controller) {
-                setServiceWorker(navigator.serviceWorker.controller);
-            } else {
-                registerServiceWorker();
-            }
+        if (fileApiWithServiceWorker && !navigator.serviceWorker.controller) {
+            registerServiceWorker();
         }
     }, [fileApiWithServiceWorker]);
 
