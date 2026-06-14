@@ -29,6 +29,7 @@ function ElementExtraction() {
                         fClassE={item}
                         logF={recordLog}
                         handleRemove={() => {
+                            item.Fs.releaseMetadata();
                             dispatch({type: 'REMOVE', payload: item.Id})
                         }}
                         key={item.Id}

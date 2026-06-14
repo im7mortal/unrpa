@@ -52,6 +52,7 @@ export interface FClassInterface {
     cancel: () => Promise<void>;
     register: (f: (file: File, group: FileHeader[]) => void) => void;
     listenProcessed?: (f: (n: number) => void) => void;
+    releaseMetadata: () => void;
 }
 
 export interface FileSystemAccessApiInterface extends FClassInterface {
@@ -88,6 +89,10 @@ export class FileSystemAccessApi extends Extractor implements FileSystemAccessAp
 
     async cancel() {
         this.canceled = true
+    }
+
+    releaseMetadata() {
+        this.Metadata = [];
     }
 
     setDirectoryHandle(handle: FileSystemDirectoryHandle) {
@@ -227,6 +232,11 @@ export class FileApi extends Extractor implements FClassInterface {
         }
     }
 
+    releaseMetadata() {
+        this.Metadata = [];
+        this.ZipGroups = [];
+    }
+
     async extractMetadata(): Promise<MetadataResponse> {
 
         this.logMessage(`Analyze "${this.file.name}"`, LogLevel.Info);
@@ -320,8 +330,11 @@ export function fileExtractionCreator(sys: boolean, logMessage: logLevelFunction
     }
 }
 
+const METADATA_CONCURRENCY = 8;
+
 export async function scanDir(iterateDirectory: () => AsyncGenerator<File, void, undefined>, logMessage: logLevelFunction, factory: (file: File) => FileExtraction, onFileSelected: (newFiles: FileExtraction) => void): Promise<void> {
-    const promises: Promise<MetadataResponse>[] = [];
+    const inFlight = new Set<Promise<void>>();
+
     for await (const file of iterateDirectory()) {
         logMessage(file.name, LogLevel.Debug);
         if (file.name.endsWith('.rpa')) { // TODO duplicate
@@ -330,17 +343,25 @@ export async function scanDir(iterateDirectory: () => AsyncGenerator<File, void,
             fs.SizeMsg = formatBytes(file.size);
             onFileSelected(fs);
 
-            promises.push(fs.Fs.extractMetadata());
+            if (inFlight.size >= METADATA_CONCURRENCY) {
+                await Promise.race(inFlight);
+            }
+
+            const tracked: Promise<void> = fs.Fs.extractMetadata()
+                .then((metadata) => {
+                    if (metadata.Error !== "") {
+                        logMessage(metadata.Error, LogLevel.Error);
+                        console.log(metadata.Error);
+                    }
+                })
+                .finally(() => {
+                    inFlight.delete(tracked);
+                });
+            inFlight.add(tracked);
         }
     }
 
-    const metadataResponses = await Promise.all(promises);
-    for (const metadata of metadataResponses) {
-        if (metadata.Error !== "") {
-            logMessage(metadata.Error, LogLevel.Error);
-            console.log(metadata.Error);
-        }
-    }
+    await Promise.all(inFlight);
 }
 
 export interface ZipWorkerOut {
